@@ -11,12 +11,12 @@ def readme():
         return f.read()
 
 setup(name='decocare',
-    version='0.0.30-dev', # http://semver.org/
+    version='0.0.30', # http://semver.org/
     description='Audit, inspect, and command MM insulin pumps.',
     long_description=readme(),
     author="Ben West",
     author_email="bewest+insulaudit@gmail.com",
-    url="https://github.com/bewest/decoding-carelink",
+    url="https://github.com/openaps/decocare",
     #namespace_packages = ['insulaudit'],
     packages=find_packages( ),
     install_requires = [
