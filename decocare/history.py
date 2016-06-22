@@ -796,7 +796,7 @@ class HistoryPage (PagedData):
     # data.reverse( )
     # self.data = self.eat_nulls(data)
     #self.data.reverse( )
-    self.data = data[:]
+    self.data = data[0:1022]
     # XXX: under some circumstances, zero is the correct value and
     # eat_nulls actually eats valid data.  This ugly hack restores two
     # nulls back ot the end.
