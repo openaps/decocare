@@ -293,7 +293,7 @@ class TempBasal(PumpCommand):
   @classmethod
   def format_params (klass, rate, duration):
     duration = duration / 30
-    rate = int(rate / 0.025)
+    rate = int(round(rate / 0.025))
     params = [0x00, rate, duration]
     return params
 
