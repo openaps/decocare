@@ -217,6 +217,11 @@ class ChangeAlarmNotifyMode (KnownRecord):
   body_length = 0
 class ChangeTimeDisplay(KnownRecord):
   opcode = 0x64
+  def decode(self):
+    self.parse_time( )
+    key = {1: "d24"}
+    info = dict(timeFormat=key.get(self.head[1], 'd12'))
+    return info
 
 class ChangeBolusWizardSetup (KnownRecord):
   opcode = 0x4f
