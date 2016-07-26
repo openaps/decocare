@@ -261,6 +261,20 @@ class JournalEntryExerciseMarker(KnownRecord):
   body_length = 1
 _confirmed.append(JournalEntryExerciseMarker)
 
+class JournalEntryInsulinMarker(KnownRecord):
+  """Capture Event > Insulin marker"""
+  opcode = 0x42
+  body_length = 1
+  def decode(self):
+    super(JournalEntryInsulinMarker, self).decode()
+    # see https://github.com/ps2/rileylink_ios/pull/160/files
+    lowbits = self.head[1]
+    highbits = (self.date[2] & 0b1100000) << 3 # ??
+    amount = (highbits + lowbits) / 10.0
+    return dict(amount=amount)
+_confirmed.append(JournalEntryInsulinMarker)
+
+
 class JournalEntryOtherMarker(KnownRecord):
   """Capture Event > Other"""
   opcode = 0x43
