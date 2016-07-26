@@ -395,9 +395,13 @@ class OldBolusWizardChange (KnownRecord):
     stale = self.body[0:half]
     changed = self.body[half:-1]
     tail = self.body[-1]
-    return dict(stale=decode_wizard_settings(stale, model=self.model)
+    stale = decode_wizard_settings(stale, model=self.model)
+    changed = decode_wizard_settings(changed, model=self.model)
+    stale.update(InsulinActionHours=(tail & 0xF))
+    changed.update(InsulinActionHours=(tail >>4))
+    return dict(stale=stale
     # , _changed=changed
-    , changed=decode_wizard_settings(changed, model=self.model)
+    , changed=changed
     , tail=tail
     )
 
