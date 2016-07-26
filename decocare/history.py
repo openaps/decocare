@@ -272,16 +272,16 @@ class Ian69(KnownRecord):
   body_length = 2
 _confirmed.append(Ian69)
 
-class Ian50(KnownRecord):
+class ChangeSensorSetup2 (KnownRecord):
   opcode = 0x50
   body_length = 34
 
   # XXX: tghoward testing on 723 at length 30
   body_length = 30
   def __init__ (self, head, model, **kwds):
-    super(Ian50, self).__init__(head, model, **kwds)
+    super(ChangeSensorSetup2, self).__init__(head, model, **kwds)
     self.body_length = model.Ian50Body
-_confirmed.append(Ian50)
+_confirmed.append(ChangeSensorSetup2)
 
 class Ian54(KnownRecord):
   opcode = 0x54
