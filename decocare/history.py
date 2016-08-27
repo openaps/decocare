@@ -608,6 +608,10 @@ class questionable6f (KnownRecord):
   opcode = 0x6f
 _confirmed.append(questionable6f)
 
+class SaveSettings (KnownRecord):
+  opcode = 0x5d
+_confirmed.append(SaveSettings)
+
 class questionable5e (KnownRecord):
   opcode = 0x5e
 _confirmed.append(questionable5e)
