@@ -1030,9 +1030,16 @@ class ReadInsulinSensitivities (PumpCommand):
     data = self.data[1:1+16]
     schedule = [ ]
     for x in range(8):
+      # Each entry in the sensitivity schedule consists of 2 bytes. The first byte is used as follows:
+      #   bits 0-2 are 0
+      #   bit 3 is in overflow bit that is set when sensitivity is > 255
+      #   bits 4-7 represent the scheduled time 
+      # The second byte is the insulin sensitivity. When the sensitivity is >255, the overflow bit above will be set and this byte will
+      # show the remainder (e.g. for 256 the overflow bit will be set and this byte will be 0).
       start = x * 2
-      end = start + 2
-      (i, sensitivity) = data[start:end]
+      i = data[start] & 0x11
+      sensitivity_overflow = data[start] & 0x100
+      sensitivity = data[start+1] + sensitivity_overflow
       if x > 0 and i == 0:
         break
       if units == 2:
