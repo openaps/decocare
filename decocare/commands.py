@@ -1037,8 +1037,8 @@ class ReadInsulinSensitivities (PumpCommand):
       # The second byte is the insulin sensitivity. When the sensitivity is >255, the overflow bit above will be set and this byte will
       # show the remainder (e.g. for 256 the overflow bit will be set and this byte will be 0).
       start = x * 2
-      i = data[start] & 0x11
-      sensitivity_overflow = data[start] & 0x100
+      i = data[start] & 0x0F
+      sensitivity_overflow = (data[start] & 0xF0) << 4
       sensitivity = data[start+1] + sensitivity_overflow
       if x > 0 and i == 0:
         break
