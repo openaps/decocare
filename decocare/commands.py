@@ -1040,8 +1040,6 @@ class ReadInsulinSensitivities (PumpCommand):
 
   @staticmethod
   def decode(data):
-    # isFast = data[17] == 0
-    isFast = data[0]
     units = data[0]
     data = data[1:1+16]
     schedule = [ ]
@@ -1054,8 +1052,7 @@ class ReadInsulinSensitivities (PumpCommand):
       if units == 2:
         sensitivity = sensitivity / 10.0
       schedule.append(dict(x=x, i=i, start=str(lib.basal_time(i)), offset=i*30, sensitivity=sensitivity))
-    labels = { True: 'Fast', False: 'Regular' }
-    return dict(sensitivities=schedule, first=isFast, units=ReadInsulinSensitivities.UNITS.get(units))
+    return dict(sensitivities=schedule, first=units, units=ReadInsulinSensitivities.UNITS.get(units))
 
 # MMPump512/	CMD_READ_BG_TARGETS	140	0x8c	('\x8c')	??
 class ReadBGTargets (PumpCommand):
