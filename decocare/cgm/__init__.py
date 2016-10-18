@@ -152,6 +152,11 @@ class PagedData (object):
     prefix_records = []
     for B in iter(lambda: self.stream.read(1), ""):
       B = bytearray(B)
+
+      # eat nulls within the page to avoid 0-value sgv records
+      if B[0] == 0x00:
+        continue
+
       record = self.suggest(B[0])
       record['_tell'] = self.stream.tell( )
       # read packet if needed
