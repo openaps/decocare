@@ -186,7 +186,7 @@ class TempBasal (KnownRecord):
     temp = { 0: 'absolute', 1: 'percent' }[(self.body[0] >> 3)]
     status = dict(temp=temp)
     if temp is 'absolute':
-      rate = self.head[1] / 40.0
+      rate = lib.BangInt([self.body[0]&0x7, self.head[1]]) / 40.0
       status.update(rate=rate)
     if temp is 'percent':
       rate = int(self.head[1])

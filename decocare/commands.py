@@ -294,7 +294,7 @@ class TempBasal(PumpCommand):
   def format_params (klass, rate, duration):
     duration = duration / 30
     rate = int(round(rate / 0.025))
-    params = [0x00, rate, duration]
+    params = [lib.HighByte(rate), lib.LowByte(rate), duration]
     return params
 
 
