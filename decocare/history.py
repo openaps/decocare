@@ -186,7 +186,7 @@ class TempBasal (KnownRecord):
     temp = { 0: 'absolute', 1: 'percent' }[(self.body[0] >> 3)]
     status = dict(temp=temp)
     if temp is 'absolute':
-      rate = self.head[1] / 40.0
+      rate = lib.BangInt([self.body[0]&0x7, self.head[1]]) / 40.0
       status.update(rate=rate)
     if temp is 'percent':
       rate = int(self.head[1])
@@ -217,6 +217,11 @@ class ChangeAlarmNotifyMode (KnownRecord):
   body_length = 0
 class ChangeTimeDisplay(KnownRecord):
   opcode = 0x64
+  def decode(self):
+    self.parse_time( )
+    key = {1: "d24"}
+    info = dict(timeFormat=key.get(self.head[1], 'd12'))
+    return info
 
 class ChangeBolusWizardSetup (KnownRecord):
   opcode = 0x4f
@@ -256,6 +261,20 @@ class JournalEntryExerciseMarker(KnownRecord):
   body_length = 1
 _confirmed.append(JournalEntryExerciseMarker)
 
+class JournalEntryInsulinMarker(KnownRecord):
+  """Capture Event > Insulin marker"""
+  opcode = 0x42
+  body_length = 1
+  def decode(self):
+    super(JournalEntryInsulinMarker, self).decode()
+    # see https://github.com/ps2/rileylink_ios/pull/160/files
+    lowbits = self.head[1]
+    highbits = (self.date[2] & 0b1100000) << 3 # ??
+    amount = (highbits + lowbits) / 10.0
+    return dict(amount=amount)
+_confirmed.append(JournalEntryInsulinMarker)
+
+
 class JournalEntryOtherMarker(KnownRecord):
   """Capture Event > Other"""
   opcode = 0x43
@@ -267,16 +286,16 @@ class Ian69(KnownRecord):
   body_length = 2
 _confirmed.append(Ian69)
 
-class Ian50(KnownRecord):
+class ChangeSensorSetup2 (KnownRecord):
   opcode = 0x50
   body_length = 34
 
   # XXX: tghoward testing on 723 at length 30
   body_length = 30
   def __init__ (self, head, model, **kwds):
-    super(Ian50, self).__init__(head, model, **kwds)
+    super(ChangeSensorSetup2, self).__init__(head, model, **kwds)
     self.body_length = model.Ian50Body
-_confirmed.append(Ian50)
+_confirmed.append(ChangeSensorSetup2)
 
 class Ian54(KnownRecord):
   opcode = 0x54
@@ -376,9 +395,13 @@ class OldBolusWizardChange (KnownRecord):
     stale = self.body[0:half]
     changed = self.body[half:-1]
     tail = self.body[-1]
-    return dict(stale=decode_wizard_settings(stale, model=self.model)
+    stale = decode_wizard_settings(stale, model=self.model)
+    changed = decode_wizard_settings(changed, model=self.model)
+    stale.update(InsulinActionHours=(tail & 0xF))
+    changed.update(InsulinActionHours=(tail >>4))
+    return dict(stale=stale
     # , _changed=changed
-    , changed=decode_wizard_settings(changed, model=self.model)
+    , changed=changed
     , tail=tail
     )
 
@@ -584,6 +607,10 @@ _confirmed.append(questionable66)
 class questionable6f (KnownRecord):
   opcode = 0x6f
 _confirmed.append(questionable6f)
+
+class SaveSettings (KnownRecord):
+  opcode = 0x5d
+_confirmed.append(SaveSettings)
 
 class questionable5e (KnownRecord):
   opcode = 0x5e

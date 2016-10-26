@@ -228,9 +228,14 @@ class CalBGForPH(KnownRecord):
   opcode = 0x0a
   def decode(self):
     self.parse_time( )
-    year_bits = extra_year_bits(self.date[4])
+    # year_bits = extra_year_bits(self.date[4])
 
-    return { 'amount': int(lib.BangInt([ year_bits[0], self.head[1] ])) }
+    highbit = (self.date[2] & 0b10000000) << 2
+    nibble = (self.date[4] & 0b10000000) << 1
+    low = self.head[1]
+    amount = int(highbit + nibble + low)
+    return { 'amount': amount }
+    # return { 'amount': int(lib.BangInt([ year_bits[0], self.head[1] ])) }
     pass
 
 if __name__ == '__main__':

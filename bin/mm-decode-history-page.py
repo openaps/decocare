@@ -10,6 +10,8 @@ from binascii import hexlify
 # from datetime import datetime
 # from scapy.all import *
 import json
+import datetime
+json.JSONEncoder.default = lambda self,obj: (obj.isoformat() if isinstance(obj, datetime.datetime) else None)
 
 from decocare import lib, history, models
 

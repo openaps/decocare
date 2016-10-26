@@ -293,8 +293,8 @@ class TempBasal(PumpCommand):
   @classmethod
   def format_params (klass, rate, duration):
     duration = duration / 30
-    rate = int(rate / 0.025)
-    params = [0x00, rate, duration]
+    rate = int(round(rate / 0.025))
+    params = [lib.HighByte(rate), lib.LowByte(rate), duration]
     return params
 
 
@@ -1005,6 +1005,27 @@ class ReadCarbRatios (PumpCommand):
 
 # MMPump512/	CMD_READ_INSULIN_SENSITIVITIES	139	0x8b	('\x8b')	OK
 class ReadInsulinSensitivities (PumpCommand):
+  """
+    >>> import json
+    >>> sens = ReadInsulinSensitivities.decode(ReadInsulinSensitivities.resp_1)
+    >>> print json.dumps(sens)
+    {"units": "mg/dL", "sensitivities": [{"i": 0, "start": "00:00:00", "sensitivity": 45, "offset": 0, "x": 0}], "first": 1}
+
+    >>> sens = ReadInsulinSensitivities.decode(ReadInsulinSensitivities.resp_uk_1)
+    >>> print json.dumps(sens)
+    {"units": "mmol/L", "sensitivities": [{"i": 0, "start": "00:00:00", "sensitivity": 2.2, "offset": 0, "x": 0}], "first": 2}
+
+    >>> sens = ReadInsulinSensitivities.decode(ReadInsulinSensitivities.resp_high_bits)
+    >>> sens == ReadInsulinSensitivities.resp_high_bit_broken
+    False
+
+    >>> sens = ReadInsulinSensitivities.decode(ReadInsulinSensitivities.resp_high_bits)
+    >>> sens == ReadInsulinSensitivities.resp_high_bit_fixed
+    True
+
+
+  """
+  
   code = 139
   resp_1 = bytearray(b'\x01\x00-\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00')
   resp_uk_1 = bytearray(str("""
@@ -1018,28 +1039,48 @@ class ReadInsulinSensitivities (PumpCommand):
 00000000000000
 """.strip( ).replace("\n", "").decode('hex')))
 
+  # Thanks to Mitchell Slep.
+  resp_high_bits = bytearray(str("""
+01400c000000000000000000000000000000000000000000000000000000
+000000000000000000000000000000000000000000000000000000000000
+00000000
+""".strip( ).replace("\n", "").decode('hex')))
+  resp_high_bit_broken = {"units": "mg/dL", "sensitivities": [{"i": 64, "start": "08:00:00", "sensitivity": 12, "offset": 1920, "x": 0}], "first": 1}
+  resp_high_bit_fixed = {"units": "mg/dL", "sensitivities": [{"i": 0, "start": "00:00:00", "sensitivity": 268, "offset": 0, "x": 0}], "first": 1}
+
+
   output_fields = ['units', 'sensitivities' ]
   UNITS = {
     1: 'mg/dL',
     2: 'mmol/L'
   }
+
   def getData (self):
-    # isFast = data[17] == 0
-    isFast = self.data[0] is 1
-    units = self.data[0]
-    data = self.data[1:1+16]
+    return self.decode(self.data)
+
+  @staticmethod
+  def decode(data):
+    units = data[0]
+    data = data[1:1+16]
     schedule = [ ]
     for x in range(8):
+      # Each entry in the sensitivity schedule consists of 2 bytes.
+      # The first byte is used as follows:
+      #   - the highest bit is 0
+      #   - the next highest bit is an overflow bit that is set when the sensitivity is > 255
+      #   - the low 6 bits are an index from 0-47 representing the scheduled time
+      # The second byte is the insulin sensitivity. When the sensitivity is >255, the overflow bit above will be set and this byte will
+      # show the remainder (e.g. for 256 the overflow bit will be set and this byte will be 0).
       start = x * 2
-      end = start + 2
-      (i, sensitivity) = data[start:end]
+      i = data[start] & 0x3F
+      sensitivity_overflow = (data[start] & 0x40) << 2
+      sensitivity = data[start+1] + sensitivity_overflow
       if x > 0 and i == 0:
         break
       if units == 2:
         sensitivity = sensitivity / 10.0
-      schedule.append(dict(x=x, i=i, start=lib.basal_time(i), offset=i*30, sensitivity=sensitivity))
-    labels = { True: 'Fast', False: 'Regular' }
-    return dict(sensitivities=schedule, first=self.data[0], units=self.UNITS.get(units))
+      schedule.append(dict(x=x, i=i, start=str(lib.basal_time(i)), offset=i*30, sensitivity=sensitivity))
+    return dict(sensitivities=schedule, first=units, units=ReadInsulinSensitivities.UNITS.get(units))
 
 # MMPump512/	CMD_READ_BG_TARGETS	140	0x8c	('\x8c')	??
 class ReadBGTargets (PumpCommand):

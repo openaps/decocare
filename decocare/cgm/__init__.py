@@ -152,6 +152,11 @@ class PagedData (object):
     prefix_records = []
     for B in iter(lambda: self.stream.read(1), ""):
       B = bytearray(B)
+
+      # eat nulls within the page to avoid 0-value sgv records
+      if B[0] == 0x00:
+        continue
+
       record = self.suggest(B[0])
       record['_tell'] = self.stream.tell( )
       # read packet if needed
@@ -173,7 +178,7 @@ class PagedData (object):
             record.update(waiting='meter_bg_now')
         prefix_records.append(record)
 
-      elif record['name'] == 'SensorTimestamp' or record['name'] == 'SensorCalFactor' or record['name'] in ['10-Something' ]:
+      elif record['name'] == 'SensorTimestamp' or record['name'] == 'SensorCalFactor' or record['name'] in ['10-Something']:
         # TODO: maybe this is like a ResetGlucose base command
         # these are sensor minute timestamped records thus create the record
         # and map prefixed elements based on the timedelta
@@ -202,7 +207,7 @@ class PagedData (object):
         prefix_records = []
 
 
-      elif record['name'] in ['SensorStatus', 'DateTimeChange', 'SensorSync', '10-Something', 'CalBGForGH', 'BatteryChange' ]:
+      elif record['name'] in ['SensorStatus', 'DateTimeChange', 'SensorSync', 'CalBGForGH', 'BatteryChange' ]:
         # independent record => parse and add to records list
         record.update(raw=self.byte_to_str(raw_packet))
         if record['name'] in ['SensorStatus', 'SensorSync', 'CalBGForGH', 'BatteryChange', 'DateTimeChange']:
