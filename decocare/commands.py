@@ -1005,6 +1005,17 @@ class ReadCarbRatios (PumpCommand):
 
 # MMPump512/	CMD_READ_INSULIN_SENSITIVITIES	139	0x8b	('\x8b')	OK
 class ReadInsulinSensitivities (PumpCommand):
+  """
+    >>> import json
+    >>> sens = ReadInsulinSensitivities.decode(ReadInsulinSensitivities.resp_1)
+    >>> print json.dumps(sens)
+    {"units": "mg/dL", "sensitivities": [{"i": 0, "start": "00:00:00", "sensitivity": 45, "offset": 0, "x": 0}], "first": 1}
+
+    >>> sens = ReadInsulinSensitivities.decode(ReadInsulinSensitivities.resp_uk_1)
+    >>> print json.dumps(sens)
+    {"units": "mmol/L", "sensitivities": [{"i": 0, "start": "00:00:00", "sensitivity": 2.2, "offset": 0, "x": 0}], "first": 2}
+  """
+  
   code = 139
   resp_1 = bytearray(b'\x01\x00-\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00')
   resp_uk_1 = bytearray(str("""
@@ -1023,11 +1034,14 @@ class ReadInsulinSensitivities (PumpCommand):
     1: 'mg/dL',
     2: 'mmol/L'
   }
+
   def getData (self):
-    # isFast = data[17] == 0
-    isFast = self.data[0] is 1
-    units = self.data[0]
-    data = self.data[1:1+16]
+    return self.decode(self.data)
+
+  @staticmethod
+  def decode(data):
+    units = data[0]
+    data = data[1:1+16]
     schedule = [ ]
     for x in range(8):
       start = x * 2
@@ -1037,9 +1051,8 @@ class ReadInsulinSensitivities (PumpCommand):
         break
       if units == 2:
         sensitivity = sensitivity / 10.0
-      schedule.append(dict(x=x, i=i, start=lib.basal_time(i), offset=i*30, sensitivity=sensitivity))
-    labels = { True: 'Fast', False: 'Regular' }
-    return dict(sensitivities=schedule, first=self.data[0], units=self.UNITS.get(units))
+      schedule.append(dict(x=x, i=i, start=str(lib.basal_time(i)), offset=i*30, sensitivity=sensitivity))
+    return dict(sensitivities=schedule, first=units, units=ReadInsulinSensitivities.UNITS.get(units))
 
 # MMPump512/	CMD_READ_BG_TARGETS	140	0x8c	('\x8c')	??
 class ReadBGTargets (PumpCommand):
