@@ -1029,6 +1029,13 @@ class ReadInsulinSensitivities (PumpCommand):
 00000000000000
 """.strip( ).replace("\n", "").decode('hex')))
 
+  # Thanks to Mitchell Slep.
+  resp_high_bits = bytearray(str("""
+01400c000000000000000000000000000000000000000000000000000000
+000000000000000000000000000000000000000000000000000000000000
+00000000
+""".strip( ).replace("\n", "").decode('hex')))
+
   output_fields = ['units', 'sensitivities' ]
   UNITS = {
     1: 'mg/dL',
