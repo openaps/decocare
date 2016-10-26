@@ -1014,6 +1014,16 @@ class ReadInsulinSensitivities (PumpCommand):
     >>> sens = ReadInsulinSensitivities.decode(ReadInsulinSensitivities.resp_uk_1)
     >>> print json.dumps(sens)
     {"units": "mmol/L", "sensitivities": [{"i": 0, "start": "00:00:00", "sensitivity": 2.2, "offset": 0, "x": 0}], "first": 2}
+
+    >>> sens = ReadInsulinSensitivities.decode(ReadInsulinSensitivities.resp_high_bits)
+    >>> sens == ReadInsulinSensitivities.resp_high_bit_broken
+    False
+
+    >>> sens = ReadInsulinSensitivities.decode(ReadInsulinSensitivities.resp_high_bits)
+    >>> sens == ReadInsulinSensitivities.resp_high_bit_fixed
+    True
+
+
   """
   
   code = 139
@@ -1035,6 +1045,9 @@ class ReadInsulinSensitivities (PumpCommand):
 000000000000000000000000000000000000000000000000000000000000
 00000000
 """.strip( ).replace("\n", "").decode('hex')))
+  resp_high_bit_broken = {"units": "mg/dL", "sensitivities": [{"i": 64, "start": "08:00:00", "sensitivity": 12, "offset": 1920, "x": 0}], "first": 1}
+  resp_high_bit_fixed = {"units": "mg/dL", "sensitivities": [{"i": 0, "start": "00:00:00", "sensitivity": 268, "offset": 0, "x": 0}], "first": 1}
+
 
   output_fields = ['units', 'sensitivities' ]
   UNITS = {
