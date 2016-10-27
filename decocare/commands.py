@@ -12,8 +12,8 @@ class BadResponse (Exception):
 Implementation and decoding of lots of commands.
 
 Each command inherits from :py:`BaseCommand`, which takes care of the
-basic logic for informing the stick if we have recieved all the data
-we expect to recieve.
+basic logic for informing the stick if we have received all the data
+we expect to receive.
 
 Many commands are supported by Medtronic but not listed here.
 Examples would include setting profiles and rates.
@@ -274,7 +274,7 @@ class TempBasal(PumpCommand):
   def getData(self):
     status = { 0: 'absolute' }
     received = True if (len(self.data) > 0 and self.data[0] is 0) else False
-    return dict(recieved=received, temp=status.get(self.params[0], 'percent'))
+    return dict(received=received, temp=status.get(self.params[0], 'percent'))
   @classmethod
   def Program (klass, rate=None, duration=None, temp=None, **kwds):
     assert duration % 30 is 0, "duration {0} is not a whole multiple of 30".format(duration)
@@ -308,7 +308,7 @@ class SetSuspend(PumpCommand):
   def getData(self):
     status = { 0: 'resumed', 1: 'suspended' }
     received = True if self.data[0] is 0 else False
-    return dict(recieved=received, status=status.get(self.params[0]))
+    return dict(received=received, status=status.get(self.params[0]))
 
 class PumpSuspend(SetSuspend):
   descr = "Suspend pump"
@@ -481,7 +481,7 @@ class Bolus (PumpCommand):
       received = True
     if len(self.data) and self.data[-1] == 0x0c:
       received = True
-    return dict(recieved=received, _type='BolusRequest', raw=str(self.data).encode('hex'))
+    return dict(received=received, _type='BolusRequest', raw=str(self.data).encode('hex'))
 
 
 class ReadErrorStatus(PumpCommand):
