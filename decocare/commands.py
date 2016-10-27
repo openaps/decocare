@@ -475,8 +475,13 @@ class Bolus (PumpCommand):
   descr = "Bolus"
   params = [ ]
   def getData(self):
-    received = True if self.data[0] is 0x0c else False
-    return dict(recieved=received, _type='BolusRequest')
+    # received = True if self.data[0] is 0x0c else False
+    received = False
+    if bytearray(64) == self.data:
+      received = True
+    if len(self.data) and self.data[-1] == 0x0c:
+      received = True
+    return dict(recieved=received, _type='BolusRequest', raw=str(self.data).encode('hex'))
 
 
 class ReadErrorStatus(PumpCommand):
