@@ -30,7 +30,23 @@ class TestTimestamping(unittest.TestCase):
     self.assertEqual(records[2]['name'], 'SensorTimestamp')
     self.assertEqual(records[2]['date'], '2016-02-08T20:54:00')
 
-  def test_no_forward_timestamp_when_timestmp_type_gap(self):
+  def test_forward_timestamping_when_reverse_not_available(self):
+    page = self.make_into_page('1008B614083445818B')
+    records = cgm.PagedData.Data(page).decode()
+
+    self.assertEqual(records[0]['name'], 'SensorTimestamp')
+    self.assertEqual(records[0]['date'], '2016-02-08T20:54:00')
+    self.assertEqual(records[0]['timestamp_type'], 'last_rf')
+
+    self.assertEqual(records[1]['name'], 'GlucoseSensorData')
+    self.assertEqual(records[1]['date'], '2016-02-08T20:59:00')
+    self.assertEqual(records[1]['sgv'], 104)
+
+    self.assertEqual(records[2]['name'], 'GlucoseSensorData')
+    self.assertEqual(records[2]['date'], '2016-02-08T21:04:00')
+    self.assertEqual(records[2]['sgv'], 138)
+
+  def test_no_forward_timestamp_when_timestamp_type_gap(self):
     page = self.make_into_page('1048B614083445EB9B')
     records = cgm.PagedData.Data(page).decode()
 

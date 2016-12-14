@@ -105,7 +105,7 @@ class PagedData (object):
 
   def decode (self):
     records = []
-    timestamp = None
+    timestamp = self.find_initial_timestamp()
     stream = self.stream_from_data(self.data)
 
     for B in iter(lambda: stream.read(1), ""):
@@ -120,6 +120,22 @@ class PagedData (object):
     records.reverse()
     self.records = records
     return self.records
+
+  def find_initial_timestamp(self):
+    stream = self.stream_from_data(self.data)
+    offset_count = 0
+
+    for B in iter(lambda: stream.read(1), ""):
+      B = bytearray(B)
+      record = self.decode_record(B[0], stream, None)
+      if record['name'] == 'SensorTimestamp' and not record['timestamp_type'] == 'gap':
+        timestamp = parser.parse(record['date'])
+        return timestamp + relativedelta(minutes=5*offset_count)
+      elif 'date_type' in record and record['date_type'] == 'relative':
+        offset_count = offset_count + 1
+      else:
+        return None
+
 
   def decode_record (self, op, stream, timestamp):
     """
