@@ -1,4 +1,3 @@
-
 """
 cgm - package for decoding cgm pages
 
@@ -42,7 +41,7 @@ def parse_months (first_byte, second_byte):
   first_two_bits  = first_byte  >> 6
   second_two_bits = second_byte >> 6
   return (first_two_bits << 2) + second_two_bits
-  
+
 
 def parse_date (data, unmask=False, strict=False, minute_specific=False):
   """
@@ -53,13 +52,11 @@ def parse_date (data, unmask=False, strict=False, minute_specific=False):
   seconds = 0
   minutes = 0
   hours   = 0
-  
+
   year    = times.parse_years(data[0])
   day     = parse_day(data[1])
   minutes = parse_minutes(data[2])
-
   hours   = parse_hours(data[3])
-
   month   = parse_months(data[3], data[2])
 
   try:
@@ -82,6 +79,7 @@ class PagedData (object):
   def Data (klass, data, **kwds):
     stream = io.BufferedReader(io.BytesIO(data))
     return klass(stream, **kwds)
+
   def __init__ (self, stream, larger=False):
     raw = bytearray(stream.read(1024))
     data, crc = raw[0:1022], raw[1022:]
@@ -89,7 +87,7 @@ class PagedData (object):
     self.larger = larger
     if lib.BangInt(crc) != computed:
       raise DataTransferCorruptionError("CRC does not match page data")
-    
+
     data.reverse( )
     self.data = self.eat_nulls(data)
     self.stream = io.BufferedReader(io.BytesIO(self.data))
@@ -99,12 +97,12 @@ class PagedData (object):
     while data[i] == 0x00:
       i = i+1
     return data[i:]
+
   def suggest (self, op):
     """
-    return a partially filled in acket/opcode
+    return a partially filled in packet/opcode
      info: name, packet size, date_type, op
-     some info will be added later when the record is parsed:
-       GlucoseSensorData, cal factor. amount, prefix, data
+     some info will be added later when the record is parsed
     """
     # TODO: would it be possible to turn these into classes which know hwo
     # to decode time and describe themselves to PagedData?
@@ -112,19 +110,20 @@ class PagedData (object):
     # the thing as a whole easily.
     records = {
       0x01: dict(name='DataEnd',packet_size=0,date_type='none',op='0x01'),
-      0x02: dict(name='SensorWeakSignal',packet_size=0,date_type='prevTimestamp',op='0x02'),
-      0x03: dict(name='SensorCal',packet_size=1,date_type='prevTimestamp',op='0x03'),
-      0x07: dict(name='Fokko-07',packet_size=1,date_type='prevTimestamp',op='0x07'),
-      0x08: dict(name='SensorTimestamp',packet_size=4,date_type='minSpecific',op='0x08'),
+      0x02: dict(name='SensorWeakSignal',packet_size=0,date_type='relative',op='0x02'),
+      0x03: dict(name='SensorCal',packet_size=1,date_type='relative',op='0x03'),
+      0x04: dict(name='SensorPacket',packet_size=1,date_type='relative',op='0x04'),
+      0x05: dict(name='SensorError',packet_size=1,date_type='relative',op='0x05'),
+      0x06: dict(name='SensorDataLow',packet_size=0,date_type='relative',op='0x06'),
+      0x07: dict(name='SensorDataHigh',packet_size=1,date_type='relative',op='0x07'),
+      0x08: dict(name='SensorTimestamp',packet_size=4,date_type='reference',op='0x08'),
       0x0a: dict(name='BatteryChange',packet_size=4,date_type='minSpecific',op='0x0a'),
       0x0b: dict(name='SensorStatus',packet_size=4,date_type='minSpecific',op='0x0b'),
-      0x0c: dict(name='DateTimeChange',packet_size=4,date_type='secSpecific',op='0x0c'),
+      0x0c: dict(name='DateTimeChange',packet_size=4,date_type='minSpecific',op='0x0c'),
       0x0d: dict(name='SensorSync',packet_size=4,date_type='minSpecific',op='0x0d'),
       0x0e: dict(name='CalBGForGH',packet_size=5,date_type='minSpecific',op='0x0e'),
       0x0f: dict(name='SensorCalFactor',packet_size=6,date_type='minSpecific',op='0x0f'),
-      # 0x10: dict(name='10-Something',packet_size=7,date_type='minSpecific',op='0x10'),
-      0x10: dict(name='10-Something',packet_size=4,date_type='minSpecific',op='0x10'),
-      0x13: dict(name='19-Something',packet_size=0,date_type='prevTimestamp',op='0x13')
+      0x10: dict(name='10-Something',packet_size=7,date_type='minSpecific',op='0x10'),
     }
     if self.larger:
       # record[08][]
@@ -137,25 +136,16 @@ class PagedData (object):
       else:
         return record
     else:
-      record = dict(name='GlucoseSensorData',packet_size=0,date_type='prevTimestamp',op=op)
+      record = dict(name='GlucoseSensorData',packet_size=0,date_type='relative',op=op)
       record.update(sgv=(int(op) * 2))
       return record
 
   def decode (self):
-    """
-      XXX: buggy code
+    records = []
+    timestamp = None
 
-        * fails to acknowledge gaps in time
-        * fails to acknowledge SensorSync
-    """
-    records = [ ]
-    prefix_records = []
     for B in iter(lambda: self.stream.read(1), ""):
       B = bytearray(B)
-
-      # eat nulls within the page to avoid 0-value sgv records
-      if B[0] == 0x00:
-        continue
 
       record = self.suggest(B[0])
       record['_tell'] = self.stream.tell( )
@@ -163,83 +153,118 @@ class PagedData (object):
       if not record is None and record['packet_size'] > 0:
         raw_packet = bytearray(self.stream.read(record['packet_size']))
 
-      if record['name'] == 'DataEnd':
-        prefix_records.append(record)
-        continue
-      
-      elif record['name'] == 'GlucoseSensorData' or record['name'] == 'SensorWeakSignal' \
-        or record['name'] == 'SensorCal' or record['name'] == '19-Something':
-        # add to prefixed records to add to the next sensor minute timestamped record
-        if record['name'] == 'SensorCal':
-          record.update(raw=self.byte_to_str(raw_packet))
-          if int(raw_packet[0]) == 1:
-            record.update(waiting='waiting')
-          else:
-            record.update(waiting='meter_bg_now')
-        prefix_records.append(record)
-
-      elif record['name'] == 'SensorTimestamp' or record['name'] == 'SensorCalFactor' or record['name'] in ['10-Something']:
-        # TODO: maybe this is like a ResetGlucose base command
-        # these are sensor minute timestamped records thus create the record
-        # and map prefixed elements based on the timedelta
+      # SensorTimestamp serves as a reference timestamp for relative events
+      if record['name'] == 'SensorTimestamp':
         record.update(raw=self.byte_to_str(raw_packet))
-        date, body = raw_packet[:4], raw_packet[4:]  
+
+        raw_type = (raw_packet[2] & 0b01100000) >> 5
+        if raw_type == 0x00:
+          timestamp_type = 'last_rf'
+        elif raw_type == 0x01:
+          timestamp_type = 'page_end'
+        elif raw_type == 0x02:
+          timestamp_type = 'gap'
+        else:
+          timestamp_type = 'unknown'
+        record.update(timestamp_type=timestamp_type)
+
+        date, body = raw_packet[:4], raw_packet[4:]
         date.reverse()
         date = parse_date(date)
         if date:
           record.update(date=date.isoformat())
+          timestamp = date
         else:
           print "@@@", self.stream.tell( )
           pprint(dict(raw=hexlify(raw_packet)))
           pprint(dict(date=hexlify(date or bytearray( ))))
           pprint(dict(body=hexlify(body)))
           break
-        prefix_records.reverse()
-        mapped_glucose_records = self.map_glucose(prefix_records, start=date, delta=self.delta_ago(reverse=True))
-        mapped_glucose_records.reverse()
-        # And this ResetGlucose has a payload indicating calibration factor
-        # Update sensor cal factor
-        if record['name'] == 'SensorCalFactor': 
-          factor = lib.BangInt([ body[0], body[1] ]) / 1000.0
-          record.update(factor=factor) 
-        records.extend(mapped_glucose_records)
-        records.append(record)
-        prefix_records = []
 
+      elif 'date_type' in record and record['date_type'] == 'relative':
 
-      elif record['name'] in ['SensorStatus', 'DateTimeChange', 'SensorSync', 'CalBGForGH', 'BatteryChange' ]:
-        # independent record => parse and add to records list
+        if timestamp:
+          record.update(date=timestamp.isoformat())
+          timestamp = timestamp + relativedelta(minutes=-5)
+
+        if record['name'] == 'SensorCal':
+          record.update(raw=self.byte_to_str(raw_packet))
+          calibration_type = 'unknown'
+          if raw_packet[0] == 0x00:
+            calibration_type = 'meter_bg_now'
+          if raw_packet[0] == 0x01:
+            calibration_type = 'waiting'
+          if raw_packet[0] == 0x02:
+            calibration_type = 'cal_error'
+          record.update(calibration_type=calibration_type)
+
+        if record['name'] == 'SensorError':
+          error_type = 'unknown'
+          if raw_packet[0] == 0x01:
+            error_type = 'end'
+          record.update(error_type=error_type)
+
+      # independent record => parse and add to records list
+      elif 'date_type' in record and record['date_type'] == 'minSpecific':
         record.update(raw=self.byte_to_str(raw_packet))
-        if record['name'] in ['SensorStatus', 'SensorSync', 'CalBGForGH', 'BatteryChange', 'DateTimeChange']:
-          date, body = raw_packet[:4], raw_packet[4:]
-          date.reverse()
-          date = parse_date(date)
-          if date is not None:
-            record.update(date=date.isoformat())
-          else:
-            record.update(_date=str(raw_packet[:4]).encode('hex'))
+        date, body = raw_packet[:4], raw_packet[4:]
+        date.reverse()
+        date = parse_date(date)
+        if date is not None:
+          record.update(date=date.isoformat())
+        else:
+          record.update(_date=str(raw_packet[:4]).encode('hex'))
+        record.update(body=self.byte_to_str(body))
+
+        # Update cal amount
+        if record['name'] == 'CalBGForGH':
+          amount = lib.BangInt([ (raw_packet[2] & 0b00100000) >> 5, body[0] ])
           record.update(body=self.byte_to_str(body))
-          # Update cal amount
-          if record['name'] == 'DateTimeChange':
-            """
-            changed = body[1:5]
-            changed.reverse( )
-            changed = parse_date(changed)
-            record.update(change=changed.isoformat( ), body=self.byte_to_str(body[5:]))
-            """
-          if record['name'] == 'CalBGForGH':
-            amount = lib.BangInt([ (raw_packet[2] & 0b00100000) >> 5, body[0] ])
-            record.update(body=self.byte_to_str(body))
-            record.update(amount=amount)
-        records.append(record)
-      else:
-        # could not decode
-        records.append(record)
-      # End For  
+          record.update(amount=amount)
+
+        # Update sensor cal factor
+        if record['name'] == 'SensorCalFactor':
+          factor = lib.BangInt([ body[0], body[1] ]) / 1000.0
+          record.update(factor=factor)
+
+        #Update sensor status type
+        if record['name'] == 'SensorStatus':
+          raw_status_type = (raw_packet[2] & 0b01100000) >> 5
+          status_type = 'unknown'
+          if raw_status_type   == 0x00:
+            status_type = 'off'
+          elif raw_status_type == 0x01:
+            status_type = 'on'
+          elif raw_status_type == 0x02:
+            status_type = 'lost'
+          record.update(status_type=status_type)
+
+        #Update sensor sync type
+        if record['name'] == 'SensorSync':
+          raw_sync_type = (raw_packet[2] & 0b01100000) >> 5
+          sync_type = 'unknown'
+          if raw_sync_type   == 0x01:
+            sync_type = 'new'
+          elif raw_sync_type == 0x02:
+            sync_type = 'old'
+          elif raw_sync_type == 0x03:
+            sync_type = 'find'
+          record.update(sync_type=sync_type)
+
+        #Update origin type
+        if record['name'] == 'CalBGForGH':
+          raw_origin_type = (raw_packet[2] & 0b01100000) >> 5
+          origin_type = 'unknown'
+          if raw_origin_type == 0x00:
+            origin_type = 'rf'
+          record.update(origin_type=origin_type)
+
+      records.append(record)
+    # End For
+
     records.reverse()
     self.records = records
     return self.records
-
 
   def byte_to_str (self, byte_array):
     # convert byte array to a string
@@ -247,20 +272,3 @@ class PagedData (object):
     for i in range(0, len(byte_array)):
       hex_bytes.append('{0:02x}'.format(byte_array[i]))
     return '-'.join(hex_bytes)
-
-  def map_glucose (self, values, start=None, delta=None):
-    last = start
-    if delta is None:
-      delta = self.delta_ago()
-    for x in list(values):
-      if x['name'] != '19-Something':
-        last = last - delta
-      x.update(date=last.isoformat())
-    return values
-          
-  def delta_ago (self, reverse=False, offset=1):
-    delta = relativedelta(minutes=5*offset)
-    if reverse:
-      delta = relativedelta(minutes=-5*offset)
-    return delta
-
