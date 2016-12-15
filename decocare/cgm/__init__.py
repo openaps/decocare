@@ -14,6 +14,7 @@ from binascii import hexlify
 import io
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
+from dateutil import parser
 
 from decocare import lib
 from decocare.records import times
@@ -88,9 +89,10 @@ class PagedData (object):
     if lib.BangInt(crc) != computed:
       raise DataTransferCorruptionError("CRC does not match page data")
 
-    data.reverse( )
+    data.reverse()
+    # self.data = data
     self.data = self.eat_nulls(data)
-    self.stream = io.BufferedReader(io.BytesIO(self.data))
+    # self.stream = io.BufferedReader(io.BytesIO(self.data))
 
   def eat_nulls (self, data):
     i = 0
@@ -98,7 +100,28 @@ class PagedData (object):
       i = i+1
     return data[i:]
 
-  def suggest (self, op):
+  def stream_from_data(self, data):
+    return io.BufferedReader(io.BytesIO(data))
+
+  def decode (self):
+    records = []
+    timestamp = None
+    stream = self.stream_from_data(self.data)
+
+    for B in iter(lambda: stream.read(1), ""):
+      B = bytearray(B)
+      record = self.decode_record(B[0], stream, timestamp)
+      if record['name'] == 'SensorTimestamp':
+        timestamp = parser.parse(record['date'])
+      elif 'date_type' in record and record['date_type'] == 'relative' and timestamp:
+        timestamp = timestamp + relativedelta(minutes=-5)
+      records.append(record)
+
+    records.reverse()
+    self.records = records
+    return self.records
+
+  def decode_record (self, op, stream, timestamp):
     """
     return a partially filled in packet/opcode
      info: name, packet size, date_type, op
@@ -132,139 +155,120 @@ class PagedData (object):
     if op > 0 and op < 20:
       record = records.get(op, None)
       if record is None:
-        return dict(name='Could Not Decode',packet_size=0,op=op)
-      else:
-        return record
+        record = dict(name='Could Not Decode',packet_size=0,op=op)
     else:
       record = dict(name='GlucoseSensorData',packet_size=0,date_type='relative',op=op)
       record.update(sgv=(int(op) * 2))
-      return record
 
-  def decode (self):
-    records = []
-    timestamp = None
+    record['_tell'] = stream.tell( )
 
-    for B in iter(lambda: self.stream.read(1), ""):
-      B = bytearray(B)
+    # read packet if needed
+    if not record is None and record['packet_size'] > 0:
+      raw_packet = bytearray(stream.read(record['packet_size']))
 
-      record = self.suggest(B[0])
-      record['_tell'] = self.stream.tell( )
-      # read packet if needed
-      if not record is None and record['packet_size'] > 0:
-        raw_packet = bytearray(self.stream.read(record['packet_size']))
+    # SensorTimestamp serves as a reference timestamp for relative events
+    if record['name'] == 'SensorTimestamp':
+      record.update(raw=self.byte_to_str(raw_packet))
 
-      # SensorTimestamp serves as a reference timestamp for relative events
-      if record['name'] == 'SensorTimestamp':
+      raw_type = (raw_packet[2] & 0b01100000) >> 5
+      if raw_type == 0x00:
+        timestamp_type = 'last_rf'
+      elif raw_type == 0x01:
+        timestamp_type = 'page_end'
+      elif raw_type == 0x02:
+        timestamp_type = 'gap'
+      else:
+        timestamp_type = 'unknown'
+      record.update(timestamp_type=timestamp_type)
+
+      date, body = raw_packet[:4], raw_packet[4:]
+      date.reverse()
+      date = parse_date(date)
+      if date:
+        record.update(date=date.isoformat())
+      else:
+        print "@@@", self.stream.tell( )
+        pprint(dict(raw=hexlify(raw_packet)))
+        pprint(dict(date=hexlify(date or bytearray( ))))
+        pprint(dict(body=hexlify(body)))
+
+    elif 'date_type' in record and record['date_type'] == 'relative':
+      if timestamp:
+        record.update(date=timestamp.isoformat())
+
+      if record['name'] == 'SensorCal':
         record.update(raw=self.byte_to_str(raw_packet))
+        calibration_type = 'unknown'
+        if raw_packet[0] == 0x00:
+          calibration_type = 'meter_bg_now'
+        if raw_packet[0] == 0x01:
+          calibration_type = 'waiting'
+        if raw_packet[0] == 0x02:
+          calibration_type = 'cal_error'
+        record.update(calibration_type=calibration_type)
 
-        raw_type = (raw_packet[2] & 0b01100000) >> 5
-        if raw_type == 0x00:
-          timestamp_type = 'last_rf'
-        elif raw_type == 0x01:
-          timestamp_type = 'page_end'
-        elif raw_type == 0x02:
-          timestamp_type = 'gap'
-        else:
-          timestamp_type = 'unknown'
-        record.update(timestamp_type=timestamp_type)
+      if record['name'] == 'SensorError':
+        error_type = 'unknown'
+        if raw_packet[0] == 0x01:
+          error_type = 'end'
+        record.update(error_type=error_type)
 
-        date, body = raw_packet[:4], raw_packet[4:]
-        date.reverse()
-        date = parse_date(date)
-        if date:
-          record.update(date=date.isoformat())
-          timestamp = date
-        else:
-          print "@@@", self.stream.tell( )
-          pprint(dict(raw=hexlify(raw_packet)))
-          pprint(dict(date=hexlify(date or bytearray( ))))
-          pprint(dict(body=hexlify(body)))
-          break
+    # independent record => parse and add to records list
+    elif 'date_type' in record and record['date_type'] == 'minSpecific':
+      record.update(raw=self.byte_to_str(raw_packet))
+      date, body = raw_packet[:4], raw_packet[4:]
+      date.reverse()
+      date = parse_date(date)
+      if date is not None:
+        record.update(date=date.isoformat())
+      else:
+        record.update(_date=str(raw_packet[:4]).encode('hex'))
+      record.update(body=self.byte_to_str(body))
 
-      elif 'date_type' in record and record['date_type'] == 'relative':
-
-        if timestamp:
-          record.update(date=timestamp.isoformat())
-          timestamp = timestamp + relativedelta(minutes=-5)
-
-        if record['name'] == 'SensorCal':
-          record.update(raw=self.byte_to_str(raw_packet))
-          calibration_type = 'unknown'
-          if raw_packet[0] == 0x00:
-            calibration_type = 'meter_bg_now'
-          if raw_packet[0] == 0x01:
-            calibration_type = 'waiting'
-          if raw_packet[0] == 0x02:
-            calibration_type = 'cal_error'
-          record.update(calibration_type=calibration_type)
-
-        if record['name'] == 'SensorError':
-          error_type = 'unknown'
-          if raw_packet[0] == 0x01:
-            error_type = 'end'
-          record.update(error_type=error_type)
-
-      # independent record => parse and add to records list
-      elif 'date_type' in record and record['date_type'] == 'minSpecific':
-        record.update(raw=self.byte_to_str(raw_packet))
-        date, body = raw_packet[:4], raw_packet[4:]
-        date.reverse()
-        date = parse_date(date)
-        if date is not None:
-          record.update(date=date.isoformat())
-        else:
-          record.update(_date=str(raw_packet[:4]).encode('hex'))
+      # Update cal amount
+      if record['name'] == 'CalBGForGH':
+        amount = lib.BangInt([ (raw_packet[2] & 0b00100000) >> 5, body[0] ])
         record.update(body=self.byte_to_str(body))
+        record.update(amount=amount)
 
-        # Update cal amount
-        if record['name'] == 'CalBGForGH':
-          amount = lib.BangInt([ (raw_packet[2] & 0b00100000) >> 5, body[0] ])
-          record.update(body=self.byte_to_str(body))
-          record.update(amount=amount)
+      # Update sensor cal factor
+      if record['name'] == 'SensorCalFactor':
+        factor = lib.BangInt([ body[0], body[1] ]) / 1000.0
+        record.update(factor=factor)
 
-        # Update sensor cal factor
-        if record['name'] == 'SensorCalFactor':
-          factor = lib.BangInt([ body[0], body[1] ]) / 1000.0
-          record.update(factor=factor)
+      #Update sensor status type
+      if record['name'] == 'SensorStatus':
+        raw_status_type = (raw_packet[2] & 0b01100000) >> 5
+        status_type = 'unknown'
+        if raw_status_type   == 0x00:
+          status_type = 'off'
+        elif raw_status_type == 0x01:
+          status_type = 'on'
+        elif raw_status_type == 0x02:
+          status_type = 'lost'
+        record.update(status_type=status_type)
 
-        #Update sensor status type
-        if record['name'] == 'SensorStatus':
-          raw_status_type = (raw_packet[2] & 0b01100000) >> 5
-          status_type = 'unknown'
-          if raw_status_type   == 0x00:
-            status_type = 'off'
-          elif raw_status_type == 0x01:
-            status_type = 'on'
-          elif raw_status_type == 0x02:
-            status_type = 'lost'
-          record.update(status_type=status_type)
+      #Update sensor sync type
+      if record['name'] == 'SensorSync':
+        raw_sync_type = (raw_packet[2] & 0b01100000) >> 5
+        sync_type = 'unknown'
+        if raw_sync_type   == 0x01:
+          sync_type = 'new'
+        elif raw_sync_type == 0x02:
+          sync_type = 'old'
+        elif raw_sync_type == 0x03:
+          sync_type = 'find'
+        record.update(sync_type=sync_type)
 
-        #Update sensor sync type
-        if record['name'] == 'SensorSync':
-          raw_sync_type = (raw_packet[2] & 0b01100000) >> 5
-          sync_type = 'unknown'
-          if raw_sync_type   == 0x01:
-            sync_type = 'new'
-          elif raw_sync_type == 0x02:
-            sync_type = 'old'
-          elif raw_sync_type == 0x03:
-            sync_type = 'find'
-          record.update(sync_type=sync_type)
+      #Update origin type
+      if record['name'] == 'CalBGForGH':
+        raw_origin_type = (raw_packet[2] & 0b01100000) >> 5
+        origin_type = 'unknown'
+        if raw_origin_type == 0x00:
+          origin_type = 'rf'
+        record.update(origin_type=origin_type)
 
-        #Update origin type
-        if record['name'] == 'CalBGForGH':
-          raw_origin_type = (raw_packet[2] & 0b01100000) >> 5
-          origin_type = 'unknown'
-          if raw_origin_type == 0x00:
-            origin_type = 'rf'
-          record.update(origin_type=origin_type)
-
-      records.append(record)
-    # End For
-
-    records.reverse()
-    self.records = records
-    return self.records
+    return record
 
   def byte_to_str (self, byte_array):
     # convert byte array to a string
@@ -272,3 +276,5 @@ class PagedData (object):
     for i in range(0, len(byte_array)):
       hex_bytes.append('{0:02x}'.format(byte_array[i]))
     return '-'.join(hex_bytes)
+
+
