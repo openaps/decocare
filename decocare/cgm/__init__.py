@@ -89,6 +89,7 @@ class PagedData (object):
     0x0e: dict(name='CalBGForGH',       packet_size=5, date_type='independent', op='0x0e'),
     0x0f: dict(name='SensorCalFactor',  packet_size=6, date_type='independent', op='0x0f'),
     0x10: dict(name='10-Something',     packet_size=7, date_type='independent', op='0x10'),
+    0x13: dict(name='19-Something',     packet_size=0, date_type='none',        op='0x13'),
   }
 
   @classmethod
@@ -270,7 +271,8 @@ class PagedData (object):
     quickly.
 
     If the last sensor timestamp is a 'gap' record or it encounters a
-    non-relative record before finding the timestamp, returns None
+    non-relative record other than 0x13 (filler?) or 0x01 (data end)
+    before finding the timestamp, returns None
     """
     stream = self.stream_from_data(self.data)
     offset_count = 0
@@ -283,7 +285,7 @@ class PagedData (object):
         return timestamp + relativedelta(minutes=5*offset_count)
       elif self.is_relative_record(record):
         offset_count = offset_count + 1
-      else:
+      elif not (record['name'] == 'DataEnd' or record['name'] == '19-Something'):
         return None
 
   def byte_to_str (self, byte_array):
