@@ -153,7 +153,7 @@ class TestEventDecoding(unittest.TestCase):
     records = cgm.PagedData.Data(page).decode()
     self.assertEqual(records[0]['name'], 'CalBGForGH')
     self.assertEqual(records[0]['date'], '2015-05-19T15:27:00')
-    self.assertEqual(records[0]['origin_type'], 'rf')
+    self.assertEqual(records[0]['amount'], 160)
 
   def test_sensor_calibration_factor(self):
     page = self.make_into_page('8C120F13674F0F')
