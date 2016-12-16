@@ -32,7 +32,11 @@ class TestTimestamping(unittest.TestCase):
 
   def test_forward_timestamping_when_reverse_not_available(self):
     page = self.make_into_page('1008B614083445818B')
-    records = cgm.PagedData.Data(page).decode()
+    paged_data = cgm.PagedData.Data(page)
+
+    self.assertFalse(paged_data.needs_timestamp())
+
+    records = paged_data.decode()
 
     self.assertEqual(records[0]['name'], 'SensorTimestamp')
     self.assertEqual(records[0]['date'], '2016-02-08T20:54:00')
@@ -48,7 +52,11 @@ class TestTimestamping(unittest.TestCase):
 
   def test_no_forward_timestamp_when_timestamp_type_gap(self):
     page = self.make_into_page('1048B614083445EB9B')
-    records = cgm.PagedData.Data(page).decode()
+    paged_data = cgm.PagedData.Data(page)
+
+    self.assertTrue(paged_data.needs_timestamp())
+
+    records = paged_data.decode()
 
     self.assertEqual(records[0]['name'], 'SensorTimestamp')
     self.assertEqual(records[0]['date'], '2016-02-08T20:54:00')
@@ -64,7 +72,11 @@ class TestTimestamping(unittest.TestCase):
 
   def test_no_forward_timestamp_when_independent_event_since_last_reference(self):
     page = self.make_into_page('1008B6140811457898')
-    records = cgm.PagedData.Data(page).decode()
+    paged_data = cgm.PagedData.Data(page)
+
+    self.assertTrue(paged_data.needs_timestamp())
+
+    records = paged_data.decode()
 
     self.assertEqual(records[0]['name'], 'SensorTimestamp')
     self.assertEqual(records[0]['date'], '2016-02-08T20:54:00')

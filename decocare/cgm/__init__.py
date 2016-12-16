@@ -103,6 +103,9 @@ class PagedData (object):
   def stream_from_data(self, data):
     return io.BufferedReader(io.BytesIO(data))
 
+  def needs_timestamp(self):
+    return self.find_initial_timestamp() is None
+
   def decode (self):
     records = []
     timestamp = self.find_initial_timestamp()
