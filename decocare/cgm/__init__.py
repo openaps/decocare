@@ -22,51 +22,31 @@ from decocare.records import times
 from decocare.errors import DataTransferCorruptionError
 from pprint import pprint
 
-###################
-#
-# Time parser
-# TODO: document
-# TODO: tests, ideally ones showing bits flip over
-###################
+class CgmDateDecoder (object):
 
-def parse_minutes (one):
-  minute = (one & 0b111111 )
-  return minute
+  @classmethod
+  def parse_date (klass, data, unmask=False, strict=False):
+    data = data[:]
+    seconds = 0
+    minutes = 0
+    hours   = 0
 
-def parse_hours (one):
-  return (one & 0x1F )
+    year    = times.parse_years(data[3])
+    day     = data[2] & 0x1F
+    minutes = data[1] & 0b111111
+    hours   = data[0] & 0x1F
+    month   = ((data[0] & 0xC0) >> 4) + ((data[1] & 0xC0) >> 6)
 
-def parse_day (one):
-  return one & 0x1F
-
-def parse_months (first_byte, second_byte):
-  first_two_bits  = first_byte  >> 6
-  second_two_bits = second_byte >> 6
-  return (first_two_bits << 2) + second_two_bits
-
-
-def parse_date (data, unmask=False, strict=False):
-  data = data[:]
-  seconds = 0
-  minutes = 0
-  hours   = 0
-
-  year    = times.parse_years(data[0])
-  day     = parse_day(data[1])
-  minutes = parse_minutes(data[2])
-  hours   = parse_hours(data[3])
-  month   = parse_months(data[3], data[2])
-
-  try:
-    date = datetime(year, month, day, hours, minutes, seconds)
-    return date
-  except ValueError, e:
-    if strict:
-      raise
-    if unmask:
-      return (year, month, day, hours, minutes, seconds)
-    pass
-  return None
+    try:
+      date = datetime(year, month, day, hours, minutes, seconds)
+      return date
+    except ValueError, e:
+      if strict:
+        raise
+      if unmask:
+        return (year, month, day, hours, minutes, seconds)
+      pass
+    return None
 
 class PagedData (object):
   """
@@ -171,7 +151,7 @@ class PagedData (object):
       record.update(raw=self.byte_to_str(raw_packet))
       record.update(body=self.byte_to_str(raw_packet[4:]))
 
-      date = self.decode_date(raw_packet)
+      date = CgmDateDecoder.parse_date(raw_packet[:4])
       if date is not None:
         record.update(date=date.isoformat())
       else:
@@ -188,11 +168,6 @@ class PagedData (object):
 
     return record
 
-  def decode_date(self, raw_packet):
-    date = raw_packet[:4]
-    date.reverse()
-    return parse_date(date)
-
   def decode_sensor_timestamp(self, record, raw_packet):
     record.update(raw=self.byte_to_str(raw_packet))
 
@@ -207,7 +182,7 @@ class PagedData (object):
       timestamp_type = 'unknown'
     record.update(timestamp_type=timestamp_type)
 
-    date = self.decode_date(raw_packet)
+    date = CgmDateDecoder.parse_date(raw_packet)
     if date is not None:
       record.update(date=date.isoformat())
     else:
