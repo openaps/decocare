@@ -98,6 +98,10 @@ class PagedData (object):
 
   def __init__ (self, stream, larger=False):
     raw = bytearray(stream.read(1024))
+
+    if len(raw) < 1024:
+      raise DataTransferCorruptionError("Page size too short")
+
     data, expected_crc = raw[0:1022], raw[1022:]
     self.check_crc(data, expected_crc)
 
