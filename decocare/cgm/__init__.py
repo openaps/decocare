@@ -144,8 +144,13 @@ class PagedData (object):
 
       if record['name'] == 'SensorCal':
         self.decode_sensor_calibration(record, raw_packet)
-      if record['name'] == 'SensorError':
+      elif record['name'] == 'SensorError':
         self.decode_sensor_error(record, raw_packet)
+      elif record['name'] == 'SensorDataLow':
+        record['sgv'] = 40
+      elif record['name'] == 'SensorDataHigh':
+        record['sgv'] = 400
+
 
     elif 'date_type' in record and record['date_type'] == 'independent':
       record.update(raw=self.byte_to_str(raw_packet))
