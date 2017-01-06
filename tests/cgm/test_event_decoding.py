@@ -63,14 +63,14 @@ class TestEventDecoding(unittest.TestCase):
   def test_sensor_data_low(self):
     page = self.make_into_page('06' + self.SENSOR_TIMESTAMP_REFERENCE)
     records = cgm.PagedData.Data(page).decode()
-    self.assertEqual(records[0]['name'], 'SensorDataLow')
+    self.assertEqual(records[0]['name'], 'GlucoseSensorDataLow')
     self.assertEqual(records[0]['date'], '2016-02-08T20:54:00')
     self.assertEqual(records[0]['sgv'], 40)
 
   def test_sensor_data_high(self):
     page = self.make_into_page('0007' + self.SENSOR_TIMESTAMP_REFERENCE)
     records = cgm.PagedData.Data(page).decode()
-    self.assertEqual(records[0]['name'], 'SensorDataHigh')
+    self.assertEqual(records[0]['name'], 'GlucoseSensorDataHigh')
     self.assertEqual(records[0]['date'], '2016-02-08T20:54:00')
     self.assertEqual(records[0]['sgv'], 400)
 

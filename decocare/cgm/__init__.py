@@ -59,8 +59,8 @@ class PagedData (object):
     0x03: dict(name='SensorCal',        packet_size=1, date_type='relative',    op='0x03'),
     0x04: dict(name='SensorPacket',     packet_size=1, date_type='relative',    op='0x04'),
     0x05: dict(name='SensorError',      packet_size=1, date_type='relative',    op='0x05'),
-    0x06: dict(name='SensorDataLow',    packet_size=0, date_type='relative',    op='0x06'),
-    0x07: dict(name='SensorDataHigh',   packet_size=1, date_type='relative',    op='0x07'),
+    0x06: dict(name='GlucoseSensorDataLow',    packet_size=0, date_type='relative',    op='0x06'),
+    0x07: dict(name='GlucoseSensorDataHigh',   packet_size=1, date_type='relative',    op='0x07'),
     0x08: dict(name='SensorTimestamp',  packet_size=4, date_type='reference',   op='0x08'),
     0x0a: dict(name='BatteryChange',    packet_size=4, date_type='independent', op='0x0a'),
     0x0b: dict(name='SensorStatus',     packet_size=4, date_type='independent', op='0x0b'),
@@ -146,9 +146,9 @@ class PagedData (object):
         self.decode_sensor_calibration(record, raw_packet)
       elif record['name'] == 'SensorError':
         self.decode_sensor_error(record, raw_packet)
-      elif record['name'] == 'SensorDataLow':
+      elif record['name'] == 'GlucoseSensorDataLow':
         record.update(sgv=40)
-      elif record['name'] == 'SensorDataHigh':
+      elif record['name'] == 'GlucoseSensorDataHigh':
         record.update(sgv=400)
 
 
