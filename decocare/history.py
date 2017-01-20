@@ -327,6 +327,7 @@ class AlarmSensor (KnownRecord):
     107: 'Sensor End',
     112: 'Weak Signal',
     113: 'Lost Sensor',
+    114: 'High Glucose Predicted',
     115: 'Low Glucose Predicted'
   }
 
