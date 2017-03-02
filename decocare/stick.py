@@ -467,7 +467,6 @@ class Stick(object):
   def __repr__(self):
     return '<{0}>'.format(str(self))
   def process(self):
-    print "PROCESSING!"
     """
     Working with the usb stick typically follows a pretty routine process:
     1.  send our opcode, get a response

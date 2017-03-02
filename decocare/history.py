@@ -328,9 +328,7 @@ class AlarmSensor (KnownRecord):
     112: 'Weak Signal',
     113: 'Lost Sensor',
     114: 'High Glucose Predicted',
-    115: 'Low Glucose Predicted',
-    116: 'Rise Rate',
-    117: 'Fall Rate'
+    115: 'Low Glucose Predicted'
   }
 
   def decode(self):
