@@ -202,6 +202,7 @@ class CommandApp(object):
     if dryrun:
       print "skipping query", pump, msg, args
       return False
+    print msg
     response = pump.query(msg, **args)
     print "response: %s" % response
     if render_hexdump:

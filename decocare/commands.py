@@ -475,6 +475,7 @@ class Bolus (PumpCommand):
   descr = "Bolus"
   params = [ ]
   def getData(self):
+    print(str([hex(ch) for ch in self.data]))
     received = True if self.data[0] is 0x0c else False
     return dict(recieved=received, _type='BolusRequest')
 
