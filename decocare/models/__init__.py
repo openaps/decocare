@@ -137,13 +137,23 @@ class PumpModel (object):
   class iter_glucose_pages (Cursor):
     Info = commands.ReadCurGlucosePageNumber
     Page = commands.ReadGlucoseHistory
+    WriteTimestamp = commands.WriteGlucoseHistoryTimestamp
     def range (self, info):
       start = int(info['page'])
       end = start - int(info['glucose'])
       return xrange(start, end, -1)
+    def cgm_paged_data(self, page_bytes):
+      return cgm.PagedData.Data(page_bytes, larger=self.inst.larger)
     def find_records (self, response):
-      page = cgm.PagedData.Data(response.data, larger=self.inst.larger)
-      return reversed(page.decode( ))
+      return reversed(self.cgm_paged_data(response.data).decode())
+    def download_page (self, num):
+      page = self.inst.session.query(self.Page, page=num)
+      if self.cgm_paged_data(page.data).needs_timestamp():
+        self.inst.session.query(self.WriteTimestamp)
+        page = self.inst.session.query(self.Page, page=num)
+      for record in self.find_records(page):
+        yield record
+
 
   @PageIterator.handler( )
   class iter_history_pages (Cursor):
