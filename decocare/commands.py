@@ -998,7 +998,7 @@ class ReadCarbRatios (PumpCommand):
       if x > 0 and i == 0:
         break
       ratio = lib.BangInt([ratio_high_byte, ratio_low_byte]) / 10.0
-      schedule.append(dict(x=x, i=i, start=lib.basal_time(i), offset=i*30, ratio_high_byte=ratio_high_byte, ratio_low_byte=ratio_low_byte, ratio=ratio))
+      schedule.append(dict(x=x, i=i, start=lib.basal_time(i), offset=i*30, ratio=ratio))
     return schedule
 
 # MMPump512/	CMD_READ_INSULIN_SENSITIVITIES	139	0x8b	('\x8b')	OK
