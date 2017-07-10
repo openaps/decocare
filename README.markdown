@@ -1,7 +1,27 @@
 
 # Decoding carelink
 
-For an intro, see
+## Install first run
+
+This only needs to be done once:
+
+### From pypi
+
+```bash
+$ easy_install decocare
+# or
+$ pip install decocare
+```
+
+### From source
+```bash
+git clone https://github.com/openaps/decocare.git
+cd decocare
+sudo python ez_setup.py # only if you rarely use python
+sudo python setup.py develop
+```
+
+For historical background, see
 [insulaudit](https://github.com/bewest/insulaudit/tree/master/questions).
 We are hoping to help diabetics independently reproduce therapeutic
 audits of their Medtronic insulin pumps.  This experimental software
@@ -11,7 +31,7 @@ will download pump settings, and the entire log of historical data.
 
 Spot something incorrect or not working?  Want a feature/tool to do
 something?
-[Please file an issue!](https://github.com/bewest/decoding-carelink/issues)
+[Please file an issue!](https://github.com/openaps/decocare/issues)
 
 * http://bewest.github.io/decoding-carelink/ Sphinx docs.
 * https://gist.github.com/bewest/6330546 some diagrams
@@ -40,26 +60,6 @@ your behalf:
   `./bin/mm-send-comm.py`
 * Bolus
   `./bin/mm-bolus.py`
-
-## Install first run
-
-This only needs to be done once:
-
-### From pypi
-
-```bash
-$ easy_install decocare
-# or
-$ pip install decocare
-```
-
-### From source
-```bash
-git clone https://github.com/bewest/decoding-carelink.git
-cd decoding-carelink
-sudo python ez_setup.py # only if you rarely use python
-sudo python setup.py develop
-```
 
 ### Contribute your logs
 
