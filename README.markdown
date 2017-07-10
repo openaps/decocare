@@ -21,6 +21,8 @@ sudo python ez_setup.py # only if you rarely use python
 sudo python setup.py develop
 ```
 
+## Background
+
 For historical background, see
 [insulaudit](https://github.com/bewest/insulaudit/tree/master/questions).
 We are hoping to help diabetics independently reproduce therapeutic
