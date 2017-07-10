@@ -225,7 +225,7 @@ class ChangeTimeDisplay(KnownRecord):
 
 class ChangeBolusWizardSetup (KnownRecord):
   opcode = 0x4f
-  body_length = 40
+  body_length = 32
 
 _confirmed = [ Bolus, Prime, AlarmPump, ResultDailyTotal,
                ChangeBasalProfile_old_profile,
