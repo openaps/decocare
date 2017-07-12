@@ -235,6 +235,12 @@ class CalBGForPH(KnownRecord):
     nibble = (self.date[4] & 0b10000000) << 1
     low = self.head[1]
     amount = int(highbit + nibble + low)
+    unit = (self.date[2] & 0x60) >> 5
+
+    # 1 == mg/dl, 2 == mmol/L
+    if (unit == 2):
+        amount = amount / 10.0
+
     return { 'amount': amount }
     # return { 'amount': int(lib.BangInt([ year_bits[0], self.head[1] ])) }
     pass
