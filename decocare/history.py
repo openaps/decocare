@@ -458,8 +458,9 @@ def decode_insulin_sensitivies (data):
   sensitivities = [ ]
   for x in range(8):
     start = x * 2
-    end = start + 2
-    (offset, sensitivity) = data[start:end]
+    n = data[start]
+    offset = n & 0x3F
+    sensitivity = lib.BangInt([(n>>6)&0x1, data[start+1]])
     sensitivities.append(dict(i=x, offset=offset*30, _offset=offset,
                        sensitivity=sensitivity))
   return sensitivities
