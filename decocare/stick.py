@@ -38,7 +38,7 @@ class StickCommand(object):
   associated with the opcode.
   Altogether, the suite of opcodes that the stick responds to allows
   you to debug and track all packets you are sending/receiving plus
-  allows you to send recieve commands to the pump, by formatting your
+  allows you to send receive commands to the pump, by formatting your
   message into payloads with opcodes, and then letting the stick work
   on what you've given it.  It's kind of like a modem with this funky
   binary interface and 64 byte payloads.
