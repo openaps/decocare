@@ -225,7 +225,7 @@ class ChangeTimeDisplay(KnownRecord):
 
 class ChangeBolusWizardSetup (KnownRecord):
   opcode = 0x4f
-  body_length = 40
+  body_length = 32
 
 _confirmed = [ Bolus, Prime, AlarmPump, ResultDailyTotal,
                ChangeBasalProfile_old_profile,
@@ -327,7 +327,10 @@ class AlarmSensor (KnownRecord):
     107: 'Sensor End',
     112: 'Weak Signal',
     113: 'Lost Sensor',
-    115: 'Low Glucose Predicted'
+    114: 'High Glucose Predicted',
+    115: 'Low Glucose Predicted',
+    116: 'Rise Rate',
+    117: 'Fall Rate'
   }
 
   def decode(self):
@@ -455,8 +458,9 @@ def decode_insulin_sensitivies (data):
   sensitivities = [ ]
   for x in range(8):
     start = x * 2
-    end = start + 2
-    (offset, sensitivity) = data[start:end]
+    n = data[start]
+    offset = n & 0x3F
+    sensitivity = lib.BangInt([(n>>6)&0x1, data[start+1]])
     sensitivities.append(dict(i=x, offset=offset*30, _offset=offset,
                        sensitivity=sensitivity))
   return sensitivities

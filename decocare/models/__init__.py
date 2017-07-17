@@ -77,7 +77,6 @@ class PageIterator (Task):
 class PumpModel (object):
   bolus_strokes = 20
   basal_strokes = 40
-  MMOL_DEFAULT = False
   larger = False
   Ian50Body = 30
   def __init__(self, model, session):
@@ -137,13 +136,23 @@ class PumpModel (object):
   class iter_glucose_pages (Cursor):
     Info = commands.ReadCurGlucosePageNumber
     Page = commands.ReadGlucoseHistory
+    WriteTimestamp = commands.WriteGlucoseHistoryTimestamp
     def range (self, info):
       start = int(info['page'])
       end = start - int(info['glucose'])
       return xrange(start, end, -1)
+    def cgm_paged_data(self, page_bytes):
+      return cgm.PagedData.Data(page_bytes, larger=self.inst.larger)
     def find_records (self, response):
-      page = cgm.PagedData.Data(response.data, larger=self.inst.larger)
-      return reversed(page.decode( ))
+      return reversed(self.cgm_paged_data(response.data).decode())
+    def download_page (self, num):
+      page = self.inst.session.query(self.Page, page=num)
+      if self.cgm_paged_data(page.data).needs_timestamp():
+        self.inst.session.query(self.WriteTimestamp)
+        page = self.inst.session.query(self.Page, page=num)
+      for record in self.find_records(page):
+        yield record
+
 
   @PageIterator.handler( )
   class iter_history_pages (Cursor):
@@ -227,7 +236,6 @@ class PumpModel (object):
 
 
 class Model508 (PumpModel):
-  MMOL_DEFAULT = False
   old6cBody = 31
   # XXX: hack to return something.
   def read_status (self, **kwds):
@@ -252,29 +260,24 @@ class Model511 (Model508):
 
 
 class Model512 (Model511):
-  MMOL_DEFAULT = False
   read_basal_profile_std = Task(commands.ReadProfile_STD512)
   read_basal_profile_a = Task(commands.ReadProfile_A512)
   read_basal_profile_b = Task(commands.ReadProfile_B512)
 
 
 class Model515 (Model512):
-  MMOL_DEFAULT = False
   read_bg_targets = Task(commands.ReadBGTargets515)
   read_status = Task(commands.ReadPumpStatus)
   pass
 
 class Model715 (Model515):
-  MMOL_DEFAULT = False
   pass
 
 class Model522 (Model515):
-  MMOL_DEFAULT = False
   old6cBody = 38
   pass
 
 class Model722 (Model522):
-  MMOL_DEFAULT = False
   pass
 
 class Model523 (Model522):
@@ -296,27 +299,21 @@ class Model730 (Model530):
   pass
 
 class Model540 (Model530):
-  MMOL_DEFAULT = True
   pass
 
 class Model740 (Model540):
-  MMOL_DEFAULT = True
   pass
 
 class Model551 (Model540):
-  MMOL_DEFAULT = True
   pass
 
 class Model751 (Model551):
-  MMOL_DEFAULT = True
   pass
 
 class Model554 (Model551):
-  MMOL_DEFAULT = True
   pass
 
 class Model754 (Model554):
-  MMOL_DEFAULT = True
   pass
 
 known = {
