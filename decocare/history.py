@@ -225,7 +225,7 @@ class ChangeTimeDisplay(KnownRecord):
 
 class ChangeBolusWizardSetup (KnownRecord):
   opcode = 0x4f
-  body_length = 40
+  body_length = 32
 
 _confirmed = [ Bolus, Prime, AlarmPump, ResultDailyTotal,
                ChangeBasalProfile_old_profile,
@@ -327,7 +327,10 @@ class AlarmSensor (KnownRecord):
     107: 'Sensor End',
     112: 'Weak Signal',
     113: 'Lost Sensor',
-    115: 'Low Glucose Predicted'
+    114: 'High Glucose Predicted',
+    115: 'Low Glucose Predicted',
+    116: 'Rise Rate',
+    117: 'Fall Rate'
   }
 
   def decode(self):
