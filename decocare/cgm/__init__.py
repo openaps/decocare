@@ -108,6 +108,11 @@ class PagedData (object):
       record = self.decode_record(B[0], stream, timestamp)
 
       if record['name'] == 'SensorTimestamp':
+        if 'date' not in record:
+          # should I log that I discard the record? is the record relevant without a 'date'?
+          # print(record) or log.warn
+          continue
+          
         timestamp = parser.parse(record['date'])
       elif self.is_relative_record(record) and timestamp:
         timestamp = timestamp + relativedelta(minutes=-5)
