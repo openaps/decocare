@@ -30,7 +30,7 @@ def get_opt_parser( ):
 def parse_date(date):
   try:
     return history.parse_date(date)
-  except NotADate, e: pass
+  except NotADate as e: pass
 
   return None
 

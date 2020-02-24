@@ -111,8 +111,8 @@ def hexdump( src, length=8, indent=0 ):
     return ''
   result = [ ]
   indent = ''.join( [ ' ' ] * indent )
-  digits = 4 if isinstance( src, unicode ) else 2
-  for i in xrange( 0, len( src ), length ):
+  digits = 4 if isinstance( src, str ) else 2
+  for i in range( 0, len( src ), length ):
     s    = src[i:i+length]
     hexa = ' '.join( [ '%#04x' %  x for x in list( s ) ] )
     text = ''.join( [ chr(x) if 0x20 <= x < 0x7F else '.' \
@@ -190,7 +190,7 @@ class CRC16CCITT:
   def compute( klass, block ):
     result = 65535
     #result = 0
-    for i in xrange( len( block ) ):
+    for i in range( len( block ) ):
       tmp = block[ i ] ^ result >> 8
       result = ( klass.lookup[ tmp ] ^ result << 8 ) & 0xFFFF
     return result
@@ -220,7 +220,7 @@ class CRC8:
   @classmethod
   def compute( klass, block ):
     result = 0
-    for i in xrange( len( block ) ):
+    for i in range( len( block ) ):
       result = klass.lookup[ ( result ^ block[ i ] & 0xFF ) ]
     return result
 
@@ -228,7 +228,7 @@ class CRC8:
 def BangLong( bytez ):
   ( a, b, c, d ) = bytez
   l = a << 24 | b << 16 | c << 8 | d;
-  return long( l )
+  return int( l )
 
 
 def BangInt( ints ):
@@ -297,7 +297,7 @@ def encodeDC(msg):
     nibbles.append( high2Bits << 2 | low2Bits )
     nibbles.append( dcValue2 & 0xF )
 
-  for i in xrange(0, len(nibbles), 2):
+  for i in range(0, len(nibbles), 2):
     # last item gets a padding terminator
     high, low = nibbles[i], 5
     # most elide the next item

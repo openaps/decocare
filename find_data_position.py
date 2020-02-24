@@ -27,7 +27,7 @@ print_data_before = false # if true will print data before , if false will print
 
 myBytes = bytearray()
 with open(fileInName, 'rb') as file:
-    while 1:
+    while True:
         byte = file.read(1)
         if not byte:
             break

@@ -65,7 +65,7 @@ def parse_date (data, unmask=False, strict=False, minute_specific=False):
   try:
     date = datetime(year, month, day, hours, minutes, seconds)
     return date
-  except ValueError, e:
+  except ValueError as e:
     if strict:
       raise
     if unmask:

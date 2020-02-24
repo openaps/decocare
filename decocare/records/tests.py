@@ -7,8 +7,8 @@ from pprint import pformat
 import json
 import difflib
 
-from times import *
-from bolus import *
+from .times import *
+from .bolus import *
 
 # I don't know where else to put this.
 """
@@ -641,8 +641,7 @@ class TestSaraBolus:
     print(json.dumps(d, indent=2))
 
 def dictlines(d):
-  items = d.items( )
-  items.sort( )
+  items = sorted(list(d.items( )))
   d = [ "%s: %s\n" % (k, v) for (k, v) in items ]
   return d
 

@@ -94,7 +94,7 @@ def find_dates(stream):
       bolus = bytearray(stream.read(4))
       extra = bytearray( )
       opcode = ''
-    except NotADate, e:
+    except NotADate as e:
       opcode = bolus[0]
       pass
   return records

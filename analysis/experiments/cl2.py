@@ -51,7 +51,7 @@ class AckError(DeviceCommsError): pass
 
 def retry(block, retry=3, sleep=0):
   r = None
-  for i in xrange(retry):
+  for i in range(retry):
     log.info('retry:%s:%i' % (block, i))
     r = block( )
     if r:
@@ -171,13 +171,13 @@ class Device(object):
 
   def execute(self, command):
     self.command = command
-    for i in xrange(max(1, self.command.retries)):
+    for i in range(max(1, self.command.retries)):
       log.info('execute attempt: %s' % (i + 1))
       try:
         self.allocateRawData()
         self.sendAndRead()
         return
-      except BadDeviceCommError, e:
+      except BadDeviceCommError as e:
         log.critical("ERROR: %s" % e)
         self.clearBuffers( )
 
@@ -457,7 +457,7 @@ if __name__ == '__main__':
   port = None
   try:
     port = sys.argv[1]
-  except IndexError, e:
+  except IndexError as e:
     print("usage:\n%s /dev/ttyUSB0" % sys.argv[0])
     sys.exit(1)
 

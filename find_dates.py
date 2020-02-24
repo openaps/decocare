@@ -74,7 +74,7 @@ def parse_date (data):
   try:
     date = datetime(year, month, day, hours, minutes, seconds)
     return date
-  except ValueError, e:
+  except ValueError as e:
     pass
   return None
 

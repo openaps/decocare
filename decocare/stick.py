@@ -1,5 +1,5 @@
 
-import lib
+from . import lib
 import logging
 import time
 
@@ -22,7 +22,7 @@ format can be read.
 
 log = logging.getLogger( ).getChild(__name__)
 
-from errors import StickError, AckError, BadDeviceCommError
+from .errors import StickError, AckError, BadDeviceCommError
 
 class BadCRC(StickError): pass
 class UnresponsiveError (StickError): pass
@@ -90,8 +90,8 @@ class ProductInfo(StickCommand):
   code   = [ 4 ]
   SW_VER = 16
   label  = 'usb.productInfo'
-  rf_table  = { 001: '868.35Mhz' ,
-                000: '916.5Mhz'  ,
+  rf_table  = { 1: '868.35Mhz' ,
+                0: '916.5Mhz'  ,
                 255: '916.5Mhz'  }
   iface_key = { 3: 'USB',
                 1: 'Paradigm RF' }
@@ -100,7 +100,7 @@ class ProductInfo(StickCommand):
   def decodeInterfaces( klass, L ):
     n, tail    = L[ 0 ], L[ 1: ]
     interfaces = [ ]
-    for x in xrange( n ):
+    for x in range( n ):
       i    = x*2
       k, v = tail[i], tail[i+1]
       interfaces.append( ( k, klass.iface_key.get( v, 'UNKNOWN'  ) ) )
@@ -112,7 +112,7 @@ class ProductInfo(StickCommand):
       'rf.freq'          : klass.rf_table.get( data[ 5 ], 'UNKNOWN' )
     , 'serial'           : str( data[ 0:3 ]).encode( 'hex'  )
     , 'product.version'  : '{0}.{1}'.format( *data[ 3:5 ] )
-    , 'description'      : str( data[ 06:16 ] )
+    , 'description'      : str( data[ 6:16 ] )
     , 'software.version' : '{0}.{1}'.format( *data[ 16:18 ] )
     , 'interfaces'       : klass.decodeInterfaces( data[ 18: ] )
     }
@@ -476,7 +476,7 @@ class Stick(object):
     This has to be done for each opcode.
     """
     msg = ':'.join(['PROCESS', 'START'
-           ] + map(str, [ self.timer.millis( ), self.command]))
+           ] + list(map(str, [ self.timer.millis( ), self.command])))
     log.info(msg)
     log.info('link %s processing %s)' % ( self, self.command ))
     """
@@ -497,7 +497,7 @@ class Stick(object):
     info = self.command.parse(response)
     log.info('finished processing {0}, {1}'.format(self.command, repr(info)))
     msg = ':'.join(['PROCESS', 'END'
-           ] + map(str, [ self.timer.millis( ), self.command]))
+           ] + list(map(str, [ self.timer.millis( ), self.command])))
     log.info(msg)
     return info
     
@@ -597,7 +597,7 @@ class Stick(object):
     size = reader.size
     start = time.time( )
     raw = bytearray( )
-    for attempt in xrange(retries):
+    for attempt in range(retries):
       log.info(' '.join([
         'send_force_read: attempt {0}/{1}'.format(attempt, retries),
         'send command,',
@@ -634,7 +634,7 @@ class Stick(object):
     self.command = reader = ReadRadio(size)
     self.reader = reader
     msg = ':'.join(['PROCESS', 'START'
-           ] + map(str, [ self.timer.millis( ), self.command]))
+           ] + list(map(str, [ self.timer.millis( ), self.command])))
     log.info(msg)
     if size == 0:
       log.info('Download Size is ZERO, returning nothing')
@@ -666,10 +666,10 @@ class Stick(object):
       ack, response = self.command.respond(raw)
       info = self.command.parse(response)
       msg = ':'.join(['PROCESS', 'END'
-             ] + map(str, [ self.timer.millis( ), self.command]))
+             ] + list(map(str, [ self.timer.millis( ), self.command])))
       log.info(msg)
       return info
-    except BadDeviceCommError, e:
+    except BadDeviceCommError as e:
       log.critical("download_packet:%s:ERROR:%s:ACK!?" % (self, e))
       log.info("we failed to pass %s ACK!?" % (self.command))
       log.info('expected size was: %s' % original_size)
@@ -793,7 +793,7 @@ class Stick(object):
     """
     bad = bytearray( )
     raw = bytearray( )
-    for attempt in xrange( 3 ):
+    for attempt in range( 3 ):
       segments = [ ]
       segs_vs_raw = 'segments[{0}],total_segments[{1}]:raw[{2}]'
       seg_stats = ( len(segments), sum(map(len, segments)), len(raw) )
@@ -831,7 +831,7 @@ class Stick(object):
                               'len(raw)', str(len(raw)),
                               'expected', str(size),
                               'len(segment)', str(len(segment)) ]))
-        except BadCRC, e:
+        except BadCRC as e:
           seg_stats = ( len(segments), sum(map(len, segments)), len(raw) )
           log_detail = segs_vs_raw.format(*seg_stats)
           log.critical('%s:IGNORING:%s:%s' % (log_head, log_detail, e))
@@ -867,7 +867,7 @@ class Stick(object):
     """
     self.link.baudrate = 9600
     self.timer = lib.Timer( )
-    for attempt in xrange( 1 ):
+    for attempt in range( 1 ):
       try:
         msg = ':'.join(['PROCESS', 'OPEN', str(self.timer.millis( ))] )
         log.info(msg)
@@ -879,7 +879,7 @@ class Stick(object):
           signal = self.signal_strength( )
         log.info('we seem to have found a nice signal strength of: %s' % signal)
         return True
-      except AckError, e:
+      except AckError as e:
         log.info('failed:(%s):\n%s' % (attempt, e))
         raise
     
@@ -904,7 +904,7 @@ if __name__ == '__main__':
   if not port:
     print("usage:\n%s /dev/ttyUSB0" % sys.argv[0])
     sys.exit(1)
-  import link
+  from . import link
   from pprint import pformat
   logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
   log.info("howdy! I'm going to take a look at your carelink usb stick.")

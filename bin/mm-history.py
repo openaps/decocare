@@ -17,7 +17,7 @@ class DownloadHistory (cli.CommandApp):
 
         parser.add_argument('--model',
                             # type=get_model,
-                            choices=models.known.keys( ))
+                            choices=list(models.known.keys( )))
 
         parser.add_argument('--timezone',
                             default=gettz( ),

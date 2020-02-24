@@ -3,8 +3,8 @@ import time
 import logging
 log = logging.getLogger( ).getChild(__name__)
 
-import lib
-import commands
+from . import lib
+from . import commands
 
 class Downloader(object):
   log_format = 'logs/'
@@ -69,9 +69,9 @@ if __name__ == '__main__':
   if not port or not serial_num:
     print("usage:\n%s <port> <serial>, eg /dev/ttyUSB0 208850" % sys.argv[0])
     sys.exit(1)
-  import link
-  import stick
-  import session
+  from . import link
+  from . import stick
+  from . import session
   from pprint import pformat
   logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
   log.info("howdy! I'm going to take a look at your pump download something info.")

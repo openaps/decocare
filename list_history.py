@@ -35,7 +35,7 @@ def get_opt_parser( ):
 
   parser.add_argument('--model',
                       # type=get_model,
-                      choices=models.known.keys( ))
+                      choices=list(models.known.keys( )))
 
   parser.add_argument('--out',
                       default=sys.stdout,

@@ -37,7 +37,7 @@ def get_opt_parser( ):
                       default='pump')
   parser.add_argument('--model',
                       # type=get_model,
-                      choices=models.known.keys( ))
+                      choices=list(models.known.keys( )))
   parser.add_argument('--larger',
                       dest='larger', action='store_true')
   parser.add_argument('--no-larger',

@@ -2,7 +2,7 @@
 import logging
 import time
 
-import lib
+from . import lib
 
 class BadResponse (Exception):
   pass
@@ -1197,7 +1197,7 @@ class ReadProfile_STD512 (PumpCommand):
     schedule = [ ]
     end = [ 0, 0, 0 ]
     none = [ 0, 0, 0x3F ]
-    for i in xrange(len(data)/3):
+    for i in range(len(data)/3):
       off = i*3
       r, z, m = data[off : off + 3]
       if i > 0 and [r,z,m] in [end, none]:
@@ -1397,7 +1397,7 @@ class ReadPumpStatus(PumpCommand):
   maxRecords = 1
   def getData(self):
     data = self.data
-    normal = { 03: 'normal' }
+    normal = { 0o3: 'normal' }
     status = { 'status': normal.get(data[0], 'error'),
                'bolusing': data[1] == 1,
                'suspended': data[2] == 1
@@ -1841,9 +1841,9 @@ if __name__ == '__main__':
   if not port or not serial_num:
     print("usage:\n%s <port> <serial>, eg /dev/ttyUSB0 208850" % sys.argv[0])
     sys.exit(1)
-  import link
-  import stick
-  import session
+  from . import link
+  from . import stick
+  from . import session
   from pprint import pformat
   logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
   log.info("howdy! I'm going to take a look at your pump and grab lots of info.")

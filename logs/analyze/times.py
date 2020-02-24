@@ -239,7 +239,7 @@ def parse_date(date, strict=False, loose=False):
   """
   try:
     return parse_date_strict(date)
-  except NotADate, e:
+  except NotADate as e:
     if strict:
       raise
     if loose:
@@ -262,7 +262,7 @@ def parse_date_strict(data):
   try:
     date = datetime(year, month, day, hours, minutes, seconds)
     return date
-  except ValueError, e:
+  except ValueError as e:
     raise NotADate(e)
 
 __test__ = {

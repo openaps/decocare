@@ -108,7 +108,7 @@ class PumpModel (object):
   )
   def press_key (self, key=None, **kwds):
     press = self.KEYPAD.get(key, None)
-    err = "Tried to press {key}, but only support {keys}".format(key=key, keys=', '.join(self.KEYPAD.keys( )))
+    err = "Tried to press {key}, but only support {keys}".format(key=key, keys=', '.join(list(self.KEYPAD.keys( ))))
     assert press, err
     # req = press(**kwds)
     resp = self.session.query(press, **kwds)
@@ -140,7 +140,7 @@ class PumpModel (object):
     def range (self, info):
       start = int(info['page'])
       end = start - int(info['glucose'])
-      return xrange(start, end, -1)
+      return range(start, end, -1)
     def find_records (self, response):
       page = cgm.PagedData.Data(response.data, larger=self.inst.larger)
       return reversed(page.decode( ))
@@ -152,7 +152,7 @@ class PumpModel (object):
     def range (self, info):
       start = 0
       end = int(info)
-      return xrange(start, end)
+      return range(start, end)
     def find_records (self, response):
       decoder = history.HistoryPage(response.data, self.inst)
       records = decoder.decode( )

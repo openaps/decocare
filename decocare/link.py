@@ -5,8 +5,8 @@
 
 import serial
 import logging
-import lib
-import fuser
+from . import lib
+from . import fuser
 io  = logging.getLogger( )
 log = io.getChild(__name__)
 

@@ -74,7 +74,7 @@ class XXXStrField(Field):
     def i2m(self, pkt, x):
         if x is None:
             x = ""
-        elif type(x) is not str:
+        elif not isinstance(x, str):
             x=str(x)
         return x
     def addfield(self, pkt, s, val):
@@ -102,7 +102,7 @@ class XXXStrFixedLenField(StrField):
         if length is not None:
             self.length_from = lambda pkt,length=length: length
     def i2repr(self, pkt, v):
-        if type(v) is str:
+        if isinstance(v, str):
             v = v.rstrip("\0")
         return repr(v)
     def getfield(self, pkt, s):
@@ -267,7 +267,7 @@ class MMDateField(Field):
     def i2m(self, pkt, x):
         if x is None:
             x = ""
-        elif type(x) is not str:
+        elif not isinstance(x, str):
             x=str(x)
         return x
     def addfield(self, pkt, s, val):

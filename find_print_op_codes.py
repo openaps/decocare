@@ -57,7 +57,7 @@ class OpCodeFinder:
   def file_to_bytes(self):
     myBytes = bytearray()
     with open(self.fileInName, 'rb') as file:
-      while 1:
+      while True:
         byte = file.read(1)
         if not byte:
           break

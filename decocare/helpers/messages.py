@@ -1,6 +1,6 @@
 import time
 from pprint import pformat
-from cli import CommandApp
+from .cli import CommandApp
 from decocare import link, stick, session, commands, lib, scan
 
 def get_parser ( ):
@@ -19,7 +19,7 @@ class SendMsgApp(CommandApp):
       self.execute_list(args.prefix, args.saveall)
     if args.command == "ManualCommand":
       kwds = {
-          'params': map(int, getattr(args, 'params', [ ])),
+          'params': list(map(int, getattr(args, 'params', [ ]))),
           'retries': getattr(args, 'retries', 0),
           'effectTime': getattr(args, 'effectTime'),
           'maxRecords': getattr(args, 'maxRecords'),
@@ -51,8 +51,7 @@ class SendMsgApp(CommandApp):
                           save=save, prefix=self.args.prefix_path)
 
   def customize_parser (self, parser):
-    choices = commands.__all__
-    choices.sort( )
+    choices = sorted(commands.__all__)
     parser.add_argument('--prefix-path',
                         dest="prefix_path",
                         type=str,

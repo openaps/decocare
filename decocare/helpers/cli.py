@@ -156,7 +156,7 @@ class CommandApp(object):
     print('### PUMP MODEL: `%s`' % self.model)
 
   def autoinit (self, args):
-    for n in xrange(3):
+    for n in range(3):
       print("AUTO INIT", n)
       self.sniff_model( )
       if len(self.model.getData( )) != 3:

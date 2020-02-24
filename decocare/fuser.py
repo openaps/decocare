@@ -13,7 +13,7 @@ def in_use (device):
   return stdout is not ""
 
 if __name__ == '__main__':
-  from scan import scan
+  from .scan import scan
   candidate = (sys.argv[1:2] or [scan( )]).pop( )
   print(in_use(candidate))
 

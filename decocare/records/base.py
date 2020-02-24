@@ -1,7 +1,7 @@
 from datetime import datetime
 #from .. import lib
 from decocare import lib
-from times import *
+from .times import *
 
 class Base(object):
   """
@@ -32,7 +32,7 @@ class Base(object):
     opstring = "0x%02x" % (getattr(klass, 'opcode', 0))
     name = klass.__name__
     out = [ klass.head_length, klass.date_length, klass.body_length ]
-    return ",".join([ opstring, name ] + map(str, out))
+    return ",".join([ opstring, name ] + list(map(str, out)))
 
   def __str__(self):
     name = self.__class__.__name__

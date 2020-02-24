@@ -7,8 +7,8 @@ specifically targeted at decoding ReadHistoryData data.
 import io
 from binascii import hexlify
 
-import lib
-from records import *
+from . import lib
+from .records import *
 from datetime import date
 
 _remote_ids = [
@@ -104,7 +104,7 @@ class ChangeBasalProfile_old_profile (KnownRecord):
         break
       try:
         rates.append(describe_rate(offset, rate, q))
-      except TypeError, e:
+      except TypeError as e:
         remainder = [ offset, rate, q ]
         rates.append(remainder)
     return rates
@@ -685,7 +685,7 @@ def parse_midnight (data):
     try:
       date = datetime(*mid) + oneday
       return date
-    except ValueError, e:
+    except ValueError as e:
       print("ERROR", e, lib.hexdump(data))
       pass
     return mid
@@ -738,7 +738,7 @@ class Sara6E(Model522ResultTotals):
     mid = unmask_m_midnight(self.date)[0:3]
     try:
       return (dict(valid_date=date(*mid).isoformat()))
-    except ValueError, e:
+    except ValueError as e:
       return (dict(error_date=mid, error=str(e)))
 
 _confirmed.append(Sara6E)
@@ -786,7 +786,7 @@ def parse_record(fd, head=bytearray( ), larger=False, model=None):
 
 
 def describe( ):
-  keys = _known.keys( )
+  keys = list(_known.keys( ))
   out  = [ ]
   for k in keys:
     out.append(_known[k].describe( ))
