@@ -4,6 +4,7 @@ This module provides some basic helper/formatting utilities,
 specifically targeted at decoding ReadHistoryData data.
 
 """
+
 import io
 from binascii import hexlify
 
@@ -110,7 +111,7 @@ class ChangeBasalProfile_old_profile (KnownRecord):
     return rates
 
 def describe_rate (offset, rate, q):
-  return (dict(offset=(30*1000*60)*offset, rate=rate/40.0))
+  return (dict(offset=(30*1000*60)*offset, rate=rate//40.0))
 
 
 class ChangeBasalProfile_new_profile (KnownRecord):
@@ -186,7 +187,7 @@ class TempBasal (KnownRecord):
     temp = { 0: 'absolute', 1: 'percent' }[(self.body[0] >> 3)]
     status = dict(temp=temp)
     if temp is 'absolute':
-      rate = lib.BangInt([self.body[0]&0x7, self.head[1]]) / 40.0
+      rate = lib.BangInt([self.body[0]&0x7, self.head[1]]) // 40.0
       status.update(rate=rate)
     if temp is 'percent':
       rate = int(self.head[1])
@@ -208,7 +209,7 @@ class LowReservoir(KnownRecord):
                         0xeb, 0x02, 0x0b, 0x07, 0x0c, ])
   def decode(self):
     self.parse_time( )
-    reservoir = {'amount' : int(self.head[1]) / 10.0 }
+    reservoir = {'amount' : int(self.head[1]) // 10.0 }
     return reservoir
 
 
@@ -270,7 +271,7 @@ class JournalEntryInsulinMarker(KnownRecord):
     # see https://github.com/ps2/rileylink_ios/pull/160/files
     lowbits = self.head[1]
     highbits = (self.date[2] & 0b1100000) << 3 # ??
-    amount = (highbits + lowbits) / 10.0
+    amount = (highbits + lowbits) // 10.0
     return dict(amount=amount)
 _confirmed.append(JournalEntryInsulinMarker)
 
@@ -391,7 +392,7 @@ class OldBolusWizardChange (KnownRecord):
       pass
   def decode (self):
     self.parse_time( )
-    half = (self.body_length - 1) / 2
+    half = (self.body_length - 1) // 2
     stale = self.body[0:half]
     changed = self.body[half:-1]
     tail = self.body[-1]
@@ -444,9 +445,9 @@ def decode_carb_ratios (data):
     start = x * 3
     end = start + 3
     (offset, q, r) = data[start:end]
-    ratio = r/10.0
+    ratio = r//10.0
     if q:
-      ratio = lib.BangInt([q, r]) / 1000.0
+      ratio = lib.BangInt([q, r]) // 1000.0
     ratios.append(dict(i=x, offset=offset*30, q=q, _offset=offset,
                        ratio=ratio, r=r))
   return ratios
@@ -470,8 +471,8 @@ def decode_bg_targets (data, bg_units):
     # (low, high, offset) = data[start:end]
     (offset, low, high) = data[start:end]
     if bg_units is 2:
-      low = low / 10.0
-      high = high / 10.0
+      low = low // 10.0
+      high = high // 10.0
     targets.append(dict( #i=x,
                        offset=offset*30, _offset=offset,
                        # _raw=str(data[start:end]).encode('hex'),
@@ -560,7 +561,7 @@ class ChangeMaxBasal (KnownRecord):
   opcode = 0x2c
   def decode (self):
     self.parse_time( )
-    return dict(maxBasal=self.head[1] / 40.0)
+    return dict(maxBasal=self.head[1] // 40.0)
 _confirmed.append(ChangeMaxBasal)
 
 class questionable22 (KnownRecord):

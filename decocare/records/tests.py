@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+
 from binascii import hexlify
 from datetime import datetime
 from pprint import pformat
@@ -746,7 +747,7 @@ class BW722(BolusWizard):
 
     # XXX: Most likely incorrect.
     correction = ( twos_comp( self.body[7], 8 )
-                 + twos_comp( self.body[5] & 0x0f, 8 ) ) / 10.0
+                 + twos_comp( self.body[5] & 0x0f, 8 ) ) // 10.0
     wizard = { 'bg': bg, 'carb_input': carb_input,
                'carb_ratio': carb_ratio,
                'sensitivity': sensitivity,

@@ -1,4 +1,5 @@
 
+
 from decocare import commands, history, cgm
 from decocare import lib
 import types
@@ -127,7 +128,7 @@ class PumpModel (object):
 
   def decode_unabsorbed_component (self, amount, age, _curve,strokes=40.0):
     curve = ((_curve & 0b110000) << 4)
-    unabsorbed = { 'amount': amount/strokes,
+    unabsorbed = { 'amount': amount//strokes,
                    'age': age + curve,
                    # 'curve': curve,
                  }

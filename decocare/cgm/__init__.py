@@ -8,6 +8,7 @@ Maybe something like this?
 * PageDecoder - stateful decoder
 """
 
+
 from binascii import hexlify
 
 # TODO: all this stuff could be refactored into re-usable and tested
@@ -200,7 +201,7 @@ class PagedData (object):
         # And this ResetGlucose has a payload indicating calibration factor
         # Update sensor cal factor
         if record['name'] == 'SensorCalFactor': 
-          factor = lib.BangInt([ body[0], body[1] ]) / 1000.0
+          factor = lib.BangInt([ body[0], body[1] ]) // 1000.0
           record.update(factor=factor) 
         records.extend(mapped_glucose_records)
         records.append(record)

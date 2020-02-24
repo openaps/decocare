@@ -1,4 +1,5 @@
 
+
 import logging
 import time
 
@@ -168,7 +169,7 @@ class PumpCommand(BaseCommand):
 
   def calcRecordsRequired(self):
     length = self.bytesPerRecord * self.maxRecords
-    i = length / 64
+    i = length // 64
     j = length % 64
     if j > 0:
       return i + 1
@@ -285,15 +286,15 @@ class TempBasal(PumpCommand):
     return klass(params=klass.format_params(rate, duration), **kwds)
   @classmethod
   def format_percent_params (klass, rate, duration):
-    duration = int(duration / 30)
+    duration = int(duration // 30)
     rate = int(rate)
     params = [rate, duration]
     return params
 
   @classmethod
   def format_params (klass, rate, duration):
-    duration = duration / 30
-    rate = int(round(rate / 0.025))
+    duration = duration // 30
+    rate = int(round(rate // 0.025))
     params = [lib.HighByte(rate), lib.LowByte(rate), duration]
     return params
 
@@ -700,7 +701,7 @@ class ReadBatteryStatus(PumpCommand):
     bd = bytearray(data)
     volt = lib.BangInt((bd[1], bd[2]))
     indicator = bd[0]
-    battery = {'status': {0: 'normal', 1: 'low'}[indicator], 'voltage': volt/100.0 }
+    battery = {'status': {0: 'normal', 1: 'low'}[indicator], 'voltage': volt//100.0 }
     return battery
 
 
@@ -735,7 +736,7 @@ class ReadRemainingInsulin(PumpCommand):
   def getData(self):
     data = self.data
     log.info("READ remaining insulin:\n%s" % lib.hexdump(data))
-    return lib.BangInt(data[self.startByte:self.endByte])/self.basalStrokes
+    return lib.BangInt(data[self.startByte:self.endByte])//self.basalStrokes
 
 
 class ReadRemainingInsulin523(ReadRemainingInsulin):
@@ -759,7 +760,7 @@ class ReadBasalTemp508 (PumpCommand):
 
   def getData(self):
     data = self.data
-    rate = lib.BangInt(data[2:4])/40.0
+    rate = lib.BangInt(data[2:4])//40.0
     duration = lib.BangInt(data[4:6])
     log.info("READ temporary basal:\n%s" % lib.hexdump(data))
     return { 'rate': rate, 'duration': duration }
@@ -779,8 +780,8 @@ class ReadTodayTotals508 (PumpCommand):
     data = self.data
     log.info("READ totals today:\n%s" % lib.hexdump(data))
     totals = {
-      'today': lib.BangInt(data[0:2]) / 10.0,
-      'yesterday': lib.BangInt(data[2:4]) / 10.0
+      'today': lib.BangInt(data[0:2]) // 10.0,
+      'yesterday': lib.BangInt(data[2:4]) // 10.0
     }
     return totals
 
@@ -799,8 +800,8 @@ class ReadTotalsToday(PumpCommand):
     data = self.data
     log.info("READ totals today:\n%s" % lib.hexdump(data))
     totals = {
-      'today': lib.BangInt(data[0:2]) / 10.0,
-      'yesterday': lib.BangInt(data[2:4]) / 10.0
+      'today': lib.BangInt(data[0:2]) // 10.0,
+      'yesterday': lib.BangInt(data[2:4]) // 10.0
     }
     return totals
 
@@ -964,7 +965,7 @@ class ReadCarbRatios512 (PumpCommand):
   def decode_ratios (klass, data, units=0):
     data = data[0:(8 *2)]
     schedule = [ ]
-    for x in range(len(data)/ 2):
+    for x in range(len(data)// 2):
       start = x * 2
       end = start + 2
       (i, r) = data[start:end]
@@ -972,7 +973,7 @@ class ReadCarbRatios512 (PumpCommand):
         break
       ratio = int(r)
       if units == 2:
-        ratio = r / 10.0
+        ratio = r // 10.0
       schedule.append(dict(x=x, i=i, start=lib.basal_time(i), offset=i*30, ratio=ratio, r=r))
     return schedule
 
@@ -991,15 +992,15 @@ class ReadCarbRatios (PumpCommand):
   @classmethod
   def decode_ratios (klass, data, units=0):
     schedule = [ ]
-    for x in range(len(data)/ 3):
+    for x in range(len(data)// 3):
       start = x * 3
       end = start + 3
       (i, q, r) = data[start:end]
       if x > 0 and i == 0:
         break
-      ratio = r/10.0
+      ratio = r//10.0
       if q:
-        ratio = lib.BangInt([q, r]) / 1000.0
+        ratio = lib.BangInt([q, r]) // 1000.0
       schedule.append(dict(x=x, i=i, start=lib.basal_time(i), offset=i*30, q=q, ratio=ratio, r=r))
     return schedule
 
@@ -1078,7 +1079,7 @@ class ReadInsulinSensitivities (PumpCommand):
       if x > 0 and i == 0:
         break
       if units == 2:
-        sensitivity = sensitivity / 10.0
+        sensitivity = sensitivity // 10.0
       schedule.append(dict(x=x, i=i, start=str(lib.basal_time(i)), offset=i*30, sensitivity=sensitivity))
     return dict(sensitivities=schedule, first=units, units=ReadInsulinSensitivities.UNITS.get(units))
 
@@ -1100,8 +1101,8 @@ class ReadBGTargets515 (PumpCommand):
       if x > 0 and i == 0:
         break
       if units is 2:
-        low = low / 10.0
-        high = high / 10.0
+        low = low // 10.0
+        high = high // 10.0
       schedule.append(dict(x=x, i=i, start=lib.basal_time(i), offset=i*30, low=low, high=high))
     return dict(targets=schedule, units=labels.get(units), first=self.data[0], raw=' '.join('0x{:02x}'.format(x) for x in self.data))
 
@@ -1157,7 +1158,7 @@ class ReadProfile_STD512 (PumpCommand):
     valid = True
     last = None
     for profile in data:
-      start = str(lib.basal_time(profile['minutes']/30))
+      start = str(lib.basal_time(profile['minutes']//30))
       if 'rate' in profile and profile['i'] == i and start == profile['start']:
         if i == 0:
           if profile['minutes'] != 0:
@@ -1197,7 +1198,7 @@ class ReadProfile_STD512 (PumpCommand):
     schedule = [ ]
     end = [ 0, 0, 0 ]
     none = [ 0, 0, 0x3F ]
-    for i in range(len(data)/3):
+    for i in range(len(data)//3):
       off = i*3
       r, z, m = data[off : off + 3]
       if i > 0 and [r,z,m] in [end, none]:
@@ -1243,7 +1244,7 @@ class ReadBasalTemp(PumpCommand):
     temp = { 0: 'absolute', 1: 'percent' }[self.data[0]]
     status = dict(temp=temp)
     if temp is 'absolute':
-      rate = lib.BangInt(data[2:4])/40.0
+      rate = lib.BangInt(data[2:4])//40.0
       duration = lib.BangInt(data[4:6])
       status.update(rate=rate, duration=duration)
     if temp is 'percent':
@@ -1309,12 +1310,12 @@ class ReadSettings(PumpCommand):
     audio_bolus_enable = data[2] == 1
     audio_bolus_size = 0
     if audio_bolus_enable:
-      audio_bolus_size = data[3] / 10.0
+      audio_bolus_size = data[3] // 10.0
     variable_bolus_enable = data[4] == 1
     #MM23 is different
-    maxBolus = data[5]/ 10.0
+    maxBolus = data[5]// 10.0
     # MM512 and up
-    maxBasal = lib.BangInt(data[6:8]) / 40.0
+    maxBasal = lib.BangInt(data[6:8]) // 40.0
     timeformat = data[8]
     insulinConcentration = {0: 100, 1: 50}[data[9]]
     patterns_enabled = data[10] == 1
@@ -1347,8 +1348,8 @@ class ReadSettings523(ReadSettings):
     values = super(ReadSettings523, self).getData()
     data = self.data
 
-    values['maxBasal'] = lib.BangInt(data[7:9]) / 40.0
-    values['maxBolus'] = data[6]/ 10.0
+    values['maxBasal'] = lib.BangInt(data[7:9]) // 40.0
+    values['maxBolus'] = data[6]// 10.0
 
     return values
 

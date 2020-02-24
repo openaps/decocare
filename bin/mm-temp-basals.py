@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # PYTHON_ARGCOMPLETE_OK
 
+
 from decocare import commands
 from decocare.helpers import cli
 import argparse
@@ -79,14 +80,14 @@ class TempBasalApp (cli.CommandApp):
     return results;
 
 def format_percent_params (args):
-  duration = int(args.duration / 30)
+  duration = int(args.duration // 30)
   rate = int(args.rate)
   params = [rate, duration]
   return params
 
 def format_params (args):
-  duration = args.duration / 30
-  rate = int(args.rate / 0.025)
+  duration = args.duration // 30
+  rate = int(args.rate // 0.025)
   params = [0x00, rate, duration]
   return params
 

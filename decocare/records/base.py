@@ -1,3 +1,4 @@
+
 from datetime import datetime
 #from .. import lib
 from decocare import lib
@@ -136,8 +137,8 @@ class Prime(KnownRecord):
   head_length = 5
   def decode(self):
     self.parse_time( )
-    amount = self.head[4] / 10.0
-    fixed  = self.head[2] / 10.0
+    amount = self.head[4] // 10.0
+    fixed  = self.head[2] // 10.0
     t = {0:'manual'}.get(fixed, 'fixed')
     prime = { 'type': t,
               'amount': amount,

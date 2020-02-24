@@ -1,3 +1,4 @@
+
 from .base import KnownRecord, VariableHead
 from decocare import lib
 # from .. import lib
@@ -27,16 +28,16 @@ class Bolus(KnownRecord):
   def decode(self):
     self.parse_time( )
     dose = {
-             'amount': self.head[2]/10.0,
-             'programmed': self.head[1]/10.0,
+             'amount': self.head[2]//10.0,
+             'programmed': self.head[1]//10.0,
              'duration': self.head[3] * 30,
              'type': self.head[3] > 0 and 'square' or 'normal'
            }
     if self.larger:
       duration = self.head[7] * 30
-      dose = { 'amount': lib.BangInt(self.head[3:5])/40.0,
-               'programmed':  lib.BangInt(self.head[1:3])/40.0,
-               'unabsorbed': lib.BangInt(self.head[5:7])/40.0,
+      dose = { 'amount': lib.BangInt(self.head[3:5])//40.0,
+               'programmed':  lib.BangInt(self.head[1:3])//40.0,
+               'unabsorbed': lib.BangInt(self.head[5:7])//40.0,
                'duration': duration,
                'type': duration > 0 and 'square' or 'normal',
              }
@@ -94,15 +95,15 @@ class BolusWizard(KnownRecord):
     carb_input = int(self.body[0])
     # XXX: I have no idea if this is correct; it seems to produce correct results.
     correction = ( twos_comp( self.body[7], 8 )
-                 + twos_comp( self.body[5] & 0x0f, 8 ) ) / 10.0
+                 + twos_comp( self.body[5] & 0x0f, 8 ) ) // 10.0
     wizard = { 'bg': bg, 'carb_input': carb_input,
                'carb_ratio': int(self.body[2]),
                'sensitivity': int(self.body[3]),
                'bg_target_low': int(self.body[4]),
                'bg_target_high': int(self.body[12]),
-               'bolus_estimate': int(self.body[11])/10.0,
-               'food_estimate': int(self.body[6])/10.0,
-               'unabsorbed_insulin_total': int(self.body[9])/10.0,
+               'bolus_estimate': int(self.body[11])//10.0,
+               'food_estimate': int(self.body[6])//10.0,
+               'unabsorbed_insulin_total': int(self.body[9])//10.0,
                'unabsorbed_insulin_count': '??',
                'correction_estimate': correction,
                '_byte[5]': self.body[5],
@@ -118,7 +119,7 @@ class BolusWizard(KnownRecord):
       # correction = ( twos_comp( self.body[6], (self.body[9] & 0x38) << 5 ) ) / 40.0
       bg = ((self.body[1] & 0x03) << 8) + self.head[1]
       carb_input = ((self.body[1] & 0x0c) << 6) + self.body[0]
-      carb_ratio = (((self.body[2] & 0x07) << 8) + self.body[3]) / 10.0
+      carb_ratio = (((self.body[2] & 0x07) << 8) + self.body[3]) // 10.0
       # xxx: not sure about this
       # https://github.com/ps2/minimed_rf/blob/master/lib/minimed_rf/log_entries/bolus_wizard.rb#L102
       sensitivity = int(self.body[4])
@@ -129,7 +130,7 @@ class BolusWizard(KnownRecord):
                  'bg_target_high': int(self.body[14]),
                  # 'bolus_estimate': int(self.body[13])/40.0,
 
-                 'correction_estimate': (((self.body[9] & 0x38) << 5) + self.body[6]) / 40.0,
+                 'correction_estimate': (((self.body[9] & 0x38) << 5) + self.body[6]) // 40.0,
                  # 'correction_maybe_estimate': correction,
 
                  'food_estimate': insulin_decode(self.body[7], self.body[8]),
@@ -140,11 +141,11 @@ class BolusWizard(KnownRecord):
 
     if self.MMOL_DEFAULT:
       for key in [ 'bg', 'bg_target_high', 'bg_target_low', 'sensitivity' ]:
-        wizard[key] = wizard[key] / 10.0
+        wizard[key] = wizard[key] // 10.0
     return wizard
 
 def insulin_decode (a, b, strokes=40.0):
-  return ((a << 8) + b) / strokes
+  return ((a << 8) + b) // strokes
 def twos_comp(val, bits):
     # http://stackoverflow.com/a/9147327
     """compute the 2's compliment of int value val"""

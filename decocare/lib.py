@@ -36,6 +36,7 @@ True
 
 """
 
+
 from pprint import pformat
 from datetime import time as clocks
 from datetime import datetime
@@ -62,7 +63,7 @@ class Timer(object):
     self.begin = datetime.now( )
   def millis(self):
     dt = datetime.now() - self.begin
-    ms = (dt.days * 24 * 60 * 60 + dt.seconds) * 1000 + dt.microseconds / 1000.0
+    ms = (dt.days * 24 * 60 * 60 + dt.seconds) * 1000 + dt.microseconds // 1000.0
     return ms
 
 def format_filter_date (date):
