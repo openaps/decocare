@@ -89,7 +89,7 @@ def dump_four (byte, indent=0, newline="\n"):
     lines.append(spaces + dump_one(byte[x]))
   return newline.join(lines)
 
-class TimeExperiment (object):
+class TimeExperiment:
   def find_dates(self, stream):
     records = [ ]
     bolus = bytearray(stream.read(4))

@@ -51,8 +51,8 @@ class OpCodeFinder:
     self.hex_bytes = []
     self.bin_bytes = []
     for i in range(0, len(self.bytes)):
-      self.hex_bytes.append('{0:02x}'.format(self.bytes[i]))
-      self.bin_bytes.append('{0:08b}'.format(self.bytes[i]))
+      self.hex_bytes.append('{:02x}'.format(self.bytes[i]))
+      self.bin_bytes.append('{:08b}'.format(self.bytes[i]))
   
   def file_to_bytes(self):
     myBytes = bytearray()

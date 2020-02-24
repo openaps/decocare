@@ -129,7 +129,7 @@ def main( ):
         # json.dumps(record, indent=2)
         print(prefix)
       i += 1
-    print("`end %s: %s records`" % (stream.name, len(records)))
+    print("`end {}: {} records`".format(stream.name, len(records)))
     stream.close( )
   if opts.collate:
     opts.out.write(json.dumps(records, indent=2))

@@ -58,7 +58,7 @@ def basal_time (raw):
   start = midnight.replace(hour=offset.hours, minute=offset.minutes)
   return start
 
-class Timer(object):
+class Timer:
   def __init__(self):
     self.begin = datetime.now( )
   def millis(self):

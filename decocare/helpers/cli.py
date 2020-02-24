@@ -8,7 +8,7 @@ log = logging.getLogger( ).getChild(__name__)
 
 from decocare import link, stick, session, commands, lib, scan
 
-class CommandApp(object):
+class CommandApp:
   def __init__(self):
     self.env = self.parse_env( )
     self.parser = self.get_parser( )

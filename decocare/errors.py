@@ -1,4 +1,3 @@
-
 class StickError(Exception): pass
 
 class AckError(StickError): pass

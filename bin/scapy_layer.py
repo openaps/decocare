@@ -175,7 +175,7 @@ class Year(MaskedMoment):
 
   def getfield(self, pkt, s):
     y = s[0]
-    print("XXX: getfield: s: %r len(%s)" % (s, len(s)))
+    print("XXX: getfield: s: {!r} len({})".format(s, len(s)))
     val = bytearray( s[0] )
     print("XXX: getfield: %s" % repr(val))
     return s[1:], self.m2i(pkt, val)

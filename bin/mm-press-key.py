@@ -21,7 +21,7 @@ class PressKeysApp (cli.CommandApp):
 
   def exec_request (self, pump, msg, **kwds):
     msg = lookup_command(msg)
-    super(PressKeysApp, self).exec_request(pump, msg, **kwds)
+    super().exec_request(pump, msg, **kwds)
 
 command_map = {
     'easy': commands.PushEASY,

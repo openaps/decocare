@@ -1,4 +1,3 @@
-
 import glob
 
 class ID:
@@ -7,7 +6,7 @@ class ID:
   @classmethod
   def template (Klass, prefix):
     postfix = '*'
-    usb_id = "%04x_%04x" % (ID.VENDOR, ID.PRODUCT)
+    usb_id = "{:04x}_{:04x}".format(ID.VENDOR, ID.PRODUCT)
     candidate = ''.join([prefix, usb_id, postfix])
     return candidate
 

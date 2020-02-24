@@ -85,7 +85,7 @@ class Link( link.Link ):
   def readSignalStrength(self):
     result = self.sendComLink2Command(6, 0)
     # result[0] is signal strength
-    log.info('%r:readSignalStrength:%s' % (self, int(result[0])))
+    log.info('{!r}:readSignalStrength:{}'.format(self, int(result[0])))
     return int(result[0])
 
   def initCommunicationsIO(self):
@@ -165,7 +165,7 @@ def CRC8(data):
 #
 
 
-class Device(object):
+class Device:
   def __init__(self, link):
     self.link = link
 
@@ -224,7 +224,7 @@ class Device(object):
     assert len(data) == resLength
     crc = results[-1]
     # crc check
-    log.info('readDeviceDataIO:msgCRC:%r:expectedCRC:%r:data:%s' % (crc, CRC8(data), lib.hexdump(data)))
+    log.info('readDeviceDataIO:msgCRC:{!r}:expectedCRC:{!r}:data:{}'.format(crc, CRC8(data), lib.hexdump(data)))
     assert crc == CRC8(data)
     return data
 
@@ -236,7 +236,7 @@ class Device(object):
     response = self.writeAndRead(packet, bytesAvailable)
     # assert response.length > 14
     log.info('readData validating remote response: %02x' % response[0])
-    log.info('readData; foreign response should be at least 14 bytes? %s %s' % (len(response), len(response) > 14))
+    log.info('readData; foreign response should be at least 14 bytes? {} {}'.format(len(response), len(response) > 14))
     log.info('readData; retries %s' % int(response[3]))
     dl_status = int(response[0])
     if dl_status != 0x02:
@@ -261,7 +261,7 @@ class Device(object):
     start = time.time()
     i     = 0
     while result == 0 and time.time() - start < 1:
-      log.debug('%r:getNumBytesAvailable:attempt:%s' % (self, i))
+      log.debug('{!r}:getNumBytesAvailable:attempt:{}'.format(self, i))
       result = self.readStatus( )
       log.info('sleeping in getNumBytesAvailable, .100')
       time.sleep(.10)
@@ -353,18 +353,18 @@ def initDevice(link):
 
   comm   = ReadErrorStatus()
   device.execute(comm)
-  log.info('comm:%s:data:%s' % (comm, getattr(comm, 'data', None)))
+  log.info('comm:{}:data:{}'.format(comm, getattr(comm, 'data', None)))
 
   comm   = ReadPumpState()
   device.execute(comm)
-  log.info('comm:%s:data:%s' % (comm, getattr(comm, 'data', None)))
+  log.info('comm:{}:data:{}'.format(comm, getattr(comm, 'data', None)))
 
   return device
 
 def do_commands(device):
   comm = ReadPumpModel( )
   device.execute(comm)
-  log.info('comm:%s:data:%s' % (comm, getattr(comm.getData( ), 'data', None)))
+  log.info('comm:{}:data:{}'.format(comm, getattr(comm.getData( ), 'data', None)))
   log.info('REMOTE PUMP MODEL NUMBER: %s' % comm.getData( ))
 
   log.info("READ RTC")
@@ -446,7 +446,7 @@ def get_pages(device):
 def shutdownDevice(device):
   comm = PowerControlOff()
   device.execute(comm)
-  log.info('comm:%s:data:%s' % (comm, getattr(comm, 'data', None)))
+  log.info('comm:{}:data:{}'.format(comm, getattr(comm, 'data', None)))
 
 
 if __name__ == '__main__':

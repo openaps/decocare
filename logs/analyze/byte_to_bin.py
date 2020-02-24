@@ -1,4 +1,3 @@
-
 ##############################################################################
 # Edward Robinson
 #
@@ -55,9 +54,9 @@ if len(myBytes) > lineSize:
         for j in range(0, lineSize):
             # convert byte to appropriate format
             if outType == "bin":
-                out = '{0:08b}'.format(myBytes[j + i])
+                out = '{:08b}'.format(myBytes[j + i])
             else:
-                out = '{0:02x}'.format(myBytes[j + i])
+                out = '{:02x}'.format(myBytes[j + i])
             fileOut.write(out)
         if withNewLine:
             fileOut.write("\n")
@@ -68,9 +67,9 @@ if j < len(myBytes):
     for i in range(0, len(myBytes) - j):
         # convert to hex or binary and print
         if outType == "bin":
-            out = '{0:08b}'.format(myBytes[i])
+            out = '{:08b}'.format(myBytes[i])
         else:
-            out = '{0:02x}'.format(myBytes[i])
+            out = '{:02x}'.format(myBytes[i])
         fileOut.write(out)
         if withNewLine:
             fileOut.write("\n")

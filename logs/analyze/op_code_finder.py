@@ -1,4 +1,3 @@
-
 from datetime import *
 """def str_to_int(string):
   return
@@ -24,7 +23,7 @@ class op_code_stats:
 
   def __init__(self, op_code, data):
     self.op_code = op_code
-    self.op_code_str = '{0:02x}'.format(op_code)
+    self.op_code_str = '{:02x}'.format(op_code)
     records = data.split(self.op_code_str)
     self.num_records = len(records)
     from collections import Counter
@@ -114,7 +113,7 @@ class record():
 ############# Main #################
 fileInName = "ReadHistoryData-page-0.data.hex"
 
-with open (fileInName, "r") as myfile:
+with open (fileInName) as myfile:
     data=myfile.read().replace('\n', '')
 
 op_codes = []
@@ -134,7 +133,7 @@ from datetime import *
 op_code = 11 # 11=0b
 #op_code = 10 # 10=0a
 print("\n\n")
-records = data.split('{0:02x}'.format(op_code))
+records = data.split('{:02x}'.format(op_code))
 parsed_records = []
 for package in records:
   record_len = len(package)

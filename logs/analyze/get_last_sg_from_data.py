@@ -1,4 +1,3 @@
-
 ##############################################################################
 # Edward Robinson
 #
@@ -59,8 +58,8 @@ latest_sg = 0
 # for each byte: convert it to a decimal, double it
 # 	check that it is a valid sg and then mark it as the latest
 for i in range(0, len(myBytes)):
-	bin = '{0:08b}'.format(myBytes[i])
-	hex = '{0:02x}'.format(myBytes[i])
+	bin = '{:08b}'.format(myBytes[i])
+	hex = '{:02x}'.format(myBytes[i])
 	dec = int(hex, 16)
 	sg = dec * 2
 	if sg == 0:

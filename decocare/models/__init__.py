@@ -1,10 +1,8 @@
-
-
 from decocare import commands, history, cgm
 from decocare import lib
 import types
 
-class Task (object):
+class Task:
   def __init__ (self, msg, handler=None, **kwargs):
     self.msg = msg
     if handler:
@@ -34,7 +32,7 @@ class Task (object):
       return Task(msg, handler=func, **kwargs)
     return closure
 
-class Cursor (object):
+class Cursor:
   # Info
   # Page
   def __init__ (self, inst, **kwds):
@@ -44,8 +42,7 @@ class Cursor (object):
     self.info = self.inst.session.query(self.Info)
   def download_page (self, num):
     page = self.inst.session.query(self.Page, page=num)
-    for record in self.find_records(page):
-      yield record
+    yield from self.find_records(page)
   def range (self, info):
     raise NotImplemented( )
   def find_records (self, response):
@@ -65,8 +62,7 @@ class PageIterator (Task):
   def __call__ (self, inst, **kwds):
     self.pager = self.Cursor(inst, **kwds)
     for page in self.pager.iter( ):
-      for record in page:
-        yield record
+      yield from page
 
   @classmethod
   def handler (klass, **kwargs):
@@ -75,7 +71,7 @@ class PageIterator (Task):
     return closure
 
 
-class PumpModel (object):
+class PumpModel:
   bolus_strokes = 20
   basal_strokes = 40
   MMOL_DEFAULT = False

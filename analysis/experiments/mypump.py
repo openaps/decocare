@@ -1,4 +1,3 @@
-
 import serial
 import argparse
 import sys
@@ -42,7 +41,7 @@ def get_argparser( ):
   return parser
 
 
-class App(object):
+class App:
   _log_map = { 0: logging.INFO, 1: logging.DEBUG,
                2: logging.WARN, 3: logging.DEBUG }
   def __init__(self):

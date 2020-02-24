@@ -27,7 +27,7 @@ def get_opt_parser( ):
   return parser
 
 import json
-class ListCGM (object):
+class ListCGM:
 
   def print_records (self, records, opts={}):
     print(json.dumps(records, indent=2))

@@ -37,8 +37,8 @@ with open(fileInName, 'rb') as file:
 myHexBytes = []
 myBinBytes = []
 for i in range(0, len(myBytes)):
-    myHexBytes.append('{0:02x}'.format(myBytes[i]))
-    myBinBytes.append('{0:08b}'.format(myBytes[i]))
+    myHexBytes.append('{:02x}'.format(myBytes[i]))
+    myBinBytes.append('{:08b}'.format(myBytes[i]))
     
 for i in range(0, len(myBytes)):
     if myHexBytes[i] == op_code:

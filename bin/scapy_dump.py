@@ -69,7 +69,7 @@ class CLMMPair(Packet):
     PacketField('recv', None, CLMMComm),
   ]
 
-class Handler(object):
+class Handler:
   def __init__(self, path, opts):
     self.path = path
     self.opts = opts
@@ -84,7 +84,7 @@ class Handler(object):
     if self.path == '-':
       self.handle = sys.stdin
     else:
-      self.handle = open(self.path, 'rU')
+      self.handle = open(self.path)
 
   def close(self):
     if self.path != '-':
@@ -138,7 +138,7 @@ class Console:
     self.parser = self.get_argparser( )
     args = list(args)
     cmd, args = args[0], args[1:]
-    self.opts = self.parser.parse_args((args))
+    self.opts = self.parser.parse_args(args)
     logger.setLevel(self._log_map.get(self.opts.verbose, 3))
     cmdverbose = ''
     if self.opts.verbose > 0:

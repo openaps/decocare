@@ -114,7 +114,7 @@ def main( ):
       else:
         json.dumps(record, indent=2)
       i += 1
-    print("`end %s: %s records`" % (stream.name, len(records)))
+    print("`end {}: {} records`".format(stream.name, len(records)))
     if opts.collate:
       opts.out.write(json.dumps(records, indent=2))
     stream.close( )

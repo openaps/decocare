@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # insulaudit:decoding-carelink documentation build configuration file, created by
 # sphinx-quickstart on Tue Jun 18 11:59:09 2013.

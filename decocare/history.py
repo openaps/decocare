@@ -186,10 +186,10 @@ class TempBasal (KnownRecord):
     self.parse_time( )
     temp = { 0: 'absolute', 1: 'percent' }[(self.body[0] >> 3)]
     status = dict(temp=temp)
-    if temp is 'absolute':
+    if temp == 'absolute':
       rate = lib.BangInt([self.body[0]&0x7, self.head[1]]) // 40.0
       status.update(rate=rate)
-    if temp is 'percent':
+    if temp == 'percent':
       rate = int(self.head[1])
       status.update(rate=rate)
     return status
@@ -250,7 +250,7 @@ class JournalEntryMealMarker(KnownRecord):
   body_length = 2
 
   def decode(self):
-    super(JournalEntryMealMarker, self).decode()
+    super().decode()
 
     return dict(carb_input=int(lib.BangInt([self.head[1], self.body[0]])))
 
@@ -267,7 +267,7 @@ class JournalEntryInsulinMarker(KnownRecord):
   opcode = 0x42
   body_length = 1
   def decode(self):
-    super(JournalEntryInsulinMarker, self).decode()
+    super().decode()
     # see https://github.com/ps2/rileylink_ios/pull/160/files
     lowbits = self.head[1]
     highbits = (self.date[2] & 0b1100000) << 3 # ??
@@ -294,7 +294,7 @@ class ChangeSensorSetup2 (KnownRecord):
   # XXX: tghoward testing on 723 at length 30
   body_length = 30
   def __init__ (self, head, model, **kwds):
-    super(ChangeSensorSetup2, self).__init__(head, model, **kwds)
+    super().__init__(head, model, **kwds)
     self.body_length = model.Ian50Body
 _confirmed.append(ChangeSensorSetup2)
 
@@ -332,7 +332,7 @@ class AlarmSensor (KnownRecord):
   }
 
   def decode(self):
-    super(AlarmSensor, self).decode()
+    super().decode()
 
     alarm_type = self.head[1]
 
@@ -436,7 +436,7 @@ def decode_wizard_settings (data, num=8, model=None):
   , bg_targets=decode_bg_targets(bg_targets, bg_units)
   # , _o_len=len(data)
   # , _bg_targets=str(bg_targets).encode('hex')
-  , _head = "{0:#010b} {1:#010b}".format(*head)
+  , _head = "{:#010b} {:#010b}".format(*head)
   )
 
 def decode_carb_ratios (data):
@@ -470,7 +470,7 @@ def decode_bg_targets (data, bg_units):
     end = start + 3
     # (low, high, offset) = data[start:end]
     (offset, low, high) = data[start:end]
-    if bg_units is 2:
+    if bg_units == 2:
       low = low // 10.0
       high = high // 10.0
     targets.append(dict( #i=x,
@@ -548,7 +548,7 @@ class SetBolusWizardEnabled (KnownRecord):
   opcode = 0x2d
   def decode (self):
     self.parse_time( )
-    return dict(enabled=self.head[1] is 1)
+    return dict(enabled=self.head[1] == 1)
 _confirmed.append(SetBolusWizardEnabled)
 
 
@@ -580,7 +580,7 @@ class ChangeBGReminderEnable (KnownRecord):
   opcode = 0x60
   def decode (self):
     self.parse_time( )
-    enabled = self.head[1] is 1
+    enabled = self.head[1] == 1
     return dict(enabled=enabled)
 _confirmed.append(ChangeBGReminderEnable)
 
@@ -634,7 +634,7 @@ _confirmed.append(ChangeParadigmLinkID)
 class ConnectDevicesOtherDevicesEnabled (KnownRecord):
   opcode = 0x7c
   def decode(self):
-    super(ConnectDevicesOtherDevicesEnabled, self).decode()
+    super().decode()
     return dict(enabled=self.head[1] == 1)
 
 _confirmed.append(ConnectDevicesOtherDevicesEnabled)
@@ -670,7 +670,7 @@ class old6c(Model522ResultTotals):
   # XXX: 515 only?
   # body_length = 31
   def __init__ (self, head, model, **kwds):
-    super(old6c, self).__init__(head, model, **kwds)
+    super().__init__(head, model, **kwds)
     self.body_length = model.old6cBody + 3
 _confirmed.append(old6c)
 
@@ -793,7 +793,7 @@ def describe( ):
     out.append(_known[k].describe( ))
   return out
 
-class PagedData (object):
+class PagedData:
   """
     PagedData - context for parsing a page of cgm data.
   """

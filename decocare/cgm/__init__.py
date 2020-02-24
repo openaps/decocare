@@ -1,4 +1,3 @@
-
 """
 cgm - package for decoding cgm pages
 
@@ -74,7 +73,7 @@ def parse_date (data, unmask=False, strict=False, minute_specific=False):
     pass
   return None
 
-class PagedData (object):
+class PagedData:
   """
     PagedData - context for parsing a page of cgm data.
   """
@@ -246,7 +245,7 @@ class PagedData (object):
     # convert byte array to a string
     hex_bytes = []
     for i in range(0, len(byte_array)):
-      hex_bytes.append('{0:02x}'.format(byte_array[i]))
+      hex_bytes.append('{:02x}'.format(byte_array[i]))
     return '-'.join(hex_bytes)
 
   def map_glucose (self, values, start=None, delta=None):

@@ -1,4 +1,3 @@
-
 ##############################################################################
 # Edward Robinson
 #
@@ -56,8 +55,8 @@ numZerosCounter = 0
 # for each byte: convert it to a decimal, double it, 
 # 	write it to a new line in the output file
 for i in range(0, len(myBytes)):
-	bin = '{0:08b}'.format(myBytes[i])
-	hex = '{0:02x}'.format(myBytes[i])
+	bin = '{:08b}'.format(myBytes[i])
+	hex = '{:02x}'.format(myBytes[i])
 	dec = int(hex, 16)
 	sg = dec * 2
 	if sg == 0:

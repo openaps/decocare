@@ -1,10 +1,9 @@
-
 from datetime import datetime
 #from .. import lib
 from decocare import lib
 from .times import *
 
-class Base(object):
+class Base:
   """
     >>> str( Base( bytearray([ 0x00, 0x00 ]) ) )
     'Base unknown head[2], body[0] op[0x00]'

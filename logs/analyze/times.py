@@ -1,4 +1,3 @@
-
 from datetime import datetime
 
 class NotADate(Exception): pass
@@ -99,7 +98,7 @@ def extra_year_bits(year=0x86):
   masks = [ ( 0x80, 7), (0x40, 6), (0x20, 5), (0x10, 4) ]
   nibbles = [ ]
   for mask, shift in masks:
-    nibbles.append( ( (year & mask) >> shift ) )
+    nibbles.append(  (year & mask) >> shift  )
   return nibbles
   
 def extra_hour_bits(value):
@@ -115,7 +114,7 @@ def extra_hour_bits(value):
   masks = [ ( 0x80, 7), (0x40, 6), (0x20, 5), ]
   nibbles = [ ]
   for mask, shift in masks:
-    nibbles.append( ( (value & mask) >> shift ) )
+    nibbles.append(  (value & mask) >> shift  )
   return nibbles
   
 def parse_years(year):

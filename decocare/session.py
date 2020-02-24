@@ -8,7 +8,7 @@ from . import models
 from .errors import StickError, AckError, BadDeviceCommError
 
 
-class Session(object):
+class Session:
   def __init__(self, stick):
     self.stick = stick
     self.should_download = True

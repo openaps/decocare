@@ -17,11 +17,11 @@ def page_range (spec):
   pages = [ ]
   for s in r:
     p = s.split('..')
-    if len(p) is 2:
+    if len(p) == 2:
       pages.extend(list(range(int(p[0]), int(p[1]) + 1)))
       continue
     p = s.split('-')
-    if len(p) is 2:
+    if len(p) == 2:
       pages.extend(list(range(int(p[0]), int(p[1]) + 1)))
       continue
     pages.append(int(s))

@@ -643,7 +643,7 @@ class TestSaraBolus:
 
 def dictlines(d):
   items = sorted(list(d.items( )))
-  d = [ "%s: %s\n" % (k, v) for (k, v) in items ]
+  d = [ "{}: {}\n".format(k, v) for (k, v) in items ]
   return d
 
 def unsolved_bolus_wizard( ):

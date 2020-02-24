@@ -34,7 +34,7 @@ def parse_date(date):
 
   return None
 
-class Record(object):
+class Record:
   _names = {
     0x01: 'Bolus',
     0x03: 'Prime',
@@ -339,7 +339,7 @@ def find_dates(stream):
           epi = bytearray(stream.read(date_length))
           finished = parse_date(epi)
       record = Record(head, date, body)
-      prefix = "#### RECORD %s %s" % (len(records), str(record) )
+      prefix = "#### RECORD {} {}".format(len(records), str(record) )
       print(record.pformat(prefix))
       print("")
       records.append(record)
@@ -385,7 +385,7 @@ def main( ):
       prefix = '#### RECORD {} {}'.format(i, str(record))
       # record.pformat(prefix)
       i += 1
-    print("`end %s: %s records`" % (stream.name, len(records)))
+    print("`end {}: {} records`".format(stream.name, len(records)))
     stream.close( )
 
 if __name__ == '__main__':

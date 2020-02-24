@@ -1,4 +1,3 @@
-
 import sys
 from subprocess import Popen, PIPE
 
@@ -10,7 +9,7 @@ def in_use (device):
     return False
   pipe = Popen(['fuser', device], stdout=PIPE, stderr=PIPE)
   stdout, stderr = pipe.communicate( )
-  return stdout is not ""
+  return stdout != ""
 
 if __name__ == '__main__':
   from .scan import scan

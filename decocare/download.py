@@ -1,4 +1,3 @@
-
 import time
 import logging
 log = logging.getLogger( ).getChild(__name__)
@@ -6,7 +5,7 @@ log = logging.getLogger( ).getChild(__name__)
 from . import lib
 from . import commands
 
-class Downloader(object):
+class Downloader:
   log_format = 'logs/'
   def __init__(self, stick=None, device=None, log_format=log_format):
     self.stick = stick
@@ -49,7 +48,7 @@ class PageDownloader(Downloader):
     self.device.execute(comm)
     page = comm.getData( )
     comm.save(prefix=self.log_format)
-    log.info("XXX: READ HISTORY DATA page number %r!!:\n%s" % (x, page))
+    log.info("XXX: READ HISTORY DATA page number {!r}!!:\n{}".format(x, page))
     time.sleep(.100)
 
   def download(self):

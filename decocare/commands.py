@@ -1,5 +1,3 @@
-
-
 import logging
 import time
 
@@ -28,7 +26,7 @@ log = logging.getLogger( ).getChild(__name__)
 def CRC8(data):
   return lib.CRC8.compute(data)
 
-class BaseCommand(object):
+class BaseCommand:
   code    = 0x00
   descr   = "(error)"
   retries = 2
@@ -49,7 +47,7 @@ class BaseCommand(object):
     found = len(self.data or [ ])
     expect = int(self.maxRecords * self.bytesPerRecord)
     expect_size = "found[{}] expected[{}]".format(found, expect)
-    log.info("%s:download:done?explain=%s" % (self, expect_size))
+    log.info("{}:download:done?explain={}".format(self, expect_size))
     return found >= expect
   def format(self):
     pass
@@ -65,7 +63,7 @@ class BaseCommand(object):
   def hexdump (self):
     return lib.hexdump(self.data)
 
-class FieldChecker (object):
+class FieldChecker:
   def __init__ (self, msg, required=[]):
     self.msg = msg
     self.required = required
@@ -119,7 +117,7 @@ class PumpCommand(BaseCommand):
     return '{}:data:unknown'.format(self.__class__.__name__)
 
   def __repr__(self):
-    return '<{0}>'.format( self)
+    return '<{}>'.format( self)
 
   def validate (self, data):
     return True
@@ -190,7 +188,7 @@ class ManualCommand(PumpCommand):
   def log_name(self, prefix=''):
     return prefix + '{}.data'.format(self.name)
   def __repr__(self):
-    return '<{0}>'.format(self)
+    return '<{}>'.format(self)
 
   def getData(self):
     return self.hexdump( )
@@ -215,7 +213,7 @@ class PowerControl(PumpCommand):
     if minutes is not None:
       self.minutes = int(minutes)
       kwds['params'] = [ 0x01, self.minutes ]
-    super(PowerControl, self).__init__(**kwds)
+    super().__init__(**kwds)
 
 class PowerControlOff(PowerControl):
   """
@@ -274,12 +272,12 @@ class TempBasal(PumpCommand):
 
   def getData(self):
     status = { 0: 'absolute' }
-    received = True if (len(self.data) > 0 and self.data[0] is 0) else False
+    received = True if (len(self.data) > 0 and self.data[0] == 0) else False
     return dict(recieved=received, temp=status.get(self.params[0], 'percent'))
   @classmethod
   def Program (klass, rate=None, duration=None, temp=None, **kwds):
-    assert duration % 30 is 0, "duration {0} is not a whole multiple of 30".format(duration)
-    assert temp in [ 'percent', 'absolute' ], "temp field <{0}> should be one of {1}".format(temp, ['percent', 'absolute' ])
+    assert duration % 30 == 0, "duration {} is not a whole multiple of 30".format(duration)
+    assert temp in [ 'percent', 'absolute' ], "temp field <{}> should be one of {}".format(temp, ['percent', 'absolute' ])
     if temp in [ 'percent' ]:
       return TempBasalPercent(params=klass.format_percent_params(rate, duration), **kwds)
 
@@ -308,7 +306,7 @@ class SetSuspend(PumpCommand):
   maxRecords = 1
   def getData(self):
     status = { 0: 'resumed', 1: 'suspended' }
-    received = True if self.data[0] is 0 else False
+    received = True if self.data[0] == 0 else False
     return dict(recieved=received, status=status.get(self.params[0]))
 
 class PumpSuspend(SetSuspend):
@@ -476,7 +474,7 @@ class Bolus (PumpCommand):
   descr = "Bolus"
   params = [ ]
   def getData(self):
-    received = True if self.data[0] is 0x0c else False
+    received = True if self.data[0] == 0x0c else False
     return dict(recieved=received, _type='BolusRequest')
 
 
@@ -521,7 +519,7 @@ class ReadHistoryData(PumpCommand):
     if page is not None:
       self.page = int(page)
       kwds['params'] = [ self.page ]
-    super(ReadHistoryData, self).__init__(**kwds)
+    super().__init__(**kwds)
 
   def log_name(self, prefix=''):
     return prefix + '{}-page-{}.data'.format(self.__class__.__name__, self.page)
@@ -544,7 +542,7 @@ class ReadHistoryData(PumpCommand):
       self.eod  = eod = (self.data[5] & 0x80) > 0
     explain_crc = "CRC ACK check found[{}] expected[{}]".format(found_crc, expect_crc)
     is_eod = 'and has eod set? %s' % (eod)
-    log.info("%s:download:done %s:%s:%s" % (self, expect_size, explain_crc, is_eod))
+    log.info("{}:download:done {}:{}:{}".format(self, expect_size, explain_crc, is_eod))
     return found >= expect
 
   def respond(self, raw):
@@ -667,7 +665,7 @@ class SetRTC (PumpCommand):
       params.extend(SetRTC.fmt_datetime(clock))
 
     kwds['params'] = params
-    super(SetRTC, self).__init__(**kwds)
+    super().__init__(**kwds)
   @classmethod
   def fmt_datetime (klass, dt):
     return [dt.hour, dt.minute, dt.second, lib.HighByte(dt.year), lib.LowByte(dt.year), dt.month, dt.day]
@@ -1100,7 +1098,7 @@ class ReadBGTargets515 (PumpCommand):
       (i, low, high) = data[start:end]
       if x > 0 and i == 0:
         break
-      if units is 2:
+      if units == 2:
         low = low // 10.0
         high = high // 10.0
       schedule.append(dict(x=x, i=i, start=lib.basal_time(i), offset=i*30, low=low, high=high))
@@ -1164,12 +1162,12 @@ class ReadProfile_STD512 (PumpCommand):
           if profile['minutes'] != 0:
             template = "{name} first scheduled item should be 00:00:00."
             msg = template.format(name=self.__class__.__name__)
-            msg = "%s\n%s" % (msg, profile)
+            msg = "{}\n{}".format(msg, profile)
             raise BadResponse(msg)
         if last and profile['minutes'] <= last['minutes']:
           template = "{name} next scheduled item occurs before previous"
           msg = template.format(name=self.__class__.__name__)
-          msg = "%s\n%s" % (msg, profile)
+          msg = "{}\n{}".format(msg, profile)
           raise BadResponse(msg)
       else:
         bad_profile = """Current profile: %s""" % (profile)
@@ -1243,11 +1241,11 @@ class ReadBasalTemp(PumpCommand):
     data = self.data
     temp = { 0: 'absolute', 1: 'percent' }[self.data[0]]
     status = dict(temp=temp)
-    if temp is 'absolute':
+    if temp == 'absolute':
       rate = lib.BangInt(data[2:4])//40.0
       duration = lib.BangInt(data[4:6])
       status.update(rate=rate, duration=duration)
-    if temp is 'percent':
+    if temp == 'percent':
       rate = int(data[1])
       duration = lib.BangInt(data[4:6])
       status.update(rate=rate, duration=duration)
@@ -1345,7 +1343,7 @@ class ReadSettings(PumpCommand):
 class ReadSettings523(ReadSettings):
 
   def getData(self):
-    values = super(ReadSettings523, self).getData()
+    values = super().getData()
     data = self.data
 
     values['maxBasal'] = lib.BangInt(data[7:9]) // 40.0
@@ -1438,7 +1436,7 @@ class ReadSensorHistoryData (ReadHistoryData):
                  lib.LowByte(page >>  8), lib.LowByte(page) ]
 
       self.page = page
-    super(ReadSensorHistoryData, self).__init__(params=params, **kwds)
+    super().__init__(params=params, **kwds)
     self.params = params
     self.page = page
 
@@ -1511,7 +1509,7 @@ class ChangeCaptureEventEnable (PumpCommand):
 
   def __init__(self, enabled=True, **kwds):
     self.params[0] = int(enabled)
-    super(ChangeCaptureEventEnable, self).__init__(**kwds)
+    super().__init__(**kwds)
 
 
 class ReadConnectDevicesOtherDevicesStatus (PumpCommand):
@@ -1534,7 +1532,7 @@ class FilterHistory (PumpCommand):
       params.extend(lib.format_filter_date(end))
 
     kwds['params'] = params
-    super(FilterHistory, self).__init__(**kwds)
+    super().__init__(**kwds)
 
   def getData(self):
     data = self.data
@@ -1569,7 +1567,7 @@ class TweakAnotherCommand (ManualCommand):
   @classmethod
   def get_kwds (klass, Other, args):
     kwds = { }
-    fields = list(set(Other.__fields__) - set(['serial', ]))
+    fields = list(set(Other.__fields__) - {'serial'})
     for k in fields:
       value = getattr(args, k, None)
       if value is not None:
@@ -1644,7 +1642,7 @@ class ReadPumpModel(PumpCommand):
 def do_commands(device):
   comm = ReadPumpModel( serial=device.serial )
   device.execute(comm)
-  log.info('comm:%s:data:%s' % (comm, getattr(comm.getData( ), 'data', None)))
+  log.info('comm:{}:data:{}'.format(comm, getattr(comm.getData( ), 'data', None)))
   log.info('REMOTE PUMP MODEL NUMBER: %s' % comm.getData( ))
 
   log.info("READ RTC")

@@ -101,7 +101,7 @@ def _build_egg(egg, tarball, to_dir):
     # returning the result
     log.warn(egg)
     if not os.path.exists(egg):
-        raise IOError('Could not build the egg.')
+        raise OSError('Could not build the egg.')
 
 
 def _do_download(version, download_base, to_dir, download_delay):

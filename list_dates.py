@@ -129,7 +129,7 @@ def main( ):
   wrapper = textwrap.TextWrapper(**tw_opts)
   for stream in opts.infile:
     records = find_dates(stream)
-    print("%s: %s records" % (stream.name, len(records)))
+    print("{}: {} records".format(stream.name, len(records)))
     i = 0
     for rec in records:
       date, datum, tail, extra = rec
@@ -139,7 +139,7 @@ def main( ):
       if date is not None:
         date_str = date.isoformat( )
 
-      print("#### RECORD %s: %s %#04x %s" % (i, date_str, opcode, stats))
+      print("#### RECORD {}: {} {:#04x} {}".format(i, date_str, opcode, stats))
       print("    hex (%s)" % len(datum))
       print(lib.hexdump(datum, indent=4))
       print("    decimal")

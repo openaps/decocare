@@ -1,4 +1,3 @@
-
 from . import lib
 import logging
 import time
@@ -30,7 +29,7 @@ class UnresponsiveError (StickError): pass
 def CRC8(data):
   return lib.CRC8.compute(data)
 
-class StickCommand(object):
+class StickCommand:
   """Basic stick command
 
   Each command is used to talk to the usb stick.
@@ -50,9 +49,9 @@ class StickCommand(object):
 
   def __str__(self):
     code = ' '.join([ '%#04x' % op for op in self.code ])
-    return '{0}:{1}'.format(self.__class__.__name__, code)
+    return '{}:{}'.format(self.__class__.__name__, code)
   def __repr__(self):
-    return '<{0:s}:size({1})>'.format(self, self.size)
+    return '<{:s}:size({})>'.format(self, self.size)
   def format(self):
     return self.format_cl2(*self.code)
 
@@ -111,9 +110,9 @@ class ProductInfo(StickCommand):
     return {
       'rf.freq'          : klass.rf_table.get( data[ 5 ], 'UNKNOWN' )
     , 'serial'           : str( data[ 0:3 ]).encode( 'hex'  )
-    , 'product.version'  : '{0}.{1}'.format( *data[ 3:5 ] )
+    , 'product.version'  : '{}.{}'.format( *data[ 3:5 ] )
     , 'description'      : str( data[ 6:16 ] )
-    , 'software.version' : '{0}.{1}'.format( *data[ 16:18 ] )
+    , 'software.version' : '{}.{}'.format( *data[ 16:18 ] )
     , 'interfaces'       : klass.decodeInterfaces( data[ 18: ] )
     }
 
@@ -172,7 +171,7 @@ class SignalStrength(StickCommand):
     """
     # result[0] is signal strength
     self.value = int(data[0])
-    log.info('%r:readSignalStrength:%s' % (self, int(data[0])))
+    log.info('{!r}:readSignalStrength:{}'.format(self, int(data[0])))
     return int(data[0])
 
 class LinkStatus(StickCommand):
@@ -190,9 +189,9 @@ class LinkStatus(StickCommand):
     size = getattr(self, 'size', None) or '??'
     extra += "size=%s" % size
     if getattr(self, 'error', False):
-      extra += '{0}:error:{1}:reason:{2}'.format(self.__class__.__name__, self.error, str(self.reasons))
+      extra += '{}:error:{}:reason:{}'.format(self.__class__.__name__, self.error, str(self.reasons))
     base = super(type(self), self).__str__( )
-    return '{0}:status:{1}'.format(base, extra)
+    return '{}:status:{}'.format(base, extra)
       
   def record_error(self, result):
     self.error  = True
@@ -259,9 +258,9 @@ class ReadRadio(StickCommand):
     self.code = packet + [ CRC8(packet) ]
 
   def __str__(self):
-    return '{0}:size:{1}'.format(self.__class__.__name__, self.dl_size)
+    return '{}:size:{}'.format(self.__class__.__name__, self.dl_size)
   def __repr__(self):
-    return '<{0:s}>'.format(self)
+    return '<{:s}>'.format(self)
   def format(self):
     msg = bytearray(self.code)
     return msg
@@ -272,7 +271,7 @@ class ReadRadio(StickCommand):
       # return False
       raise AckError("ACK is 0 bytes: %s" % lib.hexdump(raw))
     log.info('readData validating remote raw[ack]: %02x' % raw[0])
-    log.info('readData; foreign raw should be at least 14 bytes? %s %s' % (len(raw), len(raw) > 14))
+    log.info('readData; foreign raw should be at least 14 bytes? {} {}'.format(len(raw), len(raw) > 14))
     log.info('readData; raw[retries] %s' % int(raw[3]))
     dl_status = int(raw[0])
     if dl_status != 0x02: # this differs from the others?
@@ -308,8 +307,8 @@ class ReadRadio(StickCommand):
 
     data = raw[13:13+resLength]
     self.packet = data
-    log.info('%s:eod:found eod (%s)' % (self, self.eod))
-    log.info('found packet len(%s), link expects(%s)' % (len(self.packet), resLength))
+    log.info('{}:eod:found eod ({})'.format(self, self.eod))
+    log.info('found packet len({}), link expects({})'.format(len(self.packet), resLength))
     assert len(data) == resLength
     head = raw[13:]
     crc = raw[-1]
@@ -356,11 +355,11 @@ class TransmitPacket(StickCommand):
 
   def __str__(self):
     if getattr(self, 'command', False):
-      return '{0}:{1:s}'.format(self.__class__.__name__, self.command)
+      return '{}:{:s}'.format(self.__class__.__name__, self.command)
     code = ' '.join([ '%#04x' % op for op in self.head ])
-    return '{0}:{1}'.format(self.__class__.__name__, code)
+    return '{}:{}'.format(self.__class__.__name__, code)
   def __repr__(self):
-    return '<{0:s}>'.format(self)
+    return '<{:s}>'.format(self)
   
 
   def calcRecordsRequired(self):
@@ -418,7 +417,7 @@ class TransmitPacket(StickCommand):
 
 
 
-class Stick(object):
+class Stick:
   """
   The carelink usb stick acts like a buffer.
 
@@ -465,7 +464,7 @@ class Stick(object):
         ]
     return ' '.join(s)
   def __repr__(self):
-    return '<{0}>'.format(str(self))
+    return '<{}>'.format(str(self))
   def process(self):
     """
     Working with the usb stick typically follows a pretty routine process:
@@ -478,7 +477,7 @@ class Stick(object):
     msg = ':'.join(['PROCESS', 'START'
            ] + list(map(str, [ self.timer.millis( ), self.command])))
     log.info(msg)
-    log.info('link %s processing %s)' % ( self, self.command ))
+    log.info('link {} processing {})'.format( self, self.command ))
     """
     self.link.write(self.command.format( ))
     log.debug('sleeping %s' % self.command.delay)
@@ -495,7 +494,7 @@ class Stick(object):
 
     ack, response = self.command.respond(raw)
     info = self.command.parse(response)
-    log.info('finished processing {0}, {1}'.format(self.command, repr(info)))
+    log.info('finished processing {}, {}'.format(self.command, repr(info)))
     msg = ':'.join(['PROCESS', 'END'
            ] + list(map(str, [ self.timer.millis( ), self.command])))
     log.info(msg)
@@ -547,19 +546,19 @@ class Stick(object):
     size  = 0
     start = time.time()
     i     = 0
-    log.debug('%r:STARTING POLL PHASE:attempt:%s' % (self, i))
+    log.debug('{!r}:STARTING POLL PHASE:attempt:{}'.format(self, i))
     #while size == 0 and size < 64 and time.time() - start < 1:
     while size == 0 and time.time() - start < 1:
       self._poll_i = i
       self._poll_size = size
-      log.debug('%r:poll:attempt:%s' % (self, i))
+      log.debug('{!r}:poll:attempt:{}'.format(self, i))
       size  = self.read_status( )
       self._poll_size = size
       if size == 0:
         log.debug('poll zero, sleeping in POLL, .100')
         time.sleep(.100)
       i += 1
-    log.info('%s:STOP POLL after %s attempts:size:%s' % (self, i, size))
+    log.info('{}:STOP POLL after {} attempts:size:{}'.format(self, i, size))
     self._poll_size = size
     self._poll_i = False
     return size
@@ -599,10 +598,10 @@ class Stick(object):
     raw = bytearray( )
     for attempt in range(retries):
       log.info(' '.join([
-        'send_force_read: attempt {0}/{1}'.format(attempt, retries),
+        'send_force_read: attempt {}/{}'.format(attempt, retries),
         'send command,',
         'read until we get something within some timeout']))
-      log.info('link %s sending %s)' % ( self, reader ))
+      log.info('link {} sending {})'.format( self, reader ))
       self.link.write(reader.format( ))
       log.debug('sleeping %s' % reader.delay)
       time.sleep(reader.delay)
@@ -628,7 +627,7 @@ class Stick(object):
     This is the tricky bit, where we stroke the radio and hope it gives us a
     buffer full of data.
     """
-    log.info("%s:download_packet:%s" % (self, size))
+    log.info("{}:download_packet:{}".format(self, size))
     # XXX: this is the tricky bit
     original_size = size
     self.command = reader = ReadRadio(size)
@@ -670,7 +669,7 @@ class Stick(object):
       log.info(msg)
       return info
     except BadDeviceCommError as e:
-      log.critical("download_packet:%s:ERROR:%s:ACK!?" % (self, e))
+      log.critical("download_packet:{}:ERROR:{}:ACK!?".format(self, e))
       log.info("we failed to pass %s ACK!?" % (self.command))
       log.info('expected size was: %s' % original_size)
       status = LinkStatus( )
@@ -701,7 +700,7 @@ class Stick(object):
 
 
 
-    log.info('finished processing {0}, {1}'.format(self.command, repr(info)))
+    log.info('finished processing {}, {}'.format(self.command, repr(info)))
     return info
     
   def download(self, size=None):
@@ -811,13 +810,13 @@ class Stick(object):
       
       seg_stats = ( len(segments), sum(map(len, segments)), len(raw) )
       log_detail = segs_vs_raw.format(*seg_stats)
-      log.info("%s:download the size? %s:%s" % (log_head, size, log_detail))
+      log.info("{}:download the size? {}:{}".format(log_head, size, log_detail))
           
       while size > 14:
         seg_stats = ( len(segments), sum(map(len, segments)), len(raw) )
         log_detail = segs_vs_raw.format(*seg_stats)
         log_head = "XXX:clear_buffer[attempt][%s]" % (attempt)
-        log.info( ':'.join([ "%s size:%s" % (log_head, size),
+        log.info( ':'.join([ "{} size:{}".format(log_head, size),
                              log_detail,
                              "clear_buffer BUFFER self.download( )" ]))
         try:
@@ -834,11 +833,11 @@ class Stick(object):
         except BadCRC as e:
           seg_stats = ( len(segments), sum(map(len, segments)), len(raw) )
           log_detail = segs_vs_raw.format(*seg_stats)
-          log.critical('%s:IGNORING:%s:%s' % (log_head, log_detail, e))
+          log.critical('{}:IGNORING:{}:{}'.format(log_head, log_detail, e))
 
         seg_stats = ( len(segments), sum(map(len, segments)), len(raw) )
         log_detail = segs_vs_raw.format(*seg_stats)
-        log.info(':'.join([ "%s downloaded %s segment" % (log_head, len(raw)),
+        log.info(':'.join([ "{} downloaded {} segment".format(log_head, len(raw)),
                             log_detail,
                             "RAW:\n%s" % lib.hexdump(raw) ]))
         size = self.poll_size( )
@@ -880,7 +879,7 @@ class Stick(object):
         log.info('we seem to have found a nice signal strength of: %s' % signal)
         return True
       except AckError as e:
-        log.info('failed:(%s):\n%s' % (attempt, e))
+        log.info('failed:({}):\n{}'.format(attempt, e))
         raise
     
   def close (self):

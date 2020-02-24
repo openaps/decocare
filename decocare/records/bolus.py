@@ -1,4 +1,3 @@
-
 from .base import KnownRecord, VariableHead
 from decocare import lib
 # from .. import lib
@@ -21,7 +20,7 @@ class Bolus(KnownRecord):
   opcode = 0x01
   head_length = 4
   def __init__(self, head, larger=False):
-    super(Bolus, self).__init__(head, larger)
+    super().__init__(head, larger)
     # self.larger = larger
     if self.larger:
       self.head_length = 8
@@ -84,7 +83,7 @@ class BolusWizard(KnownRecord):
   opcode = 0x5b
   body_length = 13
   def __init__(self, head, model=None):
-    super(BolusWizard, self).__init__(head, model)
+    super().__init__(head, model)
     # self.larger = larger
     self.MMOL_DEFAULT = model.MMOL_DEFAULT
     if self.larger:

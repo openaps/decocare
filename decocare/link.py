@@ -1,4 +1,3 @@
-
 #
 # TODO: move all constants to config module.
 #
@@ -13,7 +12,7 @@ log = io.getChild(__name__)
 class AlreadyInUseException (Exception):
   pass
 
-class Link( object ):
+class Link:
   __timeout__ = .500
   port = None
   def __init__( self, port, timeout=None ):
@@ -45,7 +44,7 @@ class Link( object ):
 
   def write( self, string ):
     r = self.serial.write( string )
-    io.info( 'usb.write.len: %s\n%s' % ( len( string ),
+    io.info( 'usb.write.len: {}\n{}'.format( len( string ),
                                          lib.hexdump( bytearray( string ) ) ) )
     return r
 
@@ -57,13 +56,13 @@ class Link( object ):
 
   def readline( self ):
     r = self.serial.readline( )
-    io.info( 'usb.read.len: %s\n%s' % ( len( r ),
+    io.info( 'usb.read.len: {}\n{}'.format( len( r ),
                                         lib.hexdump( bytearray( r ) ) ) )
     return r
 
   def readlines( self ):
     r = self.serial.readlines( )
-    io.info( 'usb.read.len: %s\n%s' % ( len( r ),
+    io.info( 'usb.read.len: {}\n{}'.format( len( r ),
                                         lib.hexdump( bytearray( ''.join( r ) ) ) ) )
     return r
 
