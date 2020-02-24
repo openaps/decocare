@@ -116,35 +116,35 @@ class CommandApp(object):
 
   def prelude (self, args):
     if args.no_prelude:
-      print "##### skipping prelude"
+      print("##### skipping prelude")
       return
-    print "## do stuff with an insulin pump over RF"
-    print "using", "`", args, "`"
+    print("## do stuff with an insulin pump over RF")
+    print("using", "`", args, "`")
 
-    print "```"
+    print("```")
     if args.port == 'scan' or args.port == "":
       args.port = scan.scan( )
     uart = stick.Stick(link.Link(args.port))
-    print "```"
-    print "```"
+    print("```")
+    print("```")
     uart.open( )
-    print "```"
-    print "```"
+    print("```")
+    print("```")
     pump = session.Pump(uart, args.serial)
-    print "```"
-    print "```"
+    print("```")
+    print("```")
     stats = uart.interface_stats( )
-    print "```"
-    print "```javascript"
-    print pformat(stats)
-    print "```"
+    print("```")
+    print("```javascript")
+    print(pformat(stats))
+    print("```")
     self.uart = uart
     self.pump = pump
     self.model = None
     if args.no_rf_prelude:
-      print "##### skipping normal RF preludes"
+      print("##### skipping normal RF preludes")
       return
-    print "```"
+    print("```")
     if not args.autoinit:
       if args.init:
         pump.power_control(minutes=args.session_life)
@@ -152,43 +152,43 @@ class CommandApp(object):
       self.model = model
     else:
       self.autoinit(args)
-    print "```"
-    print '### PUMP MODEL: `%s`' % self.model
+    print("```")
+    print('### PUMP MODEL: `%s`' % self.model)
 
   def autoinit (self, args):
     for n in xrange(3):
-      print "AUTO INIT", n
+      print("AUTO INIT", n)
       self.sniff_model( )
       if len(self.model.getData( )) != 3:
         self.stats
-        print "SENDING POWER ON", n
+        print("SENDING POWER ON", n)
         self.pump.power_control(minutes=args.session_life)
       else:
-        print '### PUMP MODEL: `%s`' % self.model
+        print('### PUMP MODEL: `%s`' % self.model)
         break
   def sniff_model (self):
     model = self.pump.read_model( )
-    print "GOT MODEL", model
+    print("GOT MODEL", model)
     self.model = model
   def postlude (self, args):
     if args.no_postlude:
-      print "##### skipping postlude"
+      print("##### skipping postlude")
       return
-    print "### end stats"
+    print("### end stats")
     self.stats( )
   def stats (self):
-    print "```"
+    print("```")
     stats = self.uart.interface_stats( )
-    print "```"
-    print "```javascript"
-    print pformat(stats)
-    print "```"
+    print("```")
+    print("```javascript")
+    print(pformat(stats))
+    print("```")
 
   def main (self, args):
     for flow in args.commands:
-      print '### ', flow
+      print('### ', flow)
       if args.dryrun:
-        print "#### dry run, no action taken"
+        print("#### dry run, no action taken")
       else:
         self.exec_request(self.pump, flow)
 
@@ -200,20 +200,20 @@ class CommandApp(object):
                     render_decoded=True,
                     render_hexdump=True):
     if dryrun:
-      print "skipping query", pump, msg, args
+      print("skipping query", pump, msg, args)
       return False
     response = pump.query(msg, **args)
-    print "response: %s" % response
+    print("response: %s" % response)
     if render_hexdump:
-      print "hexdump:"
-      print "```python"
-      print response.hexdump( )
-      print "```"
+      print("hexdump:")
+      print("```python")
+      print(response.hexdump( ))
+      print("```")
     if render_decoded:
-      print "#### decoded:"
-      print "```python"
-      print repr(response.getData( ))
-      print "```"
+      print("#### decoded:")
+      print("```python")
+      print(repr(response.getData( )))
+      print("```")
     if save:
       response.save(prefix=prefix)
     return response

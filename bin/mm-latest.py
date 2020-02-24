@@ -119,10 +119,10 @@ class LatestActivity (cli.CommandApp):
               , model=self.pump.modelNumber
               , _type='RTC')
 
-    print "```json"
+    print("```json")
     args.rtc_archive.write(json.dumps(results, indent=2))
-    print ''
-    print "```"
+    print('')
+    print("```")
 
   def report_status (self, args):
     status = self.exec_request(self.pump, commands.ReadPumpStatus)
@@ -162,10 +162,10 @@ class LatestActivity (cli.CommandApp):
   def find_records (self, page, larger=None):
     decoder = HistoryPage(page, self.pump.model)
     records = decoder.decode( )
-    print "SINCE", self.since.isoformat( )
+    print("SINCE", self.since.isoformat( ))
     for record in records:
-      print "  * found record", record['_type'], record.get('timestamp')
-      print "  * should quit", record.get('timestamp') < self.since.isoformat( ), self.enough_history
+      print("  * found record", record['_type'], record.get('timestamp'))
+      print("  * should quit", record.get('timestamp') < self.since.isoformat( ), self.enough_history)
       if record.get('timestamp'):
         dt = parse(record['timestamp'])
         dt = dt.replace(tzinfo=self.timezone)
@@ -178,7 +178,7 @@ class LatestActivity (cli.CommandApp):
 
   def download_history (self, args):
     i = 0
-    print "find records since", self.since.isoformat( )
+    print("find records since", self.since.isoformat( ))
     self.enough_history = False
     self.records = [ ]
     while not self.enough_history:
@@ -186,10 +186,10 @@ class LatestActivity (cli.CommandApp):
       remainder = self.find_records(history.data)
       i = i + 1
     results = self.records
-    print "```json"
+    print("```json")
     args.parsed_data.write(json.dumps(results, indent=2))
-    print ''
-    print "```"
+    print('')
+    print("```")
 
   def main (self, args):
     self.delta = relativedelta.relativedelta(minutes=args.minutes)

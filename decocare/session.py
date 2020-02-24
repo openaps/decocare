@@ -110,7 +110,7 @@ if __name__ == '__main__':
   port = sys.argv[1:] and sys.argv[1] or False
   serial_num = sys.argv[2:] and sys.argv[2] or False
   if not port or not serial_num:
-    print "usage:\n%s <port> <serial>, eg /dev/ttyUSB0 208850" % sys.argv[0]
+    print("usage:\n%s <port> <serial>, eg /dev/ttyUSB0 208850" % sys.argv[0])
     sys.exit(1)
   import link
   import stick

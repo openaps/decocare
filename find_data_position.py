@@ -45,5 +45,5 @@ for i in range(0, len(myBytes)):
         pack_start = i+1
         hex_str = '-'.join(myHexBytes[pack_start:pack_start+pack_len])
         bin_str = '-'.join(myBinBytes[pack_start:pack_start+pack_len])
-        print "At "+str(i)+" found : ["+myHexBytes[i]+"] ["+hex_str+"] ["+bin_str+"]"
+        print("At "+str(i)+" found : ["+myHexBytes[i]+"] ["+hex_str+"] ["+bin_str+"]")
         

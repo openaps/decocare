@@ -215,7 +215,7 @@ def eat_nulls(fd):
     else:
       fd.seek(fd.tell( ) - 1)
       break
-  print "found %s nulls" % len(nulls)
+  print("found %s nulls" % len(nulls))
   return nulls
 
 def seek_null(fd):
@@ -279,8 +279,8 @@ def find_dates(stream):
     total = len(bolus)
     # print repr(bolus), date_length, repr(date)
     if len(date) < 5:
-      print "DATE LESS THAN 5!", stream.tell( )
-      print lib.hexdump(bolus)
+      print("DATE LESS THAN 5!", stream.tell( ))
+      print(lib.hexdump(bolus))
       break
       records[-1].body.extend(bolus)
     datetime = parse_date(date)
@@ -291,37 +291,37 @@ def find_dates(stream):
         bolus = bolus + nulls + bytearray(stream.read(-1))
         crc = bolus[-2:]
         nulls = bolus[:-2]
-        print "EOF {} nulls, CRC:".format(len(nulls))
-        print lib.hexdump(crc)
+        print("EOF {} nulls, CRC:".format(len(nulls)))
+        print(lib.hexdump(crc))
       else:
-        print total, '   ', max(total-2, 5)
-        print lib.hexdump( [0x00] * min(total, 5) )
-        print 
-        print "TOO MANY NULLS, BAILING ON STREAM at %s " % stream.tell( )
-        print "bolus"
-        print lib.hexdump(bolus)
-        print "nulls"
-        print lib.hexdump(nulls)
-        print "MISSING: ARE THERE 32 more bytes?"
-        print lib.hexdump(bytearray(stream.read(32)))
+        print(total, '   ', max(total-2, 5))
+        print(lib.hexdump( [0x00] * min(total, 5) ))
+        print() 
+        print("TOO MANY NULLS, BAILING ON STREAM at %s " % stream.tell( ))
+        print("bolus")
+        print(lib.hexdump(bolus))
+        print("nulls")
+        print(lib.hexdump(nulls))
+        print("MISSING: ARE THERE 32 more bytes?")
+        print(lib.hexdump(bytearray(stream.read(32))))
       # records[-1].body.extend(nulls)
       break
 
     
     if not Record.is_midnight(head):
       if datetime is None:
-        print ("#### MISSING DATETIME @ %s," % stream.tell( )),
-        print "reading more to debug %#04x" % opcode
-        print lib.hexdump(bolus, indent=4)
-        print int_dump(bolus, indent=11)
+        print(("#### MISSING DATETIME @ %s," % stream.tell( )), end=' ')
+        print("reading more to debug %#04x" % opcode)
+        print(lib.hexdump(bolus, indent=4))
+        print(int_dump(bolus, indent=11))
 
         extra = bytearray(stream.read(32))
-        print "##### DEBUG HEX"
-        print lib.hexdump(extra, indent=4)
-        print "##### DEBUG DECIMAL"
-        print int_dump(extra, indent=11)
+        print("##### DEBUG HEX")
+        print(lib.hexdump(extra, indent=4))
+        print("##### DEBUG DECIMAL")
+        print(int_dump(extra, indent=11))
         if history.parse_date(bolus):
-          print "XXX:???:XXX", history.parse_date(bolus).isoformat( )
+          print("XXX:???:XXX", history.parse_date(bolus).isoformat( ))
         break
 
     if datetime is not None or Record.is_midnight(head):
@@ -329,19 +329,19 @@ def find_dates(stream):
       body = bytearray(stream.read(body_length))
       bolus.extend(body)
       if False or Record.seeks_null(opcode, body):
-        print "should eat up to null, second %s" % repr(body[1:])
+        print("should eat up to null, second %s" % repr(body[1:]))
         if body[1:]:
           if body[-1] != 0x00:
             extra = seek_null(stream)
-            print "found %s extra" % len(extra)
+            print("found %s extra" % len(extra))
             body.extend(extra)
             bolus.extend(extra)
           epi = bytearray(stream.read(date_length))
           finished = parse_date(epi)
       record = Record(head, date, body)
       prefix = "#### RECORD %s %s" % (len(records), str(record) )
-      print record.pformat(prefix)
-      print ""
+      print(record.pformat(prefix))
+      print("")
       records.append(record)
       bolus = bytearray( )
       opcode = ''
@@ -377,7 +377,7 @@ def main( ):
   }
   wrapper = textwrap.TextWrapper(**tw_opts)
   for stream in opts.infile:
-    print "## START %s" % (stream.name)
+    print("## START %s" % (stream.name))
     records = find_dates(stream)
     i = 0
     for record in records:
@@ -385,14 +385,14 @@ def main( ):
       prefix = '#### RECORD {} {}'.format(i, str(record))
       # record.pformat(prefix)
       i += 1
-    print "`end %s: %s records`" % (stream.name, len(records))
+    print("`end %s: %s records`" % (stream.name, len(records)))
     stream.close( )
 
 if __name__ == '__main__':
   import doctest
   failures, tests = doctest.testmod( )
   if failures > 0:
-    print "REFUSING TO RUN DUE TO FAILED TESTS"
+    print("REFUSING TO RUN DUE TO FAILED TESTS")
     sys.exit(1)
   main( )
 #####

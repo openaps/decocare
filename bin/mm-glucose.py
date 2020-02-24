@@ -37,13 +37,13 @@ class DownloadHistory (cli.CommandApp):
     def download_history (self, args, pageRange):
         records = [ ]
         for i in range(1 + pageRange['page'] - pageRange['isig'], pageRange['page']):
-            print "Next page ", i
+            print("Next page ", i)
             try:
                 pageRaw = self.download_page(i).data
                 pageResult = cgm.PagedData.Data(pageRaw)
                 records.extend(pageResult.decode())
             except:
-                print "Unexpected error when downloading cgm-page ", i, " from pump:", sys.exc_info()[0]
+                print("Unexpected error when downloading cgm-page ", i, " from pump:", sys.exc_info()[0])
 
         recordsJson = json.dumps(records);
         args.parsed_data.write(recordsJson)

@@ -902,7 +902,7 @@ if __name__ == '__main__':
   port = None
   port = sys.argv[1:] and sys.argv[1] or False
   if not port:
-    print "usage:\n%s /dev/ttyUSB0" % sys.argv[0]
+    print("usage:\n%s /dev/ttyUSB0" % sys.argv[0])
     sys.exit(1)
   import link
   from pprint import pformat

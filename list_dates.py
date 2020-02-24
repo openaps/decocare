@@ -67,7 +67,7 @@ def eat_nulls(fd):
     else:
       fd.seek(fd.tell( ) - 1)
       break
-  print "found %s nulls" % len(nulls)
+  print("found %s nulls" % len(nulls))
   return nulls
 
 def find_dates(stream):
@@ -129,7 +129,7 @@ def main( ):
   wrapper = textwrap.TextWrapper(**tw_opts)
   for stream in opts.infile:
     records = find_dates(stream)
-    print "%s: %s records" % (stream.name, len(records))
+    print("%s: %s records" % (stream.name, len(records)))
     i = 0
     for rec in records:
       date, datum, tail, extra = rec
@@ -139,19 +139,19 @@ def main( ):
       if date is not None:
         date_str = date.isoformat( )
 
-      print "#### RECORD %s: %s %#04x %s" % (i, date_str, opcode, stats)
-      print "    hex (%s)" % len(datum)
-      print lib.hexdump(datum, indent=4)
-      print "    decimal"
-      print int_dump(datum, indent=11)
-      print "    datetime\n%s" % (lib.hexdump(tail, indent=4))
-      print "    extra(%s)" % len(extra),
+      print("#### RECORD %s: %s %#04x %s" % (i, date_str, opcode, stats))
+      print("    hex (%s)" % len(datum))
+      print(lib.hexdump(datum, indent=4))
+      print("    decimal")
+      print(int_dump(datum, indent=11))
+      print("    datetime\n%s" % (lib.hexdump(tail, indent=4)))
+      print("    extra(%s)" % len(extra), end=' ')
       if len(extra) > 0:
-        print "\n%s" % (lib.hexdump(extra, indent=4))
-        print int_dump(extra, indent=11)
+        print("\n%s" % (lib.hexdump(extra, indent=4)))
+        print(int_dump(extra, indent=11))
       else:
-        print "%s" % (None)
-      print ""
+        print("%s" % (None))
+      print("")
       i += 1
     stream.close( )
 
@@ -159,7 +159,7 @@ if __name__ == '__main__':
   import doctest
   failures, tests = doctest.testmod( )
   if failures > 0:
-    print "REFUSING TO RUN DUE TO FAILED TESTS"
+    print("REFUSING TO RUN DUE TO FAILED TESTS")
     sys.exit(1)
   main( )
 #####

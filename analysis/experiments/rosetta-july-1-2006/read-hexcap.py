@@ -23,7 +23,7 @@ def get_argparse( ):
 
 def do_input(stream):
   #pprint(stream)
-  print stream.name
+  print(stream.name)
   text = stream.read( )
   #scapy.all.import_hexcap( )
 

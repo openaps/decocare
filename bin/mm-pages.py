@@ -67,9 +67,9 @@ class PumpPager (cli.CommandApp):
     return pages.getData( )
     
   def main (self, args):
-    print args
-    print args.variant
-    print args.range[0]
+    print(args)
+    print(args.variant)
+    print(args.range[0])
     if args.query:
       self.query_pages( )
     pages = args.range[0]
@@ -79,9 +79,9 @@ class PumpPager (cli.CommandApp):
       history = self.download_page(n)
       page = HistoryPage(history.data)
       records.extend(page.decode( ))
-    print "```json"
-    print json.dumps(records, indent=2)
-    print "```"
+    print("```json")
+    print(json.dumps(records, indent=2))
+    print("```")
 
 
 if __name__ == '__main__':

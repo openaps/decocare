@@ -37,7 +37,7 @@ class BolusApp (cli.CommandApp):
 
     return parser
   def main (self, args):
-    print args
+    print(args)
     self.bolus(args);
 
   def bolus (self, args):

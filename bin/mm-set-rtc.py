@@ -59,10 +59,10 @@ class SetRTCApp (cli.CommandApp):
               , model=self.pump.model.model
               , _type='RTC')
 
-    print "```json"
+    print("```json")
     self.args.rtc_archive.write(json.dumps(results, indent=2))
-    print ''
-    print "```"
+    print('')
+    print("```")
     return results
 
   def set_clock (self, args):
@@ -73,8 +73,8 @@ class SetRTCApp (cli.CommandApp):
     return new_clock
   def main (self, args):
     if args.dryrun:
-      print args.set
-      print lib.hexdump(bytearray(commands.SetRTC.fmt_datetime(args.set)))
+      print(args.set)
+      print(lib.hexdump(bytearray(commands.SetRTC.fmt_datetime(args.set))))
       return
     clock = self.report_clock(args)
     if args.command == "query":

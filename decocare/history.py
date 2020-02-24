@@ -686,7 +686,7 @@ def parse_midnight (data):
       date = datetime(*mid) + oneday
       return date
     except ValueError, e:
-      print "ERROR", e, lib.hexdump(data)
+      print("ERROR", e, lib.hexdump(data))
       pass
     return mid
 

@@ -18,5 +18,5 @@ def scan (prefix='/dev/serial/by-id/*-', template=ID.template):
 
 if __name__ == '__main__':
   candidate = scan( )
-  print candidate
+  print(candidate)
 

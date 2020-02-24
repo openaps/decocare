@@ -458,7 +458,7 @@ if __name__ == '__main__':
   try:
     port = sys.argv[1]
   except IndexError, e:
-    print "usage:\n%s /dev/ttyUSB0" % sys.argv[0]
+    print("usage:\n%s /dev/ttyUSB0" % sys.argv[0])
     sys.exit(1)
 
   link = Link(port)

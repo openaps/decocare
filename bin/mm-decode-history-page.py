@@ -64,7 +64,7 @@ def eat_nulls(fd):
     else:
       fd.seek(fd.tell( ) - 1)
       break
-  print "found %s nulls" % len(nulls)
+  print("found %s nulls" % len(nulls))
   return nulls
 
 def find_records(stream, opts):
@@ -77,17 +77,17 @@ def find_records(stream, opts):
   for B in iter(lambda: bytearray(stream.read(2)), bytearray("")):
 
     if B == bytearray( [ 0x00, 0x00 ] ):
-      print ("#### STOPPING DOUBLE NULLS @ %s," % stream.tell( )),
+      print(("#### STOPPING DOUBLE NULLS @ %s," % stream.tell( )), end=' ')
       nulls = eat_nulls(stream)
-      print "reading more to debug %#04x" % B[0]
-      print lib.hexdump(B, indent=4)
-      print lib.int_dump(B, indent=11)
+      print("reading more to debug %#04x" % B[0])
+      print(lib.hexdump(B, indent=4))
+      print(lib.int_dump(B, indent=11))
 
       extra = bytearray(stream.read(32))
-      print "##### DEBUG HEX"
-      print lib.hexdump(extra, indent=4)
-      print "##### DEBUG DECIMAL"
-      print lib.int_dump(extra, indent=11)
+      print("##### DEBUG HEX")
+      print(lib.hexdump(extra, indent=4))
+      print("##### DEBUG DECIMAL")
+      print(lib.int_dump(extra, indent=11))
       # print "XXX:???:XXX", history.parse_date(bolus).isoformat( )
       break
     record = parse_record( stream, B, model=opts.model, larger=opts.larger )
@@ -110,7 +110,7 @@ def main( ):
   wrapper = textwrap.TextWrapper(**tw_opts)
   records = [ ]
   for stream in opts.infile:
-    print "## START %s" % (stream.name)
+    print("## START %s" % (stream.name))
     if opts.collate and opts.data == 'pump':
       page = HistoryPage(bytearray(stream.read( )), opts.model)
       records.extend(page.decode(larger=opts.larger ))
@@ -124,12 +124,12 @@ def main( ):
 
       prefix = '#### RECORD {} {}'.format(i, str(record))
       if getattr(record, 'pformat', None):
-        print record.pformat(prefix)
+        print(record.pformat(prefix))
       else:
         # json.dumps(record, indent=2)
-        print prefix
+        print(prefix)
       i += 1
-    print "`end %s: %s records`" % (stream.name, len(records))
+    print("`end %s: %s records`" % (stream.name, len(records)))
     stream.close( )
   if opts.collate:
     opts.out.write(json.dumps(records, indent=2))
@@ -138,7 +138,7 @@ if __name__ == '__main__':
   import doctest
   failures, tests = doctest.testmod( )
   if failures > 0:
-    print "REFUSING TO RUN DUE TO FAILED TESTS"
+    print("REFUSING TO RUN DUE TO FAILED TESTS")
     sys.exit(1)
   main( )
 #####

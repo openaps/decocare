@@ -189,7 +189,7 @@ class PagedData (object):
         if date:
           record.update(date=date.isoformat())
         else:
-          print "@@@", self.stream.tell( )
+          print("@@@", self.stream.tell( ))
           pprint(dict(raw=hexlify(raw_packet)))
           pprint(dict(date=hexlify(date or bytearray( ))))
           pprint(dict(body=hexlify(body)))

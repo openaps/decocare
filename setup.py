@@ -14,6 +14,7 @@ setup(name='decocare',
     version='0.0.31', # http://semver.org/
     description='Audit, inspect, and command MM insulin pumps.',
     long_description=readme(),
+    long_description_content_type="text/markdown",
     author="Ben West",
     author_email="bewest+insulaudit@gmail.com",
     url="https://github.com/openaps/decocare",

@@ -125,7 +125,7 @@ class Decoder(Handler):
           self.lines.append(p)
 
     for p in self.lines:
-      print "###", "XXX unusual line!", p.dir
+      print("###", "XXX unusual line!", p.dir)
       p.show( )
 
 
@@ -146,7 +146,7 @@ class Console:
       
     #logger.info('opts: %s' % (pformat(args)))
     cmdline = [ cmd, cmdverbose ] + self.opts.input
-    print ' '.join(cmdline)
+    print(' '.join(cmdline))
 
   def main(self):
     logger.info('opening %s' % (self.opts.input))

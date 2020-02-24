@@ -133,7 +133,7 @@ from times import *
 from datetime import *
 op_code = 11 # 11=0b
 #op_code = 10 # 10=0a
-print "\n\n"
+print("\n\n")
 records = data.split('{0:02x}'.format(op_code))
 parsed_records = []
 for package in records:
@@ -146,10 +146,10 @@ for record in parsed_records:
   if record.is_valid_record:
     valid_records.append(record)
 
-print "should match about 284 parsed("+ str(len(parsed_records))+") valid("+\
-  str(len(valid_records))+")"
+print("should match about 284 parsed("+ str(len(parsed_records))+") valid("+\
+  str(len(valid_records))+")")
 
 valid_records.sort(key=lambda r:r.mydatetime)
 
 for record in valid_records:
-  print record.str()
+  print(record.str())

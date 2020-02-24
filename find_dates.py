@@ -112,14 +112,14 @@ class TimeExperiment (object):
         last = stream.tell( )
         # last = len(everything)
         start = last - SIZE
-        print "### FOUND ", date.isoformat( ), ' @ ', start, "%#08x" % start
-        print "#### previous"
-        print lib.hexdump(bolus, indent=4)
-        print "#### datetime"
-        print lib.hexdump(candidate, indent=4)
-        print ""
+        print("### FOUND ", date.isoformat( ), ' @ ', start, "%#08x" % start)
+        print("#### previous")
+        print(lib.hexdump(bolus, indent=4))
+        print("#### datetime")
+        print(lib.hexdump(candidate, indent=4))
+        print("")
         found = dict(timestamp=date, blob=bolus)
-        print dump_four(candidate, indent=4)
+        print(dump_four(candidate, indent=4))
         # print lib.hexdump(bolus)
         records.append(found)
         bolus = bytearray( )

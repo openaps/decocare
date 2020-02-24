@@ -36,7 +36,7 @@ class SendMsgApp(CommandApp):
     if args.command == "tweak":
       Other = getattr(commands, args.other)
       kwds = commands.TweakAnotherCommand.get_kwds(Other, args)
-      print Other, kwds
+      print(Other, kwds)
       resp = self.exec_request(self.pump, Other, args=kwds,
                    dryrun=args.dryrun, save=args.save, prefix=args.prefix_path)
     if args.postfix:
@@ -45,7 +45,7 @@ class SendMsgApp(CommandApp):
   def execute_list (self, messages, save=False):
     for name in messages:
       msg = getattr(commands, name)
-      print "###### sending `%s`" % getattr(msg, 'name', msg)
+      print("###### sending `%s`" % getattr(msg, 'name', msg))
       resp = self.exec_request(self.pump, msg, dryrun=self.args.dryrun,
                           render_hexdump=self.args.verbose>0,
                           save=save, prefix=self.args.prefix_path)

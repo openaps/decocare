@@ -162,22 +162,22 @@ class Year(MaskedMoment):
     return str(bytearray(parse_years(raw)))
 
   def i2m(self, pkt, x):
-    print "XXX: i2m %r" % repr(x)
+    print("XXX: i2m %r" % repr(x))
     if x is None or x == "":
       return ""
     return str(bytearray( [ x - 2000 ] ))
 
   def addfield(self, pkt, s, val):
-      print "XXXX: addfield: pkt: %r" % pkt
-      print "XXXX: addfield: s: %r" % s
-      print "XXXX: addfield: val: %r" % val
+      print("XXXX: addfield: pkt: %r" % pkt)
+      print("XXXX: addfield: s: %r" % s)
+      print("XXXX: addfield: val: %r" % val)
       return s+self.i2m(pkt, val)
 
   def getfield(self, pkt, s):
     y = s[0]
-    print "XXX: getfield: s: %r len(%s)" % (s, len(s))
+    print("XXX: getfield: s: %r len(%s)" % (s, len(s)))
     val = bytearray( s[0] )
-    print "XXX: getfield: %s" % repr(val)
+    print("XXX: getfield: %s" % repr(val))
     return s[1:], self.m2i(pkt, val)
 
 class TestYearPacket(Packet):
@@ -316,13 +316,13 @@ class MMAction(Packet):
   ]
 
 def main( ):
-  print "I do nothing."
+  print("I do nothing.")
 
 if __name__ == '__main__':
   import doctest
   failures, tests = doctest.testmod( )
   if failures > 0:
-    print "REFUSING TO RUN DUE TO FAILED TESTS"
+    print("REFUSING TO RUN DUE TO FAILED TESTS")
     sys.exit(1)
   main( )
 

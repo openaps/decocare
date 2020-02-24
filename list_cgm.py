@@ -30,7 +30,7 @@ import json
 class ListCGM (object):
 
   def print_records (self, records, opts={}):
-    print json.dumps(records, indent=2)
+    print(json.dumps(records, indent=2))
   def main(self):
     parser = get_opt_parser( )
     opts = parser.parse_args( )

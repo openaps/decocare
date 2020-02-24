@@ -637,8 +637,8 @@ class TestSaraBolus:
     data = klass.cal_bg_bytes
     rec = CalBGForPH(data[:2])
     d = rec.parse(data)
-    print str(rec)
-    print json.dumps(d, indent=2)
+    print(str(rec))
+    print(json.dumps(d, indent=2))
 
 def dictlines(d):
   items = d.items( )
@@ -679,16 +679,16 @@ def unsolved_bolus_wizard( ):
   }
   found = decode_wizard(TestSaraBolus.bw_1_bytes)
   if found != bw_ok_1:
-    print "FOUND:"
-    print json.dumps(found, indent=2)
-    print "EXPECTED:"
-    print json.dumps(bw_ok_1, indent=2)
+    print("FOUND:")
+    print(json.dumps(found, indent=2))
+    print("EXPECTED:")
+    print(json.dumps(bw_ok_1, indent=2))
   found = decode_wizard(TestSaraBolus.bw_2_bytes)
   if found != bw_ok_2:
-    print "FOUND:"
-    print json.dumps(found, indent=2)
-    print "EXPECTED:"
-    print json.dumps(bw_ok_2, indent=2)
+    print("FOUND:")
+    print(json.dumps(found, indent=2))
+    print("EXPECTED:")
+    print(json.dumps(bw_ok_2, indent=2))
 
 def decode_wizard(data):
   """
@@ -726,7 +726,7 @@ def decode_wizard(data):
   bg_target_high = int(body[3])
   sensitivity = int(body[4])
 
-  print "BOLUS WIZARD", datetime.isoformat( )
+  print("BOLUS WIZARD", datetime.isoformat( ))
   wizard = { 'bg_input': bg, 'carb_input': carb_input,
              'carb_ratio': carb_ratio,
              'insulin_sensitivity': sensitivity,

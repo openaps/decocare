@@ -32,7 +32,7 @@ class ParserTest:
       print_str = "At "+str(packet['start_point'])+":  "
       print_str += "bin[" + str(bin_to_read_start) + ":" + str(bin_to_read_end) + "] "
       print_str += "= " + str(dec) + "  ["+packet['hex_str']+"] ["+packet['bin_str']+"]"
-      print print_str
+      print(print_str)
 
 
 

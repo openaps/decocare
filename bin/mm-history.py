@@ -38,9 +38,9 @@ class DownloadHistory (cli.CommandApp):
 
         records = decoder.decode( )
 
-        print "Found " , len(records), " records."
+        print("Found " , len(records), " records.")
         for record in records:
-            print "  * found record", record.get('timestamp'), record['_type']
+            print("  * found record", record.get('timestamp'), record['_type'])
             if record.get('timestamp'):
                 dt = parse(record['timestamp'])
                 dt = dt.replace(tzinfo=self.timezone)
@@ -50,13 +50,13 @@ class DownloadHistory (cli.CommandApp):
     def download_history (self, args, nrPages):
         records = [ ]
         for i in range(1, nrPages):
-            print "Next page ", i
+            print("Next page ", i)
             try:
                 pageRaw = self.download_page(i)
                 pageResult = HistoryPage(pageRaw.data, self.pump.model)
                 records.extend(pageResult.decode())
             except:
-                print "Unexpected error when downloading cgm-page ", i, " from pump:", sys.exc_info()[0]
+                print("Unexpected error when downloading cgm-page ", i, " from pump:", sys.exc_info()[0])
 
         recordsJson = json.dumps(records);
         args.parsed_data.write(recordsJson)
