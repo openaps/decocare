@@ -18,7 +18,7 @@ from .bolus import *
     + bytearray([ ])
     + bytearray([ ])),
 """
-
+# fmt:off
 _midnights = {
   'page_4': [
     # record 14 (2013, 0, 7, 6, 5, 0)
@@ -187,22 +187,23 @@ _midnights = {
                   0xe8, 0x00, 0x00, 0x00, ]))
   ],
 }
-
+# fmt:on
 _bewest_dates = {
-  # from https://github.com/bewest/decoding-carelink/blob/rewriting/analysis/bewest-pump/ReadHistoryData-page-19.data.list_opcodes.markdown
-  'page-19': {
-    0:  [ 0xaa, 0xf7, 0x40, 0x0c, 0x0c, ],
-    1:  [ 0x40, 0x0c, 0x0c, 0x0a, 0x0c, ],
-    2:  [ 0x0c, 0x8b, 0xc3, 0x28, 0x0c, ],
-    3:  [ 0x8b, 0xc3, 0x28, 0x0c, 0x8c, ],
-    4:  [ 0x28, 0x0c, 0x8c, 0x5b, 0x0c, ],
-    5:  [ 0x8d, 0xc3, 0x08, 0x0c, 0x0c, ],
-    6:  [ 0xaa, 0xf7, 0x00, 0x0c, 0x0c, ],
-  }
+    # from https://github.com/bewest/decoding-carelink/blob/rewriting/analysis/bewest-pump/ReadHistoryData-page-19.data.list_opcodes.markdown
+    "page-19": {
+        0: [0xAA, 0xF7, 0x40, 0x0C, 0x0C,],
+        1: [0x40, 0x0C, 0x0C, 0x0A, 0x0C,],
+        2: [0x0C, 0x8B, 0xC3, 0x28, 0x0C,],
+        3: [0x8B, 0xC3, 0x28, 0x0C, 0x8C,],
+        4: [0x28, 0x0C, 0x8C, 0x5B, 0x0C,],
+        5: [0x8D, 0xC3, 0x08, 0x0C, 0x0C,],
+        6: [0xAA, 0xF7, 0x00, 0x0C, 0x0C,],
+    }
 }
 
-def _test_decode_bolus( ):
-  """
+
+def _test_decode_bolus():
+    """
   ## correct
   >>> parse_date( bytearray( _bewest_dates['page-19'][6] ) ).isoformat( )
   '2012-11-12T00:55:42'
@@ -232,8 +233,8 @@ def _test_decode_bolus( ):
   '2012-11-12T08:03:13'
 
 
-  """
-  """
+    """
+    """
 
   0x5b 0x7e # bolus wizard,
   0xaa 0xf7 0x00 0x0c 0x0c # page-19[0]
@@ -254,7 +255,8 @@ def _test_decode_bolus( ):
 
   0x8d 0xc3 0x08 0x0c 0x0c # page-19[5]
   0x00 0x51 0x0d 0x2d 0x6a 0x1f 0x00 0x00 0x00 0x00 0x00
-  """
+    """
+
 
 ### csv deconstructed
 """
@@ -303,24 +305,21 @@ def _test_decode_bolus( ):
 """
 
 
-
 _bad_days = [
-    bytearray([ 0xa9, 0xf5, 0x15, 0x14, 0x0c, ]),
-    bytearray([ 0xa6, 0xc7, 0x36, 0x14, 0x8c, ]),
-    bytearray([ 0xa9, 0xf5, 0x15, 0x14, 0x0c, ]),
-    bytearray([ 0xa6, 0xc7, 0x36, 0x14, 0x8c, ]),
-
-    bytearray([ 0xa2, 0xe9, 0x10, 0x19, 0x0c, ]),
-    bytearray([ 0xa0, 0xf6, 0x0d, 0x19, 0x0c, ]),
-    bytearray([ 0xa5, 0xd9, 0x34, 0x1d, 0x0c, ]),
-
-    bytearray([ 0xc2, 0x3b, 0x0e, 0x14, 0x0c, ]),
-    bytearray([ 0xd9, 0x1c, 0x0f, 0x14, 0x0c, ]),
-  ]
+    bytearray([0xA9, 0xF5, 0x15, 0x14, 0x0C,]),
+    bytearray([0xA6, 0xC7, 0x36, 0x14, 0x8C,]),
+    bytearray([0xA9, 0xF5, 0x15, 0x14, 0x0C,]),
+    bytearray([0xA6, 0xC7, 0x36, 0x14, 0x8C,]),
+    bytearray([0xA2, 0xE9, 0x10, 0x19, 0x0C,]),
+    bytearray([0xA0, 0xF6, 0x0D, 0x19, 0x0C,]),
+    bytearray([0xA5, 0xD9, 0x34, 0x1D, 0x0C,]),
+    bytearray([0xC2, 0x3B, 0x0E, 0x14, 0x0C,]),
+    bytearray([0xD9, 0x1C, 0x0F, 0x14, 0x0C,]),
+]
 
 # days need 5 bits
 def big_days(x=0):
-  """
+    """
     # page 17, RECORD 11
     >>> parse_date( big_days(0) ).isoformat( )
     '2012-11-20T21:53:41'
@@ -353,10 +352,11 @@ def big_days(x=0):
     >>> parse_date( big_days(8) ).isoformat( )
     '2012-12-20T15:28:25'
 
-  """
-  return _bad_days[x]
+    """
+    return _bad_days[x]
 
 
+# fmt:off
 _wizards = [
   # 2382,1/19/13,21:50:15,1/19/13
   # 21:50:15,5.9,125,106,13,45,87,75,-0.7,6.6,0.0,BolusWizardBolusEstimate,"BG_INPUT=75,
@@ -385,11 +385,15 @@ _wizards = [
               0x00, 0x0a, 0x00, 0x43, 0x7d, ]),
   # bytearray([ ]),
 ]
+# fmt:on
 
 from decocare import models
-model522 = models.PumpModel('522', None)
-def _test_bolus_wizards( ):
-  """
+
+model522 = models.PumpModel("522", None)
+
+
+def _test_bolus_wizards():
+    """
   >>> rec = BolusWizard( _wizards[0][:2], model522 )
   >>> print pformat(rec.parse( _wizards[0] ))
   {'_byte[5]': 249,
@@ -432,35 +436,31 @@ def _test_bolus_wizards( ):
   >>> print str(rec)
   BolusWizard 2013-01-14T22:36:00 head[2], body[13] op[0x5b]
 
-  """
-  pass
+    """
+    pass
 
 
 _bolus = [
-
-  # 2381,1/19/13,21:50:15,1/19/13
-  # 21:50:15,Dual/Normal,2.6,2.6,BolusNormal,"AMOUNT=2.6,
-  # CONCENTRATION=null, PROGRAMMED_AMOUNT=2.6, ACTION_REQUESTOR=pump,
-  # ENABLE=true, IS_DUAL_COMPONENT=true,
-  # UNABSORBED_INSULIN_TOTAL=null"
-  #  9942918054,51974238,108,Paradigm 522
-  bytearray([ 0x01, 0x1a, 0x1a, 0x00,
-              0x0f, 0x72, 0x95, 0x13, 0x0d, ]),
-
-  # 2305,1/15/13,15:57:16,1/15/13
-  # 15:57:16,Normal,1.7,1.7,BolusNormal,"AMOUNT=1.7,
-  # CONCENTRATION=null, PROGRAMMED_AMOUNT=1.7, ACTION_REQUESTOR=pump,
-  # ENABLE=true, IS_DUAL_COMPONENT=false,
-  # UNABSORBED_INSULIN_TOTAL=null"
-  #  9942918131,51974238,185,Paradigm 522
-  bytearray([ 0x01, 0x11, 0x11, 0x00,
-              0x10, 0x79, 0x4f, 0x0f, 0x0d, ]),
-  # bytearray([ ]),
-
+    # 2381,1/19/13,21:50:15,1/19/13
+    # 21:50:15,Dual/Normal,2.6,2.6,BolusNormal,"AMOUNT=2.6,
+    # CONCENTRATION=null, PROGRAMMED_AMOUNT=2.6, ACTION_REQUESTOR=pump,
+    # ENABLE=true, IS_DUAL_COMPONENT=true,
+    # UNABSORBED_INSULIN_TOTAL=null"
+    #  9942918054,51974238,108,Paradigm 522
+    bytearray([0x01, 0x1A, 0x1A, 0x00, 0x0F, 0x72, 0x95, 0x13, 0x0D,]),
+    # 2305,1/15/13,15:57:16,1/15/13
+    # 15:57:16,Normal,1.7,1.7,BolusNormal,"AMOUNT=1.7,
+    # CONCENTRATION=null, PROGRAMMED_AMOUNT=1.7, ACTION_REQUESTOR=pump,
+    # ENABLE=true, IS_DUAL_COMPONENT=false,
+    # UNABSORBED_INSULIN_TOTAL=null"
+    #  9942918131,51974238,185,Paradigm 522
+    bytearray([0x01, 0x11, 0x11, 0x00, 0x10, 0x79, 0x4F, 0x0F, 0x0D,]),
+    # bytearray([ ]),
 ]
 
-def _test_bolus( ):
-  """
+
+def _test_bolus():
+    """
   >>> rec = Bolus( _bolus[0][:2] )
   >>> print pformat(rec.parse( _bolus[0] ))
   {'amount': 2.6, 'duration': 0, 'programmed': 2.6, 'type': 'normal'}
@@ -474,11 +474,12 @@ def _test_bolus( ):
   >>> print str(rec)
   Bolus 2013-01-15T15:57:16 head[4], body[0] op[0x01]
 
-  """
+    """
+
 
 class TestSaraBolus:
-  # model 722
-  hexdump = """
+    # model 722
+    hexdump = """
   5b 67
     a1 51 0e 04 0d
     0d 50 00 78
@@ -495,8 +496,8 @@ class TestSaraBolus:
   5c 0b 28 40 c0 44 b8 c0 3c 8a d0
   01 00 3c 00 3c 00 1c 00
     b7 54 4f 04 0d
-  """
-  csv_breakdown = """
+    """
+    csv_breakdown = """
   9/4/13 14:17:33,,,,,,,Normal,1.0,1.0,,,,,,,,,,,,,,,,,,,,,BolusNormal
     "AMOUNT=1
       CONCENTRATION=null
@@ -591,107 +592,123 @@ class TestSaraBolus:
       INSULIN_ACTION_CURVE=180"
     11345487205,52554138,84,Paradigm Revel - 723
   9/4/13 16:11:57,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,CurrentSensorMissedDataTime,TIME=1800000,11345487185,52554138,64,Paradigm Revel - 723
-  """
-  bolus_1_ok = {
-      'bg': 103,
-      # 'BG_UNITS': 'mg dl'
-      'carb_input': 13,
-      #'CARB_UNITS': 'grams',
-      'carb_ratio': 12,
-      'sensitivity': 60,
-      'bg_target_low': 100,
-      'bg_target_high': 120,
-      'bolus_estimate': 1,
-      'correction_estimate': 0,
-      'food_estimate': 1,
-      'unabsorbed_insulin_total': 0.5,
-      'unabsorbed_insulin_count': 2,
-      #'action_requestor': 'pump'
-  }
-  bw_1_bytes = bytearray(''.join("""
+    """
+    bolus_1_ok = {
+        "bg": 103,
+        # 'BG_UNITS': 'mg dl'
+        "carb_input": 13,
+        #'CARB_UNITS': 'grams',
+        "carb_ratio": 12,
+        "sensitivity": 60,
+        "bg_target_low": 100,
+        "bg_target_high": 120,
+        "bolus_estimate": 1,
+        "correction_estimate": 0,
+        "food_estimate": 1,
+        "unabsorbed_insulin_total": 0.5,
+        "unabsorbed_insulin_count": 2,
+        #'action_requestor': 'pump'
+    }
+    bw_1_bytes = bytearray(
+        "".join(
+            """
   5b 67
     a1 51 0e 04 0d
     0d 50 00 78
     3c 64 00 00 28 00 00 14 00 28 78
-  """.strip( ).split( )).decode('hex'))
-  bw_2_bytes = bytearray(''.join("""
+    """.strip().split()
+        ).decode("hex")
+    )
+    bw_2_bytes = bytearray(
+        "".join(
+            """
   5b fc
     b7 54 0f 04 0d
     00 50 00 78
     3c 64 58 00 00 00 00 1c 00 3c 78
-  """.strip( ).split( )).decode('hex'))
+    """.strip().split()
+        ).decode("hex")
+    )
 
-  cal_bg_bytes = bytearray(''.join("""
+    cal_bg_bytes = bytearray(
+        "".join(
+            """
   0a fc
     b4 54 2f 04 0d
-  """.strip( ).split( )).decode('hex'))
-  @classmethod
-  def test_cal_bg(klass):
-    """
+    """.strip().split()
+        ).decode("hex")
+    )
+
+    @classmethod
+    def test_cal_bg(klass):
+        """
     >>> TestSaraBolus.test_cal_bg( )
     CalBGForPH 2013-09-04T15:20:52 head[2], body[0] op[0x0a]
     {
       "amount": 252
     }
     """
-    # 9/4/13 15:20:52,,,,,,,,,,,,,,,,,,,,,,,,,,252,,,,CalBGForPH,"AMOUNT=252, ACTION_REQUESTOR=pump"
-    data = klass.cal_bg_bytes
-    rec = CalBGForPH(data[:2])
-    d = rec.parse(data)
-    print(str(rec))
-    print(json.dumps(d, indent=2))
+        # 9/4/13 15:20:52,,,,,,,,,,,,,,,,,,,,,,,,,,252,,,,CalBGForPH,"AMOUNT=252, ACTION_REQUESTOR=pump"
+        data = klass.cal_bg_bytes
+        rec = CalBGForPH(data[:2])
+        d = rec.parse(data)
+        print(str(rec))
+        print(json.dumps(d, indent=2))
+
 
 def dictlines(d):
-  items = sorted(list(d.items( )))
-  d = [ "{}: {}\n".format(k, v) for (k, v) in items ]
-  return d
+    items = sorted(list(d.items()))
+    d = ["{}: {}\n".format(k, v) for (k, v) in items]
+    return d
 
-def unsolved_bolus_wizard( ):
-  """
+
+def unsolved_bolus_wizard():
+    """
   # >>> unsolved_bolus_wizard( )
-  """
-  # these byte sequences line up with these records:
-  bw_ok_1 = {
-      'bg_input': 103,
-      'carb_input': 13,
-      'carb_ratio': 12,
-      'insulin_sensitivity': 60,
-      'bg_target_low': 100,
-      'bg_target_high': 120,
-      'bolus_estimate': 1,
-      'correction_estimate': 0,
-      'food_estimate': 1,
-      'unabsorbed_insulin_total': 0.5,
-      'unabsorbed_insulin_count': 2,
-  }
-  bw_ok_2 = {
-      'bg_input': 252,
-      'carb_input': 0,
-      'carb_ratio': 12,
-      'insulin_sensitivity': 60,
-      'bg_target_low': 100,
-      'bg_target_high': 120,
-      'bolus_estimate': 1.5,
-      'correction_estimate': 2.2,
-      'food_estimate': 0,
-      'unabsorbed_insulin_total': 0.7,
-      'unabsorbed_insulin_count': 3,
-  }
-  found = decode_wizard(TestSaraBolus.bw_1_bytes)
-  if found != bw_ok_1:
-    print("FOUND:")
-    print(json.dumps(found, indent=2))
-    print("EXPECTED:")
-    print(json.dumps(bw_ok_1, indent=2))
-  found = decode_wizard(TestSaraBolus.bw_2_bytes)
-  if found != bw_ok_2:
-    print("FOUND:")
-    print(json.dumps(found, indent=2))
-    print("EXPECTED:")
-    print(json.dumps(bw_ok_2, indent=2))
+    """
+    # these byte sequences line up with these records:
+    bw_ok_1 = {
+        "bg_input": 103,
+        "carb_input": 13,
+        "carb_ratio": 12,
+        "insulin_sensitivity": 60,
+        "bg_target_low": 100,
+        "bg_target_high": 120,
+        "bolus_estimate": 1,
+        "correction_estimate": 0,
+        "food_estimate": 1,
+        "unabsorbed_insulin_total": 0.5,
+        "unabsorbed_insulin_count": 2,
+    }
+    bw_ok_2 = {
+        "bg_input": 252,
+        "carb_input": 0,
+        "carb_ratio": 12,
+        "insulin_sensitivity": 60,
+        "bg_target_low": 100,
+        "bg_target_high": 120,
+        "bolus_estimate": 1.5,
+        "correction_estimate": 2.2,
+        "food_estimate": 0,
+        "unabsorbed_insulin_total": 0.7,
+        "unabsorbed_insulin_count": 3,
+    }
+    found = decode_wizard(TestSaraBolus.bw_1_bytes)
+    if found != bw_ok_1:
+        print("FOUND:")
+        print(json.dumps(found, indent=2))
+        print("EXPECTED:")
+        print(json.dumps(bw_ok_1, indent=2))
+    found = decode_wizard(TestSaraBolus.bw_2_bytes)
+    if found != bw_ok_2:
+        print("FOUND:")
+        print(json.dumps(found, indent=2))
+        print("EXPECTED:")
+        print(json.dumps(bw_ok_2, indent=2))
+
 
 def decode_wizard(data):
-  """
+    """
   BYTE
   01:
   02:
@@ -714,61 +731,67 @@ def decode_wizard(data):
   20:
   21:
   22:
-  """
-  head = data[:2]
-  date = data[2:7]
-  datetime = parse_date(date)
-  body = data[7:]
-  bg = lib.BangInt([ body[1] & 0x0f, head[1] ])
-  carb_input = int(body[0])
-  carb_ratio = int(body[2])
-  bg_target_low = int(body[5])
-  bg_target_high = int(body[3])
-  sensitivity = int(body[4])
+    """
+    head = data[:2]
+    date = data[2:7]
+    datetime = parse_date(date)
+    body = data[7:]
+    bg = lib.BangInt([body[1] & 0x0F, head[1]])
+    carb_input = int(body[0])
+    carb_ratio = int(body[2])
+    bg_target_low = int(body[5])
+    bg_target_high = int(body[3])
+    sensitivity = int(body[4])
 
-  print("BOLUS WIZARD", datetime.isoformat( ))
-  wizard = { 'bg_input': bg, 'carb_input': carb_input,
-             'carb_ratio': carb_ratio,
-             'insulin_sensitivity': sensitivity,
-             'bg_target_low': bg_target_low,
-             'bg_target_high': bg_target_high,
-  }
-  return wizard
-
-class BW722(BolusWizard):
-  def decode(self):
-    self.parse_time( )
-    bg = lib.BangInt([ self.body[1] & 0x0f, self.head[1] ])
-    carb_input = int(self.body[0])
-    carb_ratio = int(self.body[2])
-    bg_target_low = int(self.body[5])
-    bg_target_high = int(self.body[3])
-    sensitivity = int(self.body[12])
-
-    # XXX: Most likely incorrect.
-    correction = ( twos_comp( self.body[7], 8 )
-                 + twos_comp( self.body[5] & 0x0f, 8 ) ) // 10.0
-    wizard = { 'bg': bg, 'carb_input': carb_input,
-               'carb_ratio': carb_ratio,
-               'sensitivity': sensitivity,
-               'bg_target_low': bg_target_low,
-               'bg_target_high': bg_target_high,
-               #'bolus_estimate': int(self.body[6])/10.0,
-               #'food_estimate': int(self.body[13])/10.0,
-               #'unabsorbed_insulin_total': int(self.body[9])/10.0,
-               #'unabsorbed_insulin_count': self.body[11],
-               'correction_estimate': correction,
-               # '??': '??',
-               # 'unabsorbed_insulin_total': int(self.body[9])/10.0,
-               # 'food_estimate': int(self.body[0]),
-             }
+    print("BOLUS WIZARD", datetime.isoformat())
+    wizard = {
+        "bg_input": bg,
+        "carb_input": carb_input,
+        "carb_ratio": carb_ratio,
+        "insulin_sensitivity": sensitivity,
+        "bg_target_low": bg_target_low,
+        "bg_target_high": bg_target_high,
+    }
     return wizard
 
 
+class BW722(BolusWizard):
+    def decode(self):
+        self.parse_time()
+        bg = lib.BangInt([self.body[1] & 0x0F, self.head[1]])
+        carb_input = int(self.body[0])
+        carb_ratio = int(self.body[2])
+        bg_target_low = int(self.body[5])
+        bg_target_high = int(self.body[3])
+        sensitivity = int(self.body[12])
 
-if __name__ == '__main__':
-  import doctest
-  doctest.testmod( )
+        # XXX: Most likely incorrect.
+        correction = (
+            twos_comp(self.body[7], 8) + twos_comp(self.body[5] & 0x0F, 8)
+        ) // 10.0
+        wizard = {
+            "bg": bg,
+            "carb_input": carb_input,
+            "carb_ratio": carb_ratio,
+            "sensitivity": sensitivity,
+            "bg_target_low": bg_target_low,
+            "bg_target_high": bg_target_high,
+            #'bolus_estimate': int(self.body[6])/10.0,
+            #'food_estimate': int(self.body[13])/10.0,
+            #'unabsorbed_insulin_total': int(self.body[9])/10.0,
+            #'unabsorbed_insulin_count': self.body[11],
+            "correction_estimate": correction,
+            # '??': '??',
+            # 'unabsorbed_insulin_total': int(self.body[9])/10.0,
+            # 'food_estimate': int(self.body[0]),
+        }
+        return wizard
+
+
+if __name__ == "__main__":
+    import doctest
+
+    doctest.testmod()
 
 #####
 # EOF

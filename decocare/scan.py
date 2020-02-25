@@ -1,21 +1,24 @@
 import glob
 
+
 class ID:
-  VENDOR  = 0x0a21
-  PRODUCT = 0x8001
-  @classmethod
-  def template (Klass, prefix):
-    postfix = '*'
-    usb_id = "{:04x}_{:04x}".format(ID.VENDOR, ID.PRODUCT)
-    candidate = ''.join([prefix, usb_id, postfix])
-    return candidate
+    VENDOR = 0x0A21
+    PRODUCT = 0x8001
 
-def scan (prefix='/dev/serial/by-id/*-', template=ID.template):
-  candidate = template(prefix)
-  results = glob.glob(candidate)
-  return (results[0:1] or ['']).pop( )
+    @classmethod
+    def template(Klass, prefix):
+        postfix = "*"
+        usb_id = "{:04x}_{:04x}".format(ID.VENDOR, ID.PRODUCT)
+        candidate = "".join([prefix, usb_id, postfix])
+        return candidate
 
-if __name__ == '__main__':
-  candidate = scan( )
-  print(candidate)
 
+def scan(prefix="/dev/serial/by-id/*-", template=ID.template):
+    candidate = template(prefix)
+    results = glob.glob(candidate)
+    return (results[0:1] or [""]).pop()
+
+
+if __name__ == "__main__":
+    candidate = scan()
+    print(candidate)
