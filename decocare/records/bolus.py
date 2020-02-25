@@ -1,9 +1,11 @@
-from .base import KnownRecord, VariableHead
+from pprint import pformat
+
 from decocare import lib
+
+from .base import KnownRecord, VariableHead
 
 # from .. import lib
 from .times import extra_year_bits
-from pprint import pformat
 
 
 class Bolus(KnownRecord):

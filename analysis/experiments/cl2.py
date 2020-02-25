@@ -1,17 +1,16 @@
 #!/usr/bin/python
-import user
+import logging
 
 # import struct
 import sys
-import serial
 import time
-import logging
-from pprint import pprint, pformat
+from pprint import pformat, pprint
 
-from decocare import link
+import serial
+import user
+from decocare import lib, link
 from decocare.commands import *
-from decocare.stick import ProductInfo, InterfaceStats
-from decocare import lib
+from decocare.stick import InterfaceStats, ProductInfo
 
 logging.basicConfig(stream=sys.stdout)
 log = logging.getLogger("auditor")

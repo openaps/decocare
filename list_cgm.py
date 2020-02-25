@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 # PYTHON_ARGCOMPLETE_OK
-
-import sys
 import argparse
+import sys
 
 # TODO: should probably be able to remove this stuff
-from pprint import pprint, pformat
+from pprint import pformat, pprint
+
 from decocare import cgm
+
 
 # this stuff will stay
 def get_opt_parser():

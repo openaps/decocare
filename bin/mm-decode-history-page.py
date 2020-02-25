@@ -1,25 +1,24 @@
 #!/usr/bin/env python
 # PYTHON_ARGCOMPLETE_OK
-
-import sys
-import argparse, argcomplete
-import textwrap
-
-from pprint import pprint, pformat
-from binascii import hexlify
+import argparse
+import datetime
 
 # from datetime import datetime
 # from scapy.all import *
 import json
-import datetime
+import sys
+import textwrap
+from binascii import hexlify
+from pprint import pformat, pprint
+
+import argcomplete
 
 json.JSONEncoder.default = lambda self, obj: (
     obj.isoformat() if isinstance(obj, datetime.datetime) else None
 )
 
-from decocare import lib, history, models
-
-from decocare.history import parse_record, HistoryPage
+from decocare import history, lib, models
+from decocare.history import HistoryPage, parse_record
 
 
 def get_model(spec):

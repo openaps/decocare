@@ -8,10 +8,8 @@
 # argv[2] = output type (bin=pure binary, hex=hexidecimal)
 # argv[3] = with new line characters (true or false)
 ##############################################################################
-
-import sys
 import getopt
-
+import sys
 
 lineSize = 10
 # fileInName = sys.argv[1]

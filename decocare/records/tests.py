@@ -1,15 +1,12 @@
 #!/usr/bin/python
-
-
+import difflib
+import json
 from binascii import hexlify
 from datetime import datetime
 from pprint import pformat
 
-import json
-import difflib
-
-from .times import *
 from .bolus import *
+from .times import *
 
 # I don't know where else to put this.
 """

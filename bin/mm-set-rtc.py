@@ -1,14 +1,13 @@
 #!/usr/bin/env python
 # PYTHON_ARGCOMPLETE_OK
-
-from decocare import commands
-from decocare.helpers import cli
 import argparse
-from decocare import lib
-from dateutil.tz import gettz
-from datetime import datetime
-import time
 import json
+import time
+from datetime import datetime
+
+from dateutil.tz import gettz
+from decocare import commands, lib
+from decocare.helpers import cli
 
 
 class SetRTCApp(cli.CommandApp):

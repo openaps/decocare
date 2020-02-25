@@ -1,15 +1,12 @@
 #!/usr/bin/env python
 # PYTHON_ARGCOMPLETE_OK
-
-import sys
 import argparse
+import sys
 import textwrap
-
-from pprint import pprint, pformat
 from binascii import hexlify
 from datetime import datetime
+from pprint import pformat, pprint
 
-from datetime import datetime
 from decocare import lib
 from decocare.records import times
 

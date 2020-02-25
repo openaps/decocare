@@ -1,16 +1,13 @@
 #!/usr/bin/env python
 # PYTHON_ARGCOMPLETE_OK
-
-from decocare import commands
 import io
 import json
-
 from datetime import datetime
-from dateutil import relativedelta
 
-from decocare import lib
-from decocare.history import parse_record, HistoryPage
+from dateutil import relativedelta
+from decocare import commands, lib
 from decocare.helpers import cli
+from decocare.history import HistoryPage, parse_record
 
 
 def page_range(spec):

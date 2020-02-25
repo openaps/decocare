@@ -1,7 +1,9 @@
 import time
 from pprint import pformat
+
+from decocare import commands, lib, link, scan, session, stick
+
 from .cli import CommandApp
-from decocare import link, stick, session, commands, lib, scan
 
 
 def get_parser():

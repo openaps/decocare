@@ -35,15 +35,13 @@ True
 514L
 
 """
-
-
-from pprint import pformat
-from datetime import time as clocks
+from binascii import hexlify, unhexlify
 from datetime import datetime
+from datetime import time as clocks
+from pprint import pformat
 
 import dateutil.parser
 from dateutil import relativedelta
-from binascii import unhexlify, hexlify
 
 
 def _fmt_hex(bytez):

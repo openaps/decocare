@@ -1,11 +1,11 @@
 #
 # TODO: move all constants to config module.
 #
+import logging
 
 import serial
-import logging
-from . import lib
-from . import fuser
+
+from . import fuser, lib
 
 io = logging.getLogger()
 log = io.getChild(__name__)

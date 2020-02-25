@@ -6,20 +6,17 @@ Maybe something like this?
 * decoders - decoder classes?
 * PageDecoder - stateful decoder
 """
-
-
-from binascii import hexlify
-
 # TODO: all this stuff could be refactored into re-usable and tested
 # module.
 import io
+from binascii import hexlify
 from datetime import datetime
-from dateutil.relativedelta import relativedelta
-
-from decocare import lib
-from decocare.records import times
-from decocare.errors import DataTransferCorruptionError
 from pprint import pprint
+
+from dateutil.relativedelta import relativedelta
+from decocare import lib
+from decocare.errors import DataTransferCorruptionError
+from decocare.records import times
 
 ###################
 #

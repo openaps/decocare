@@ -12,9 +12,8 @@
 # argv[3] = package length
 ##############################################################################
 
-import sys
 import getopt
-
+import sys
 
 file_in_name = sys.argv[1]
 data_to_find = sys.argv[2]

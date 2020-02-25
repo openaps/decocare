@@ -14,8 +14,9 @@
 # for each packet convert the requested bits to an integer
 #
 
-import sys
 import getopt
+import sys
+
 from find_print_op_codes import OpCodeFinder
 
 

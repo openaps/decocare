@@ -143,8 +143,9 @@ op_codes = sorted(op_codes, key=lambda op_code_stats: op_code_stats.num_records)
 #    print op_code.str()
 
 import array
-from times import *
 from datetime import *
+
+from times import *
 
 op_code = 11  # 11=0b
 # op_code = 10 # 10=0a

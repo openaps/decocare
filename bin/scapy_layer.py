@@ -1,15 +1,13 @@
 #!/usr/bin/env python
 # PYTHON_ARGCOMPLETE_OK
-
 import argparse
-
-from pprint import pprint, pformat
 from binascii import hexlify
 from datetime import datetime
-from scapy.all import *
+from pprint import pformat, pprint
 
 from decocare import lib
 from decocare.history import *
+from scapy.all import *
 
 
 class MMMomentBase(XByteField):

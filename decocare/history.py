@@ -4,13 +4,12 @@ This module provides some basic helper/formatting utilities,
 specifically targeted at decoding ReadHistoryData data.
 
 """
-
 import io
 from binascii import hexlify
+from datetime import date
 
 from . import lib
 from .records import *
-from datetime import date
 
 _remote_ids = [
     bytearray([0x01, 0xE2, 0x40]),

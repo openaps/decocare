@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 # PYTHON_ARGCOMPLETE_OK
-
-from decocare import commands, models
-import json, argparse, sys
-
-from decocare.history import HistoryPage
-from decocare.helpers import cli
+import argparse
+import json
+import sys
 
 from dateutil.parser import parse
 from dateutil.tz import gettz
+from decocare import commands, models
+from decocare.helpers import cli
+from decocare.history import HistoryPage
 
 
 class DownloadHistory(cli.CommandApp):

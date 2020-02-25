@@ -1,19 +1,18 @@
 #!/usr/bin/env python
 # PYTHON_ARGCOMPLETE_OK
-
-import sys
 import argparse
+import sys
 import textwrap
-
-from pprint import pprint, pformat
 from binascii import hexlify
+from pprint import pformat, pprint
+
+from decocare import history, lib
+from decocare.history import NotADate
 
 # from datetime import datetime
 # from scapy.all import *
 
-from decocare import lib, history
 
-from decocare.history import NotADate
 
 
 def get_opt_parser():

@@ -10,10 +10,8 @@
 # 	the logs directory is used
 #
 ##############################################################################
-
-import sys
 import getopt
-
+import sys
 
 # lineSize = 10
 # fileInName = sys.argv[1]

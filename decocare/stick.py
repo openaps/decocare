@@ -1,6 +1,7 @@
-from . import lib
 import logging
 import time
+
+from . import lib
 
 """
 stick - implement a naive open source driver for Medtronic's
@@ -21,7 +22,7 @@ format can be read.
 
 log = logging.getLogger().getChild(__name__)
 
-from .errors import StickError, AckError, BadDeviceCommError
+from .errors import AckError, BadDeviceCommError, StickError
 
 
 class BadCRC(StickError):
@@ -1024,8 +1025,9 @@ if __name__ == "__main__":
     if not port:
         print("usage:\n%s /dev/ttyUSB0" % sys.argv[0])
         sys.exit(1)
-    from . import link
     from pprint import pformat
+
+    from . import link
 
     logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
     log.info("howdy! I'm going to take a look at your carelink usb stick.")

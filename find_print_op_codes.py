@@ -12,9 +12,8 @@
 # argv[3] = package length
 ##############################################################################
 
-import sys
 import getopt
-
+import sys
 
 # uncomment lines below to run as a test
 # fileInName = "logs/analyze/20140421_030133-ReadGlucoseHistory-page-16.data"

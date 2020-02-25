@@ -1,12 +1,13 @@
-import sys, os
-import logging
-import time
 import argparse
+import logging
+import os
+import sys
+import time
 from pprint import pformat
 
 log = logging.getLogger().getChild(__name__)
 
-from decocare import link, stick, session, commands, lib, scan
+from decocare import commands, lib, link, scan, session, stick
 
 
 class CommandApp:

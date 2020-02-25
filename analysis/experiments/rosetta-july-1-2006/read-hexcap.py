@@ -1,16 +1,13 @@
 #!/usr/bin/python
-
+import logging
+import sys
 
 import scapy
 import scapy.all
-import sys
-
-import logging
 
 logging.basicConfig(level=logging.INFO)
 import argparse
-
-from pprint import pprint, pformat
+from pprint import pformat, pprint
 
 
 def get_argparse():

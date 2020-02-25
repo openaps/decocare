@@ -1,12 +1,10 @@
-import serial
 import argparse
+import logging
 import sys
-
-from pprint import pprint, pformat
-
+from pprint import pformat, pprint
 
 import pump
-import logging
+import serial
 
 io = logging.getLogger()
 

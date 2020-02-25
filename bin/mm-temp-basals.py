@@ -1,11 +1,10 @@
 #!/usr/bin/env python
 # PYTHON_ARGCOMPLETE_OK
-
+import argparse
+import json
 
 from decocare import commands
 from decocare.helpers import cli
-import argparse
-import json
 
 
 class TempBasalApp(cli.CommandApp):

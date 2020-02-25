@@ -6,23 +6,23 @@ decoder.py - An analysis of Medtronic Carelink Diabetes protocol using
 scapy.
 """
 
-# stdlib
-import user
-import sys
 import argparse
-import logging
 import binascii
+import logging
+import sys
 from os.path import getsize
+
+import user
 
 logging.basicConfig(stream=sys.stdout)
 logger = logging.getLogger("decoder")
 logger.setLevel(logging.INFO)
 
-# Requires scapy to be in your PYATHONPATH
+from scapy import automaton, utils
+
+# Requires scapy to be in your PYTHONPATH
 # import scapy
 from scapy.all import *
-from scapy import utils
-from scapy import automaton
 
 _usb_response = {0x00: "OUT", 0x55: "Success", 0x66: "Fail"}
 

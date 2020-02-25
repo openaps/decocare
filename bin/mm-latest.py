@@ -1,19 +1,16 @@
 #!/usr/bin/env python
 # PYTHON_ARGCOMPLETE_OK
-
-from decocare import commands
+import argparse
 import io
 import json
-import argparse
-
 from datetime import datetime
+
 from dateutil import relativedelta
 from dateutil.parser import parse
 from dateutil.tz import gettz
-
-from decocare import lib
-from decocare.history import parse_record, HistoryPage
+from decocare import commands, lib
 from decocare.helpers import cli
+from decocare.history import HistoryPage, parse_record
 
 
 class LatestActivity(cli.CommandApp):

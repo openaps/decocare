@@ -1,6 +1,6 @@
-from decocare import commands, history, cgm
-from decocare import lib
 import types
+
+from decocare import cgm, commands, history, lib
 
 
 class Task:

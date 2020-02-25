@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # PYTHON_ARGCOMPLETE_OK
-
 from decocare.helpers import messages
 
 if __name__ == "__main__":
