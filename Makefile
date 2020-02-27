@@ -12,11 +12,8 @@ ci-install:
 	python3 setup.py develop
 
 ci-test: ci-install test
-	# do the travis dance
 
 docs:
 	(cd doc; make)
-travis: test
-	# do the travis dance
 
 .PHONY: test docs

@@ -5,4 +5,4 @@ python:
 install:
   - make ci-install
 script:
-  - make travis
+  - make test
