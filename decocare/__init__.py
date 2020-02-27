@@ -1,4 +1,3 @@
-
 """
 decocare - a pure python module for serial communication with insulin pumps.
 
@@ -16,4 +15,3 @@ See:
 
 
 """
-

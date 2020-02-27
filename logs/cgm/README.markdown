@@ -137,13 +137,13 @@ Is it possible that this is:
 
 ```
 ```python
->>> print "{0:#04x} {0:08b} {0:d}".format( 0x16 )
+>>> print("{0:#04x} {0:08b} {0:d}".format( 0x16 ))
 0x16 00010110 22
->>> print "{0:#04x} {0:08b} {0:d}".format( 0x10 )
+>>> print("{0:#04x} {0:08b} {0:d}".format( 0x10 ))
 0x10 00010000 16
->>> print "{0:#04x} {0:08b} {0:d}".format( 0x4a )
+>>> print("{0:#04x} {0:08b} {0:d}".format( 0x4a ))
 0x4a 01001010 74
->>> print "{0:#04x} {0:08b} {0:d}".format( 0x0e )
+>>> print("{0:#04x} {0:08b} {0:d}".format( 0x0e ))
 0x0e 00001110 14
 ```
 

@@ -50,15 +50,15 @@ This only needs to be done once:
 ```bash
 $ easy_install decocare
 # or
-$ pip install decocare
+$ pip3 install decocare
 ```
 
 ### From source
 ```bash
 git clone https://github.com/bewest/decoding-carelink.git
 cd decoding-carelink
-sudo python ez_setup.py # only if you rarely use python
-sudo python setup.py develop
+sudo python3 ez_setup.py # only if you rarely use python
+sudo python3 setup.py develop
 ```
 
 ### Contribute your logs
@@ -722,23 +722,23 @@ Each experiment is saved in the `./logs` directory, which is tracked by git.
 Source a bunch of helper functions, notably:
 
 ##### `run_stick`_
-Runs `python decocare/stick.py /dev/ttyUSB0`
+Runs `python3 decocare/stick.py /dev/ttyUSB0`
 and saves results in `logs/stick.log`.
 When run by `status-quo.sh`, it creates
 `./logs/baseline.stick.log` before continuing.
 At end of experiments, it records `./logs/postmortem.stick.log`
 
 ##### `run_session`_
-Runs `python decocare/session.py /dev/ttyUSB0 <SERIAL>`
+Runs `python3 decocare/session.py /dev/ttyUSB0 <SERIAL>`
 and saves results in `logs/session.log`.
 
 ##### `run_commands`_
-Runs `python decocare/commands.py /dev/ttyUSB0 <SERIAL>`
+Runs `python3 decocare/commands.py /dev/ttyUSB0 <SERIAL>`
 and saves results in `logs/commands.log`.
 
 ##### `run_download`_
 
-Runs `python decocare/download.py /dev/ttyUSB0 <SERIAL>`
+Runs `python3 decocare/download.py /dev/ttyUSB0 <SERIAL>`
 and saves results in `logs/download.log`.
 
 The download script is configured to save each page of historical data as a raw
@@ -757,7 +757,7 @@ is saved in `./status-quo.log`.
 #### `run_regress`
 After `. bin/common`, `export SERIAL=511888` with your serial number.
 
-Runs `python list_history.py` on each binary file found in `logs/`, saves
+Runs `python3 list_history.py` on each binary file found in `logs/`, saves
 results in `./analysis/<SERIAL>/...`.
 
 This is what I use to render the markdown files in analysis.
