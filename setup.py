@@ -14,7 +14,7 @@ def readme():
 
 setup(
     name="decocare",
-    version="0.0.31",  # http://semver.org/
+    version="0.1.0",  # http://semver.org/
     description="Audit, inspect, and command MM insulin pumps.",
     long_description=readme(),
     long_description_content_type="text/markdown",
