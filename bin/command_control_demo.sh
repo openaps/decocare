@@ -14,7 +14,7 @@ INIT="$STATUS --init query"
 SERIAL=208850
 # PORT is the device file to use.  My udev rules create a nice
 # persistent device.  You can try something like this:
-# PORT=$(python decocare/scan.py)
+# PORT=$(python3 decocare/scan.py)
 PORT=/dev/ttyUSB.Carelink0
 
 # just send power, and query basic status

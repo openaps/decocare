@@ -351,7 +351,7 @@ def _extractall(self, path=".", members=None):
 
 def _build_install_args(options):
     """
-    Build the arguments to 'python setup.py install' on the setuptools package
+    Build the arguments to 'python3 setup.py install' on the setuptools package
     """
     install_args = []
     if options.user_install:

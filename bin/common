@@ -350,7 +350,7 @@ TOOL_ARGS=""
 
 function opcodes ( ) {
   x=${1}
-  python $TOOL $TOOL_ARGS $x 2>&1
+  python3 $TOOL $TOOL_ARGS $x 2>&1
 
 }
 

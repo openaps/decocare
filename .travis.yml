@@ -3,6 +3,6 @@ language: python
 python:
   - "3.5"  # Need to support debian stretch for edison 32-bit installs
 install:
-  - sudo python setup.py install
+  - make ci-install
 script:
   - make travis
