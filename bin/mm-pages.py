@@ -30,7 +30,7 @@ class PumpPager(cli.CommandApp):
     """%(prog)s - Download and decode pages of history from pump.
 
 
-  Download history pages from the pump.
+    Download history pages from the pump.
     """
 
     def customize_parser(self, parser):

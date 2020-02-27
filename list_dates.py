@@ -54,7 +54,7 @@ def opcode_read_ahead(opcode, fd=None):
     TABLE = {}
     return TABLE.get(opcode, 0)
     if TABLE.get(opcode) is not None:
-        # print "special opcode %#04x, read:%s" % (opcode, TABLE[opcode])
+        # print("special opcode %#04x, read:%s" % (opcode, TABLE[opcode]))
         return bytearray(fd.read(TABLE[opcode]))
     return bytearray()
 
@@ -108,9 +108,8 @@ def find_dates(stream):
 
 def int_dump(stream, indent=0):
     """
-  >>> int_dump(bytearray([0x01, 0x02]))
-  '   1    2'
-
+    >>> int_dump(bytearray([0x01, 0x02]))
+    '   1    2'
 
     """
     cells = ["%#04s" % (x) for x in stream]

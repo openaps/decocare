@@ -84,7 +84,7 @@ def find_records(stream, opts):
             print(lib.hexdump(extra, indent=4))
             print("##### DEBUG DECIMAL")
             print(lib.int_dump(extra, indent=11))
-            # print "XXX:???:XXX", history.parse_date(bolus).isoformat( )
+            # print("XXX:???:XXX", history.parse_date(bolus).isoformat( ))
             break
         record = parse_record(stream, B, larger=opts.larger)
         records.append(record)

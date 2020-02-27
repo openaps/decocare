@@ -24,7 +24,7 @@ class Task:
         return response.getData()
 
     def __call__(self, inst, **kwds):
-        # print "__calll__", inst, self.func
+        # print("__call__", inst, self.func)
         # self.func( )
         self.response = inst.session.query(self.msg, **kwds)
         self.validate()
@@ -143,7 +143,7 @@ class PumpModel:
     def decode_unabsorbed_component(self, amount, age, _curve, strokes=40.0):
         curve = (_curve & 0b110000) << 4
         unabsorbed = {
-            "amount": amount // strokes,
+            "amount": amount / strokes,
             "age": age + curve,
             # 'curve': curve,
         }
@@ -208,7 +208,7 @@ class PumpModel:
     def _set_clock(self, response):
         raw = response.getData()
         # TODO: fix mmeowlink's zero responses
-        # print "SET RESPONSE RAW", raw, response
+        # print("SET RESPONSE RAW", raw, response)
         # clock = lib.parse.date(raw)
         return raw
 

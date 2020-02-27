@@ -7,7 +7,7 @@ from decocare.helpers import cli
 class SetSuspendResumeApp(cli.CommandApp):
     """ %(prog)s -  query or set suspend/resume status
 
-  Pause or resume pump.
+    Pause or resume pump.
     """
 
     def customize_parser(self, parser):

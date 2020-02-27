@@ -248,7 +248,7 @@ class Second(MMMomentField):
 
 class TestSecondPacket(Packet):
     """
-  >>> TestSecondPacket( ) / str(bytearray( [ 0x6f ] ))
+    >>> TestSecondPacket( ) / str(bytearray( [ 0x6f ] ))
     """
 
     fields_desc = [
@@ -258,7 +258,7 @@ class TestSecondPacket(Packet):
 
 class TestMinutePacket(Packet):
     """
-  >>> TestMinutePacket( ) / str(bytearray( [ 0xd7 ] ))
+    >>> TestMinutePacket( ) / str(bytearray( [ 0xd7 ] ))
     """
 
     fields_desc = [
@@ -268,7 +268,7 @@ class TestMinutePacket(Packet):
 
 class TestMonthPacket(Packet):
     """
-  >>> TestMonthPacket( ) / str(bytearray( [ 0x6f, 0xd7 ] ))
+    >>> TestMonthPacket( ) / str(bytearray( [ 0x6f, 0xd7 ] ))
     """
 
     fields_desc = [
@@ -278,7 +278,7 @@ class TestMonthPacket(Packet):
 
 class TestTimeHeadPacket(Packet):
     """
-  >>> TestTimeHeadPacket( ) / str(bytearray( [ 0x6f, 0xd7 ] ))
+    >>> TestTimeHeadPacket( ) / str(bytearray( [ 0x6f, 0xd7 ] ))
     """
 
     fields_desc = [
@@ -336,7 +336,7 @@ class XXMMDate(Field):
 
 class MMDateTime(Packet):
     """
-  >>> MMDateTime( ) / str(bytearray( [ 0x6f, 0xd7, 0x08, 0x01, 0x06 ] ))
+    >>> MMDateTime( ) / str(bytearray( [ 0x6f, 0xd7, 0x08, 0x01, 0x06 ] ))
     """
 
     name = "TIME"

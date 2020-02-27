@@ -8,7 +8,7 @@ class PressKeysApp(cli.CommandApp):
     """%(prog)s - Simulate presses on the keypad.
 
 
-  Press keys on the keypad.
+    Press keys on the keypad.
     """
 
     def customize_parser(self, parser):

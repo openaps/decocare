@@ -1,21 +1,6 @@
 from datetime import *
 
-"""def str_to_int(string):
-  return
 
-def int_to_hex():
-
-def int_to_hexstr():
-  # convert integer to string
-  return '{0:02x}'.format(op_code)
-
-def hex_to_int():
-  # convert hex char(s) to int
-  '{0:08b}'.format()
-"""
-
-
-# -*- coding: utf-8 *-*
 class op_code_stats:
     #  op_code = 0
     #  op_code_str = '{0:02x}'.format(op_code)

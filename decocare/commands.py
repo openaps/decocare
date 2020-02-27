@@ -1,7 +1,9 @@
+import codecs
 import logging
+import textwrap
 import time
 
-from . import lib
+from decocare import lib
 
 
 class BadResponse(Exception):
@@ -152,7 +154,7 @@ class PumpCommand(BaseCommand):
         params = self.params
         code = self.code
         maxRetries = self.retries
-        serial = list(bytearray(self.serial.decode("hex")))
+        serial = list(bytearray(codecs.decode(self.serial, "hex")))
         paramsCount = len(params)
         head = [1, 0, 167, 1]
         # serial
@@ -259,7 +261,7 @@ class PowerControl(PumpCommand):
 
 class PowerControlOff(PowerControl):
     """
-  Here's an example where arguments clearly modify behavior.
+    Here's an example where arguments clearly modify behavior.
     """
 
     params = [0x00, 0x00]
@@ -347,7 +349,7 @@ class TempBasal(PumpCommand):
 
     @classmethod
     def format_percent_params(klass, rate, duration):
-        duration = int(duration // 30)
+        duration = int(duration / 30)
         rate = int(rate)
         params = [rate, duration]
         return params
@@ -355,7 +357,7 @@ class TempBasal(PumpCommand):
     @classmethod
     def format_params(klass, rate, duration):
         duration = duration // 30
-        rate = int(round(rate // 0.025))
+        rate = int(round(rate / 0.025))
         params = [lib.HighByte(rate), lib.LowByte(rate), duration]
         return params
 
@@ -560,10 +562,10 @@ class Read256KMem(PumpCommand):
 
 class Bolus(PumpCommand):
     """
-  Bolus some insulin.
+    Bolus some insulin.
 
-  XXX: Be careful please.
-  Best trying this not connected to the pump until you trust it.
+    XXX: Be careful please.
+    Best trying this not connected to the pump until you trust it.
     """
 
     code = 66
@@ -817,7 +819,7 @@ class ReadRTC(PumpCommand):
 
 class SetRTC(PumpCommand):
     """
-  Set clock
+    Set clock
     """
 
     code = 64
@@ -881,7 +883,7 @@ class ReadBatteryStatus(PumpCommand):
         indicator = bd[0]
         battery = {
             "status": {0: "normal", 1: "low"}[indicator],
-            "voltage": volt // 100.0,
+            "voltage": volt / 100.0,
         }
         return battery
 
@@ -918,7 +920,7 @@ class ReadRemainingInsulin(PumpCommand):
     def getData(self):
         data = self.data
         log.info("READ remaining insulin:\n%s" % lib.hexdump(data))
-        return lib.BangInt(data[self.startByte : self.endByte]) // self.basalStrokes
+        return lib.BangInt(data[self.startByte : self.endByte]) / self.basalStrokes
 
 
 class ReadRemainingInsulin523(ReadRemainingInsulin):
@@ -942,7 +944,7 @@ class ReadBasalTemp508(PumpCommand):
 
     def getData(self):
         data = self.data
-        rate = lib.BangInt(data[2:4]) // 40.0
+        rate = lib.BangInt(data[2:4]) / 40.0
         duration = lib.BangInt(data[4:6])
         log.info("READ temporary basal:\n%s" % lib.hexdump(data))
         return {"rate": rate, "duration": duration}
@@ -962,8 +964,8 @@ class ReadTodayTotals508(PumpCommand):
         data = self.data
         log.info("READ totals today:\n%s" % lib.hexdump(data))
         totals = {
-            "today": lib.BangInt(data[0:2]) // 10.0,
-            "yesterday": lib.BangInt(data[2:4]) // 10.0,
+            "today": lib.BangInt(data[0:2]) / 10.0,
+            "yesterday": lib.BangInt(data[2:4]) / 10.0,
         }
         return totals
 
@@ -983,8 +985,8 @@ class ReadTotalsToday(PumpCommand):
         data = self.data
         log.info("READ totals today:\n%s" % lib.hexdump(data))
         totals = {
-            "today": lib.BangInt(data[0:2]) // 10.0,
-            "yesterday": lib.BangInt(data[2:4]) // 10.0,
+            "today": lib.BangInt(data[0:2]) / 10.0,
+            "yesterday": lib.BangInt(data[2:4]) / 10.0,
         }
         return totals
 
@@ -1208,7 +1210,7 @@ class ReadCarbRatios512(PumpCommand):
                 break
             ratio = int(r)
             if units == 2:
-                ratio = r // 10.0
+                ratio = r / 10.0
             schedule.append(
                 dict(x=x, i=i, start=lib.basal_time(i), offset=i * 30, ratio=ratio, r=r)
             )
@@ -1241,9 +1243,9 @@ class ReadCarbRatios(PumpCommand):
             (i, q, r) = data[start:end]
             if x > 0 and i == 0:
                 break
-            ratio = r // 10.0
+            ratio = r / 10.0
             if q:
-                ratio = lib.BangInt([q, r]) // 1000.0
+                ratio = lib.BangInt([q, r]) / 1000.0
             schedule.append(
                 dict(
                     x=x,
@@ -1263,12 +1265,12 @@ class ReadInsulinSensitivities(PumpCommand):
     """
     >>> import json
     >>> sens = ReadInsulinSensitivities.decode(ReadInsulinSensitivities.resp_1)
-    >>> print json.dumps(sens)
-    {"units": "mg/dL", "sensitivities": [{"i": 0, "start": "00:00:00", "sensitivity": 45, "offset": 0, "x": 0}], "first": 1}
+    >>> print(json.dumps(sens, sort_keys=True))
+    {"first": 1, "sensitivities": [{"i": 0, "offset": 0, "sensitivity": 45, "start": "00:00:00", "x": 0}], "units": "mg/dL"}
 
     >>> sens = ReadInsulinSensitivities.decode(ReadInsulinSensitivities.resp_uk_1)
-    >>> print json.dumps(sens)
-    {"units": "mmol/L", "sensitivities": [{"i": 0, "start": "00:00:00", "sensitivity": 2.2, "offset": 0, "x": 0}], "first": 2}
+    >>> print(json.dumps(sens, sort_keys=True))
+    {"first": 2, "sensitivities": [{"i": 0, "offset": 0, "sensitivity": 2.2, "start": "00:00:00", "x": 0}], "units": "mmol/L"}
 
     >>> sens = ReadInsulinSensitivities.decode(ReadInsulinSensitivities.resp_high_bits)
     >>> sens == ReadInsulinSensitivities.resp_high_bit_broken
@@ -1278,7 +1280,6 @@ class ReadInsulinSensitivities(PumpCommand):
     >>> sens == ReadInsulinSensitivities.resp_high_bit_fixed
     True
 
-
     """
 
     code = 139
@@ -1286,32 +1287,30 @@ class ReadInsulinSensitivities(PumpCommand):
         b"\x01\x00-\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
     )
     resp_uk_1 = bytearray(
-        str(
-            """
-02001600000000
-00000000000000
-00000000000000
-00000000000000
-00000000000000
-00000000000000
-00000000000000
-00000000000000
-""".strip()
-            .replace("\n", "")
-            .decode("hex")
+        codecs.decode(
+            (
+                "02001600000000"
+                "00000000000000"
+                "00000000000000"
+                "00000000000000"
+                "00000000000000"
+                "00000000000000"
+                "00000000000000"
+                "00000000000000"
+            ),
+            "hex",
         )
     )
 
     # Thanks to Mitchell Slep.
     resp_high_bits = bytearray(
-        str(
-            """
-01400c000000000000000000000000000000000000000000000000000000
-000000000000000000000000000000000000000000000000000000000000
-00000000
-""".strip()
-            .replace("\n", "")
-            .decode("hex")
+        codecs.decode(
+            (
+                "01400c000000000000000000000000000000000000000000000000000000"
+                "000000000000000000000000000000000000000000000000000000000000"
+                "00000000"
+            ),
+            "hex",
         )
     )
     resp_high_bit_broken = {
@@ -1355,7 +1354,7 @@ class ReadInsulinSensitivities(PumpCommand):
             if x > 0 and i == 0:
                 break
             if units == 2:
-                sensitivity = sensitivity // 10.0
+                sensitivity = sensitivity / 10.0
             schedule.append(
                 dict(
                     x=x,
@@ -1393,8 +1392,8 @@ class ReadBGTargets515(PumpCommand):
             if x > 0 and i == 0:
                 break
             if units == 2:
-                low = low // 10.0
-                high = high // 10.0
+                low = low / 10.0
+                high = high / 10.0
             schedule.append(
                 dict(
                     x=x, i=i, start=lib.basal_time(i), offset=i * 30, low=low, high=high
@@ -1435,14 +1434,14 @@ class ReadProfile_STD512(PumpCommand):
     >>> schedule = ReadProfile_STD512.decode(ReadProfile_STD512._test_result_1)
     >>> len(schedule)
     4
-    >>> print json.dumps(schedule[0])
-    {"i": 0, "start": "00:00:00", "rate": 0.8, "minutes": 0}
-    >>> print json.dumps(schedule[1])
-    {"i": 1, "start": "06:30:00", "rate": 0.9500000000000001, "minutes": 390}
-    >>> print json.dumps(schedule[2])
-    {"i": 2, "start": "09:30:00", "rate": 1.1, "minutes": 570}
-    >>> print json.dumps(schedule[3])
-    {"i": 3, "start": "14:00:00", "rate": 0.9500000000000001, "minutes": 840}
+    >>> print(json.dumps(schedule[0], sort_keys=True))
+    {"i": 0, "minutes": 0, "rate": 0.8, "start": "00:00:00"}
+    >>> print(json.dumps(schedule[1], sort_keys=True))
+    {"i": 1, "minutes": 390, "rate": 0.9500000000000001, "start": "06:30:00"}
+    >>> print(json.dumps(schedule[2], sort_keys=True))
+    {"i": 2, "minutes": 570, "rate": 1.1, "start": "09:30:00"}
+    >>> print(json.dumps(schedule[3], sort_keys=True))
+    {"i": 3, "minutes": 840, "rate": 0.9500000000000001, "start": "14:00:00"}
 
     """
 
@@ -1479,14 +1478,15 @@ class ReadProfile_STD512(PumpCommand):
                     msg = "{}\n{}".format(msg, profile)
                     raise BadResponse(msg)
             else:
-                bad_profile = """Current profile: %s""" % (profile)
-                template = """{bad_profile} Found in response to {name}
-          i: {i} matches? {matches_i}
-          our calcstart: {start}
-          profile start: {profile_start}
-          has a rate: {has_rate}
-          start matches: {matches_start}
-        """
+                bad_profile = "Current profile: %s" % (profile)
+                template = textwrap.dedent("""\
+                {bad_profile} Found in response to {name}
+                  i: {i} matches? {matches_i}
+                  our calcstart: {start}
+                  profile start: {profile_start}
+                  has a rate: {has_rate}
+                  start matches: {matches_start}
+                """)
                 raise BadResponse(
                     template.format(
                         bad_profile=bad_profile,
@@ -1552,9 +1552,9 @@ class ReadBGAlarmEnable(PumpCommand):
 # MMPump512/	CMD_READ_TEMP_BASAL	152	0x98	('\x98')	OK
 class ReadBasalTemp(PumpCommand):
     """
-  MM511 - 120
-  MM512 and up - opcode 152
-  # strokes per basalunit = 40 - mm12, 10 in mm11
+    MM511 - 120
+    MM512 and up - opcode 152
+    # strokes per basalunit = 40 - mm12, 10 in mm11
     """
 
     code = 152
@@ -1568,7 +1568,7 @@ class ReadBasalTemp(PumpCommand):
         temp = {0: "absolute", 1: "percent"}[self.data[0]]
         status = dict(temp=temp)
         if temp == "absolute":
-            rate = lib.BangInt(data[2:4]) // 40.0
+            rate = lib.BangInt(data[2:4]) / 40.0
             duration = lib.BangInt(data[4:6])
             status.update(rate=rate, duration=duration)
         if temp == "percent":
@@ -1606,7 +1606,7 @@ class GuardianSensorRateChangeAlerts(PumpCommand):
 
 class ReadSettings(PumpCommand):
     """
-  XXX: changed in MM512 to 192
+    XXX: changed in MM512 to 192
 
     """
 
@@ -1642,12 +1642,12 @@ class ReadSettings(PumpCommand):
         audio_bolus_enable = data[2] == 1
         audio_bolus_size = 0
         if audio_bolus_enable:
-            audio_bolus_size = data[3] // 10.0
+            audio_bolus_size = data[3] / 10.0
         variable_bolus_enable = data[4] == 1
         # MM23 is different
-        maxBolus = data[5] // 10.0
+        maxBolus = data[5] / 10.0
         # MM512 and up
-        maxBasal = lib.BangInt(data[6:8]) // 40.0
+        maxBasal = lib.BangInt(data[6:8]) / 40.0
         timeformat = data[8]
         insulinConcentration = {0: 100, 1: 50}[data[9]]
         patterns_enabled = data[10] == 1
@@ -1657,9 +1657,9 @@ class ReadSettings(PumpCommand):
         temp_basal = self.temp_basal_type(data[14:16])
         paradigm_enabled = data[16]
         """
-    # MM12
-    insulin_action_type = data[17] == 0 and 'Fast' or 'Regular'
-    """
+        # MM12
+        insulin_action_type = data[17] == 0 and 'Fast' or 'Regular'
+        """
         # MM15
         # insulin_action_type = data[17]
         insulin_action_curve = data[17]
@@ -1680,8 +1680,8 @@ class ReadSettings523(ReadSettings):
         values = super().getData()
         data = self.data
 
-        values["maxBasal"] = lib.BangInt(data[7:9]) // 40.0
-        values["maxBolus"] = data[6] // 10.0
+        values["maxBasal"] = lib.BangInt(data[7:9]) / 40.0
+        values["maxBolus"] = data[6] / 10.0
 
         return values
 
@@ -2272,7 +2272,7 @@ if __name__ == "__main__":
         sys.exit(1)
     from pprint import pformat
 
-    from . import link, session, stick
+    from decocare import link, session, stick
 
     logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
     log.info("howdy! I'm going to take a look at your pump and grab lots of info.")

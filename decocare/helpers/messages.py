@@ -3,7 +3,7 @@ from pprint import pformat
 
 from decocare import commands, lib, link, scan, session, stick
 
-from .cli import CommandApp
+from decocare.helpers.cli import CommandApp
 
 
 def get_parser():
@@ -13,10 +13,10 @@ def get_parser():
 
 class SendMsgApp(CommandApp):
     """
-  %(prog)s - send messages to a compatible MM insulin pump
+    %(prog)s - send messages to a compatible MM insulin pump
 
-  This tool is intended to help discover protocol behavior.
-  Under no circumstance is it intended to deliver therapy.
+    This tool is intended to help discover protocol behavior.
+    Under no circumstance is it intended to deliver therapy.
     """
 
     def main(self, args):

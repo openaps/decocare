@@ -136,7 +136,7 @@ class Record:
     @classmethod
     def variable_read(cls, opcode, body):
         if opcode == 0x5C and body[1:]:
-            # print "XXX: VARIABLE READ: %#04x" % body[1]
+            # print("XXX: VARIABLE READ: %#04x" % body[1])
             return body[1]
         return 0
 
@@ -146,7 +146,7 @@ class Record:
         if opcode == 0x5C:
             return True
         if False and opcode == 0x5B:
-            # print 'XXX: %#04x' % body[13]
+            # print('XXX: %#04x' % body[13])
             if body[13:] and body[13] == 0x5C:
                 return True
         return False
@@ -160,7 +160,7 @@ class Record:
 
     @classmethod
     def lookup_body(cls, opcode):
-        # print "lookup body for opcode %#04x" % (opcode)
+        # print("lookup body for opcode %#04x" % (opcode))
         return cls._body.get(opcode, 0)
 
     def __str__(self):
@@ -233,7 +233,7 @@ def seek_null(fd):
     bolus = bytearray()
     for B in iter(lambda: fd.read(1), ""):
         bolus.append(B)
-        # print lib.hexdump(bolus)
+        # print(lib.hexdump(bolus))
         if B == bytearray([0x00]):
             return bolus
     return bolus
@@ -262,11 +262,11 @@ def find_dates(stream):
 
         if variable_read > 2:
 
-            # print "super special"
+            # print("super special")
             bolus.extend(bytearray(stream.read(variable_read)))
-            # print lib.hexdump( bolus )
+            # print(lib.hexdump( bolus ))
             opcode = bolus[variable_read]
-            # print "NEW OPCODE %#04x" % opcode
+            # print("NEW OPCODE %#04x" % opcode)
             head_length = Record.lookup_head(opcode)
             body_length = Record.lookup_body(opcode)
             total = len(bolus) - variable_read
@@ -287,7 +287,7 @@ def find_dates(stream):
         bolus.extend(bytearray(stream.read(date_length)))
         date = bolus[head_length : head_length + date_length]
         total = len(bolus)
-        # print repr(bolus), date_length, repr(date)
+        # print(repr(bolus), date_length, repr(date))
         if len(date) < 5:
             print("DATE LESS THAN 5!", stream.tell())
             print(lib.hexdump(bolus))
@@ -360,9 +360,8 @@ def find_dates(stream):
 
 def int_dump(stream, indent=0):
     """
-  >>> int_dump(bytearray([0x01, 0x02]))
-  '   1    2'
-
+    >>> int_dump(bytearray([0x01, 0x02]))
+    '   1    2'
 
     """
     cells = ["%#04s" % (x) for x in stream]

@@ -17,7 +17,7 @@ class LatestActivity(cli.CommandApp):
     """%(prog)s - Grab latest activity
 
 
-  Query pump for latest activity.
+    Query pump for latest activity.
     """
 
     def customize_parser(self, parser):

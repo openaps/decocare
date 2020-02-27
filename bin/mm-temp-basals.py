@@ -10,7 +10,7 @@ from decocare.helpers import cli
 class TempBasalApp(cli.CommandApp):
     """ %(prog)s -  query or set temp basals
 
-  Set or query temp basals.
+    Set or query temp basals.
     """
 
     def customize_parser(self, parser):
@@ -92,7 +92,7 @@ class TempBasalApp(cli.CommandApp):
 
 
 def format_percent_params(args):
-    duration = int(args.duration // 30)
+    duration = int(args.duration / 30)
     rate = int(args.rate)
     params = [rate, duration]
     return params
@@ -100,7 +100,7 @@ def format_percent_params(args):
 
 def format_params(args):
     duration = args.duration // 30
-    rate = int(args.rate // 0.025)
+    rate = int(args.rate / 0.025)
     params = [0x00, rate, duration]
     return params
 

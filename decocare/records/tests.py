@@ -1,12 +1,13 @@
 #!/usr/bin/python
 import difflib
 import json
+import codecs
 from binascii import hexlify
 from datetime import datetime
 from pprint import pformat
 
-from .bolus import *
-from .times import *
+from decocare.records.bolus import *
+from decocare.records.times import *
 
 # I don't know where else to put this.
 """
@@ -201,57 +202,56 @@ _bewest_dates = {
 
 def _test_decode_bolus():
     """
-  ## correct
-  >>> parse_date( bytearray( _bewest_dates['page-19'][6] ) ).isoformat( )
-  '2012-11-12T00:55:42'
+    ## correct
+    >>> parse_date( bytearray( _bewest_dates['page-19'][6] ) ).isoformat( )
+    '2012-11-12T00:55:42'
 
-  ## correct
-  >>> parse_date( bytearray( _bewest_dates['page-19'][0] ) ).isoformat( )
-  '2012-11-12T00:55:42'
+    ## correct
+    >>> parse_date( bytearray( _bewest_dates['page-19'][0] ) ).isoformat( )
+    '2012-11-12T00:55:42'
 
-  ## this is wrong
-  >>> parse_date( bytearray( _bewest_dates['page-19'][1] ) ).isoformat( )
-  '2012-04-10T12:12:00'
+    ## this is wrong
+    >>> parse_date( bytearray( _bewest_dates['page-19'][1] ) ).isoformat( )
+    '2012-04-10T12:12:00'
 
-  ## day,month is wrong, time H:M:S is correct
-  # expected:
-  >>> parse_date( bytearray( _bewest_dates['page-19'][2] ) ).isoformat( )
-  '2012-02-08T03:11:12'
+    ## day,month is wrong, time H:M:S is correct
+    # expected:
+    >>> parse_date( bytearray( _bewest_dates['page-19'][2] ) ).isoformat( )
+    '2012-02-08T03:11:12'
 
-  ## correct
-  >>> parse_date( bytearray( _bewest_dates['page-19'][3] ) ).isoformat( )
-  '2012-11-12T08:03:11'
+    ## correct
+    >>> parse_date( bytearray( _bewest_dates['page-19'][3] ) ).isoformat( )
+    '2012-11-12T08:03:11'
 
-  #### not a valid date
-  # >>> parse_date( bytearray( _bewest_dates['page-19'][4] ) ).isoformat( )
+    #### not a valid date
+    # >>> parse_date( bytearray( _bewest_dates['page-19'][4] ) ).isoformat( )
 
-  ## correct
-  >>> parse_date( bytearray( _bewest_dates['page-19'][5] ) ).isoformat( )
-  '2012-11-12T08:03:13'
-
+    ## correct
+    >>> parse_date( bytearray( _bewest_dates['page-19'][5] ) ).isoformat( )
+    '2012-11-12T08:03:13'
 
     """
     """
 
-  0x5b 0x7e # bolus wizard,
-  0xaa 0xf7 0x00 0x0c 0x0c # page-19[0]
+    0x5b 0x7e # bolus wizard,
+    0xaa 0xf7 0x00 0x0c 0x0c # page-19[0]
 
-  0x0f 0x50 0x0d 0x2d 0x6a 0x00 0x0b 0x00
-  0x00 0x07 0x00 0x0b 0x7d 0x5c 0x08 0x58
-  0x97 0x04 0x30 0x05 0x14 0x34 0xc8
-  0x91 0xf8      # 0x91, 0xf8 = month=11, minute=56, seconds=17!
-  0x00           # general parsing fails here
-  0x00
-  0xaa 0xf7 0x40 0x0c 0x0c # expected  - page-19[6]
+    0x0f 0x50 0x0d 0x2d 0x6a 0x00 0x0b 0x00
+    0x00 0x07 0x00 0x0b 0x7d 0x5c 0x08 0x58
+    0x97 0x04 0x30 0x05 0x14 0x34 0xc8
+    0x91 0xf8      # 0x91, 0xf8 = month=11, minute=56, seconds=17!
+    0x00           # general parsing fails here
+    0x00
+    0xaa 0xf7 0x40 0x0c 0x0c # expected  - page-19[6]
 
-  0x0a 0x0c
-  0x8b 0xc3 0x28 0x0c 0x8c # page-19[3]
+    0x0a 0x0c
+    0x8b 0xc3 0x28 0x0c 0x8c # page-19[3]
 
 
-  0x5b 0x0c
+    0x5b 0x0c
 
-  0x8d 0xc3 0x08 0x0c 0x0c # page-19[5]
-  0x00 0x51 0x0d 0x2d 0x6a 0x1f 0x00 0x00 0x00 0x00 0x00
+    0x8d 0xc3 0x08 0x0c 0x0c # page-19[5]
+    0x00 0x51 0x0d 0x2d 0x6a 0x1f 0x00 0x00 0x00 0x00 0x00
     """
 
 
@@ -391,47 +391,47 @@ model522 = models.PumpModel("522", None)
 
 def _test_bolus_wizards():
     """
-  >>> rec = BolusWizard( _wizards[0][:2], model522 )
-  >>> print pformat(rec.parse( _wizards[0] ))
-  {'_byte[5]': 249,
-   '_byte[7]': 240,
-   'bg': 75,
-   'bg_target_high': 125,
-   'bg_target_low': 106,
-   'bolus_estimate': 5.9,
-   'carb_input': 87,
-   'carb_ratio': 13,
-   'correction_estimate': -0.7,
-   'food_estimate': 6.6,
-   'sensitivity': 45,
-   'unabsorbed_insulin_count': '??',
-   'unabsorbed_insulin_total': 0.0,
-   'unknown_byte[10]': 0,
-   'unknown_byte[8]': 0}
-  >>> print str(rec)
-  BolusWizard 2013-01-19T21:50:15 head[2], body[13] op[0x5b]
+    >>> rec = BolusWizard( _wizards[0][:2], model522 )
+    >>> print(pformat(rec.parse( _wizards[0] )))
+    {'_byte[5]': 249,
+     '_byte[7]': 240,
+     'bg': 75,
+     'bg_target_high': 125,
+     'bg_target_low': 106,
+     'bolus_estimate': 5.9,
+     'carb_input': 87,
+     'carb_ratio': 13,
+     'correction_estimate': -0.7,
+     'food_estimate': 6.6,
+     'sensitivity': 45,
+     'unabsorbed_insulin_count': '??',
+     'unabsorbed_insulin_total': 0.0,
+     'unknown_byte[10]': 0,
+     'unknown_byte[8]': 0}
+    >>> print(str(rec))
+    BolusWizard 2013-01-19T21:50:15 head[2], body[13] op[0x5b]
 
 
-  >>> rec = BolusWizard( _wizards[1][:2], model522 )
-  >>> print pformat(rec.parse( _wizards[1] ))
-  {'_byte[5]': 251,
-   '_byte[7]': 240,
-   'bg': 83,
-   'bg_target_high': 125,
-   'bg_target_low': 106,
-   'bolus_estimate': 6.7,
-   'carb_input': 94,
-   'carb_ratio': 13,
-   'correction_estimate': -0.5,
-   'food_estimate': 7.2,
-   'sensitivity': 45,
-   'unabsorbed_insulin_count': '??',
-   'unabsorbed_insulin_total': 1.0,
-   'unknown_byte[10]': 0,
-   'unknown_byte[8]': 0}
+    >>> rec = BolusWizard( _wizards[1][:2], model522 )
+    >>> print(pformat(rec.parse( _wizards[1] )))
+    {'_byte[5]': 251,
+     '_byte[7]': 240,
+     'bg': 83,
+     'bg_target_high': 125,
+     'bg_target_low': 106,
+     'bolus_estimate': 6.7,
+     'carb_input': 94,
+     'carb_ratio': 13,
+     'correction_estimate': -0.5,
+     'food_estimate': 7.2,
+     'sensitivity': 45,
+     'unabsorbed_insulin_count': '??',
+     'unabsorbed_insulin_total': 1.0,
+     'unknown_byte[10]': 0,
+     'unknown_byte[8]': 0}
 
-  >>> print str(rec)
-  BolusWizard 2013-01-14T22:36:00 head[2], body[13] op[0x5b]
+    >>> print(str(rec))
+    BolusWizard 2013-01-14T22:36:00 head[2], body[13] op[0x5b]
 
     """
     pass
@@ -458,18 +458,18 @@ _bolus = [
 
 def _test_bolus():
     """
-  >>> rec = Bolus( _bolus[0][:2] )
-  >>> print pformat(rec.parse( _bolus[0] ))
-  {'amount': 2.6, 'duration': 0, 'programmed': 2.6, 'type': 'normal'}
+    >>> rec = Bolus( _bolus[0][:2] )
+    >>> print(pformat(rec.parse( _bolus[0] )))
+    {'amount': 2.6, 'duration': 0, 'programmed': 2.6, 'type': 'normal'}
 
-  >>> print str(rec)
-  Bolus 2013-01-19T21:50:15 head[4], body[0] op[0x01]
+    >>> print(str(rec))
+    Bolus 2013-01-19T21:50:15 head[4], body[0] op[0x01]
 
-  >>> rec = Bolus( _bolus[1][:2] )
-  >>> print pformat(rec.parse( _bolus[1] ))
-  {'amount': 1.7, 'duration': 0, 'programmed': 1.7, 'type': 'normal'}
-  >>> print str(rec)
-  Bolus 2013-01-15T15:57:16 head[4], body[0] op[0x01]
+    >>> rec = Bolus( _bolus[1][:2] )
+    >>> print(pformat(rec.parse( _bolus[1] )))
+    {'amount': 1.7, 'duration': 0, 'programmed': 1.7, 'type': 'normal'}
+    >>> print(str(rec))
+    Bolus 2013-01-15T15:57:16 head[4], body[0] op[0x01]
 
     """
 
@@ -477,118 +477,118 @@ def _test_bolus():
 class TestSaraBolus:
     # model 722
     hexdump = """
-  5b 67
-    a1 51 0e 04 0d
-    0d 50 00 78
-  3c 64 00 00 28 00 00 14 00 28 78
-  5c 08 44 79 c0 3c 4b d0
-  01 00 28 00 28 00 14 00
-    a1 51 4e 04 0d
-  0a fc
-    b4 54 2f 04 0d
-  5b fc
-    b7 54 0f 04 0d
-    00 50 00 78
-  3c 64 58 00 00 00 00 1c 00 3c 78
-  5c 0b 28 40 c0 44 b8 c0 3c 8a d0
-  01 00 3c 00 3c 00 1c 00
-    b7 54 4f 04 0d
+    5b 67
+      a1 51 0e 04 0d
+      0d 50 00 78
+    3c 64 00 00 28 00 00 14 00 28 78
+    5c 08 44 79 c0 3c 4b d0
+    01 00 28 00 28 00 14 00
+      a1 51 4e 04 0d
+    0a fc
+      b4 54 2f 04 0d
+    5b fc
+      b7 54 0f 04 0d
+      00 50 00 78
+    3c 64 58 00 00 00 00 1c 00 3c 78
+    5c 0b 28 40 c0 44 b8 c0 3c 8a d0
+    01 00 3c 00 3c 00 1c 00
+      b7 54 4f 04 0d
     """
     csv_breakdown = """
-  9/4/13 14:17:33,,,,,,,Normal,1.0,1.0,,,,,,,,,,,,,,,,,,,,,BolusNormal
-    "AMOUNT=1
-      CONCENTRATION=null
-      PROGRAMMED_AMOUNT=1
-      ACTION_REQUESTOR=pump
-      ENABLE=true
-      IS_DUAL_COMPONENT=false
-      UNABSORBED_INSULIN_TOTAL=0.5"
-    11345487207,52554138,86,Paradigm Revel - 723
+    9/4/13 14:17:33,,,,,,,Normal,1.0,1.0,,,,,,,,,,,,,,,,,,,,,BolusNormal
+      "AMOUNT=1
+        CONCENTRATION=null
+        PROGRAMMED_AMOUNT=1
+        ACTION_REQUESTOR=pump
+        ENABLE=true
+        IS_DUAL_COMPONENT=false
+        UNABSORBED_INSULIN_TOTAL=0.5"
+      11345487207,52554138,86,Paradigm Revel - 723
 
-  9/4/13 14:17:33,,,,,,,,,,,,,,,1.0,120,100,12,60,13,103,0,1,0.5,,,,,,BolusWizardBolusEstimate,"BG_INPUT=103
-      BG_UNITS=mg dl
-      CARB_INPUT=13
-      CARB_UNITS=grams
-      CARB_RATIO=12
-      INSULIN_SENSITIVITY=60
-      BG_TARGET_LOW=100
-      BG_TARGET_HIGH=120
-      BOLUS_ESTIMATE=1
-      CORRECTION_ESTIMATE=0
-      FOOD_ESTIMATE=1
-      UNABSORBED_INSULIN_TOTAL=0.5
-      UNABSORBED_INSULIN_COUNT=2
-      ACTION_REQUESTOR=pump"
-    11345487208,52554138,87,Paradigm Revel - 723
+    9/4/13 14:17:33,,,,,,,,,,,,,,,1.0,120,100,12,60,13,103,0,1,0.5,,,,,,BolusWizardBolusEstimate,"BG_INPUT=103
+        BG_UNITS=mg dl
+        CARB_INPUT=13
+        CARB_UNITS=grams
+        CARB_RATIO=12
+        INSULIN_SENSITIVITY=60
+        BG_TARGET_LOW=100
+        BG_TARGET_HIGH=120
+        BOLUS_ESTIMATE=1
+        CORRECTION_ESTIMATE=0
+        FOOD_ESTIMATE=1
+        UNABSORBED_INSULIN_TOTAL=0.5
+        UNABSORBED_INSULIN_COUNT=2
+        ACTION_REQUESTOR=pump"
+      11345487208,52554138,87,Paradigm Revel - 723
 
-  9/4/13 14:17:33,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,UnabsorbedInsulin,"BOLUS_ESTIMATE_DATUM=11345487208
-      INDEX=0
-      AMOUNT=1.7
-      RECORD_AGE=121
-      INSULIN_TYPE=null
-      INSULIN_ACTION_CURVE=180"
-    11345487209,52554138,88,Paradigm Revel - 723
+    9/4/13 14:17:33,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,UnabsorbedInsulin,"BOLUS_ESTIMATE_DATUM=11345487208
+        INDEX=0
+        AMOUNT=1.7
+        RECORD_AGE=121
+        INSULIN_TYPE=null
+        INSULIN_ACTION_CURVE=180"
+      11345487209,52554138,88,Paradigm Revel - 723
 
-  9/4/13 14:17:33,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,UnabsorbedInsulin,"BOLUS_ESTIMATE_DATUM=11345487208
-      INDEX=1
-      AMOUNT=1.5
-      RECORD_AGE=331
-      INSULIN_TYPE=null
-      INSULIN_ACTION_CURVE=180"
-    11345487210,52554138,89,Paradigm Revel - 723
+    9/4/13 14:17:33,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,UnabsorbedInsulin,"BOLUS_ESTIMATE_DATUM=11345487208
+        INDEX=1
+        AMOUNT=1.5
+        RECORD_AGE=331
+        INSULIN_TYPE=null
+        INSULIN_ACTION_CURVE=180"
+      11345487210,52554138,89,Paradigm Revel - 723
 
-  9/4/13 15:20:52,,,,,,,,,,,,,,,,,,,,,,,,,,252,,,,CalBGForPH,"AMOUNT=252, ACTION_REQUESTOR=pump"
-    11345487206,52554138,85,Paradigm Revel - 723
+    9/4/13 15:20:52,,,,,,,,,,,,,,,,,,,,,,,,,,252,,,,CalBGForPH,"AMOUNT=252, ACTION_REQUESTOR=pump"
+      11345487206,52554138,85,Paradigm Revel - 723
 
-  9/4/13 15:20:55,,,,,,,Normal,1.5,1.5,,,,,,,,,,,,,,,,,,,,,BolusNormal,"AMOUNT=1.5
-      CONCENTRATION=null
-      PROGRAMMED_AMOUNT=1.5
-      ACTION_REQUESTOR=pump
-      ENABLE=true
-      IS_DUAL_COMPONENT=false
-      UNABSORBED_INSULIN_TOTAL=0.7"
-    11345487201,52554138,80,Paradigm Revel - 723
+    9/4/13 15:20:55,,,,,,,Normal,1.5,1.5,,,,,,,,,,,,,,,,,,,,,BolusNormal,"AMOUNT=1.5
+        CONCENTRATION=null
+        PROGRAMMED_AMOUNT=1.5
+        ACTION_REQUESTOR=pump
+        ENABLE=true
+        IS_DUAL_COMPONENT=false
+        UNABSORBED_INSULIN_TOTAL=0.7"
+      11345487201,52554138,80,Paradigm Revel - 723
 
-  9/4/13 15:20:55,,,,,,,,,,,,,,,1.5,120,100,12,60,0,252,2.2,0,0.7,,,,,,BolusWizardBolusEstimate,"BG_INPUT=252
-      BG_UNITS=mg dl
-      CARB_INPUT=0
-      CARB_UNITS=grams
-      CARB_RATIO=12
-      INSULIN_SENSITIVITY=60
-      BG_TARGET_LOW=100
-      BG_TARGET_HIGH=120
-      BOLUS_ESTIMATE=1.5
-      CORRECTION_ESTIMATE=2.2
-      FOOD_ESTIMATE=0
-      UNABSORBED_INSULIN_TOTAL=0.7
-      UNABSORBED_INSULIN_COUNT=3
-      ACTION_REQUESTOR=pump"
-    11345487202,52554138,81,Paradigm Revel - 723
+    9/4/13 15:20:55,,,,,,,,,,,,,,,1.5,120,100,12,60,0,252,2.2,0,0.7,,,,,,BolusWizardBolusEstimate,"BG_INPUT=252
+        BG_UNITS=mg dl
+        CARB_INPUT=0
+        CARB_UNITS=grams
+        CARB_RATIO=12
+        INSULIN_SENSITIVITY=60
+        BG_TARGET_LOW=100
+        BG_TARGET_HIGH=120
+        BOLUS_ESTIMATE=1.5
+        CORRECTION_ESTIMATE=2.2
+        FOOD_ESTIMATE=0
+        UNABSORBED_INSULIN_TOTAL=0.7
+        UNABSORBED_INSULIN_COUNT=3
+        ACTION_REQUESTOR=pump"
+      11345487202,52554138,81,Paradigm Revel - 723
 
-  9/4/13 15:20:55,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,UnabsorbedInsulin,"BOLUS_ESTIMATE_DATUM=11345487202
-      INDEX=0
-      AMOUNT=1
-      RECORD_AGE=64
-      INSULIN_TYPE=null
-      INSULIN_ACTION_CURVE=180"
-    11345487203,52554138,82,Paradigm Revel - 723
+    9/4/13 15:20:55,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,UnabsorbedInsulin,"BOLUS_ESTIMATE_DATUM=11345487202
+        INDEX=0
+        AMOUNT=1
+        RECORD_AGE=64
+        INSULIN_TYPE=null
+        INSULIN_ACTION_CURVE=180"
+      11345487203,52554138,82,Paradigm Revel - 723
 
-  9/4/13 15:20:55,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,UnabsorbedInsulin,"BOLUS_ESTIMATE_DATUM=11345487202
-      INDEX=1
-      AMOUNT=1.7
-      RECORD_AGE=184
-      INSULIN_TYPE=null
-      INSULIN_ACTION_CURVE=180"
-    11345487204,52554138,83,Paradigm Revel - 723
+    9/4/13 15:20:55,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,UnabsorbedInsulin,"BOLUS_ESTIMATE_DATUM=11345487202
+        INDEX=1
+        AMOUNT=1.7
+        RECORD_AGE=184
+        INSULIN_TYPE=null
+        INSULIN_ACTION_CURVE=180"
+      11345487204,52554138,83,Paradigm Revel - 723
 
-  9/4/13 15:20:55,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,UnabsorbedInsulin,"BOLUS_ESTIMATE_DATUM=11345487202
-      INDEX=2
-      AMOUNT=1.5
-      RECORD_AGE=394
-      INSULIN_TYPE=null
-      INSULIN_ACTION_CURVE=180"
-    11345487205,52554138,84,Paradigm Revel - 723
-  9/4/13 16:11:57,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,CurrentSensorMissedDataTime,TIME=1800000,11345487185,52554138,64,Paradigm Revel - 723
+    9/4/13 15:20:55,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,UnabsorbedInsulin,"BOLUS_ESTIMATE_DATUM=11345487202
+        INDEX=2
+        AMOUNT=1.5
+        RECORD_AGE=394
+        INSULIN_TYPE=null
+        INSULIN_ACTION_CURVE=180"
+      11345487205,52554138,84,Paradigm Revel - 723
+    9/4/13 16:11:57,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,CurrentSensorMissedDataTime,TIME=1800000,11345487185,52554138,64,Paradigm Revel - 723
     """
     bolus_1_ok = {
         "bg": 103,
@@ -607,44 +607,49 @@ class TestSaraBolus:
         #'action_requestor': 'pump'
     }
     bw_1_bytes = bytearray(
-        "".join(
-            """
-  5b 67
-    a1 51 0e 04 0d
-    0d 50 00 78
-    3c 64 00 00 28 00 00 14 00 28 78
-    """.strip().split()
-        ).decode("hex")
+        codecs.decode(
+            (
+                "5b 67"
+                "a1 51 0e 04 0d"
+                "0d 50 00 78"
+                "3c 64 00 00 28 00 00 14 00 28 78"
+            ).replace(" ", ""),
+            "hex",
+        )
     )
     bw_2_bytes = bytearray(
-        "".join(
-            """
-  5b fc
-    b7 54 0f 04 0d
-    00 50 00 78
-    3c 64 58 00 00 00 00 1c 00 3c 78
-    """.strip().split()
-        ).decode("hex")
+        codecs.decode(
+            (
+                "5b fc"
+                "b7 54 0f 04 0d"
+                "00 50 00 78"
+                "3c 64 58 00 00 00 00 1c 00 3c 78"
+            ).replace(" ", ""),
+            "hex",
+        )
     )
 
     cal_bg_bytes = bytearray(
-        "".join(
-            """
-  0a fc
-    b4 54 2f 04 0d
-    """.strip().split()
-        ).decode("hex")
+        # fmt: off
+        codecs.decode(
+            (
+                "0a fc"
+                "b4 54 2f 04 0d"
+            ).replace(" ", ""),
+            "hex",
+        )
+        # fmt: on
     )
 
     @classmethod
     def test_cal_bg(klass):
         """
-    >>> TestSaraBolus.test_cal_bg( )
-    CalBGForPH 2013-09-04T15:20:52 head[2], body[0] op[0x0a]
-    {
-      "amount": 252
-    }
-    """
+        >>> TestSaraBolus.test_cal_bg( )
+        CalBGForPH 2013-09-04T15:20:52 head[2], body[0] op[0x0a]
+        {
+          "amount": 252
+        }
+        """
         # 9/4/13 15:20:52,,,,,,,,,,,,,,,,,,,,,,,,,,252,,,,CalBGForPH,"AMOUNT=252, ACTION_REQUESTOR=pump"
         data = klass.cal_bg_bytes
         rec = CalBGForPH(data[:2])
@@ -661,7 +666,7 @@ def dictlines(d):
 
 def unsolved_bolus_wizard():
     """
-  # >>> unsolved_bolus_wizard( )
+    # >>> unsolved_bolus_wizard( )
     """
     # these byte sequences line up with these records:
     bw_ok_1 = {
@@ -706,28 +711,28 @@ def unsolved_bolus_wizard():
 
 def decode_wizard(data):
     """
-  BYTE
-  01:
-  02:
-  03:
-  04:
-  05:
-  06:
-  07:
-  08:
-  09:
-  10:
-  12:
-  13:
-  14:
-  15:
-  16:
-  17:
-  18:
-  19:
-  20:
-  21:
-  22:
+    BYTE
+    01:
+    02:
+    03:
+    04:
+    05:
+    06:
+    07:
+    08:
+    09:
+    10:
+    12:
+    13:
+    14:
+    15:
+    16:
+    17:
+    18:
+    19:
+    20:
+    21:
+    22:
     """
     head = data[:2]
     date = data[2:7]
@@ -765,7 +770,7 @@ class BW722(BolusWizard):
         # XXX: Most likely incorrect.
         correction = (
             twos_comp(self.body[7], 8) + twos_comp(self.body[5] & 0x0F, 8)
-        ) // 10.0
+        ) / 10.0
         wizard = {
             "bg": bg,
             "carb_input": carb_input,

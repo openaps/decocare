@@ -8,8 +8,8 @@ import io
 from binascii import hexlify
 from datetime import date
 
-from . import lib
-from .records import *
+from decocare import lib
+from decocare.records import *
 
 _remote_ids = [
     bytearray([0x01, 0xE2, 0x40]),
@@ -20,24 +20,22 @@ _remote_ids = [
 
 def decode_remote_id(msg):
     """
-  practice decoding some remote ids:
+    practice decoding some remote ids:
 
-  | 0x27
-  | 0x01 0xe2 0x40
-  | 0x03 0x42 0x2a
-  | 0x28 0x0c 0x89
-  | 0x92 0x00 0x00 0x00
+    | 0x27
+    | 0x01 0xe2 0x40
+    | 0x03 0x42 0x2a
+    | 0x28 0x0c 0x89
+    | 0x92 0x00 0x00 0x00
 
-  >>> decode_remote_id(_remote_ids[0])
-  '123456'
+    >>> decode_remote_id(_remote_ids[0])
+    '123456'
 
-  >>> decode_remote_id(_remote_ids[1])
-  '213546'
+    >>> decode_remote_id(_remote_ids[1])
+    '213546'
 
-  >>> decode_remote_id(_remote_ids[2])
-  '821650'
-
-
+    >>> decode_remote_id(_remote_ids[2])
+    '821650'
 
     """
     high = msg[0] * 256 * 256
@@ -119,7 +117,7 @@ class ChangeBasalProfile_old_profile(KnownRecord):
 
 
 def describe_rate(offset, rate, q):
-    return dict(offset=(30 * 1000 * 60) * offset, rate=rate // 40.0)
+    return dict(offset=(30 * 1000 * 60) * offset, rate=rate / 40.0)
 
 
 class ChangeBasalProfile_new_profile(KnownRecord):
@@ -225,7 +223,7 @@ class TempBasal(KnownRecord):
         temp = {0: "absolute", 1: "percent"}[(self.body[0] >> 3)]
         status = dict(temp=temp)
         if temp == "absolute":
-            rate = lib.BangInt([self.body[0] & 0x7, self.head[1]]) // 40.0
+            rate = lib.BangInt([self.body[0] & 0x7, self.head[1]]) / 40.0
             status.update(rate=rate)
         if temp == "percent":
             rate = int(self.head[1])
@@ -235,13 +233,13 @@ class TempBasal(KnownRecord):
 
 class LowReservoir(KnownRecord):
     """
-  >>> rec = LowReservoir( LowReservoir._test_1[:2] )
-  >>> decoded = rec.parse(LowReservoir._test_1)
-  >>> print str(rec)
-  LowReservoir 2012-12-07T11:02:43 head[2], body[0] op[0x34]
+    >>> rec = LowReservoir( LowReservoir._test_1[:2] )
+    >>> decoded = rec.parse(LowReservoir._test_1)
+    >>> print(str(rec))
+    LowReservoir 2012-12-07T11:02:43 head[2], body[0] op[0x34]
 
-  >>> print pformat(decoded)
-  {'amount': 20.0}
+    >>> print(pformat(decoded))
+    {'amount': 20.0}
     """
 
     opcode = 0x34
@@ -249,7 +247,7 @@ class LowReservoir(KnownRecord):
 
     def decode(self):
         self.parse_time()
-        reservoir = {"amount": int(self.head[1]) // 10.0}
+        reservoir = {"amount": int(self.head[1]) / 10.0}
         return reservoir
 
 
@@ -344,7 +342,7 @@ class JournalEntryInsulinMarker(KnownRecord):
         # see https://github.com/ps2/rileylink_ios/pull/160/files
         lowbits = self.head[1]
         highbits = (self.date[2] & 0b1100000) << 3  # ??
-        amount = (highbits + lowbits) // 10.0
+        amount = (highbits + lowbits) / 10.0
         return dict(amount=amount)
 
 
@@ -500,7 +498,7 @@ class OldBolusWizardChange(KnownRecord):
 
     def decode(self):
         self.parse_time()
-        half = (self.body_length - 1) // 2
+        half = (self.body_length - 1) / 2
         stale = self.body[0:half]
         changed = self.body[half:-1]
         tail = self.body[-1]
@@ -564,9 +562,9 @@ def decode_carb_ratios(data):
         start = x * 3
         end = start + 3
         (offset, q, r) = data[start:end]
-        ratio = r // 10.0
+        ratio = r / 10.0
         if q:
-            ratio = lib.BangInt([q, r]) // 1000.0
+            ratio = lib.BangInt([q, r]) / 1000.0
         ratios.append(
             dict(i=x, offset=offset * 30, q=q, _offset=offset, ratio=ratio, r=r)
         )
@@ -594,8 +592,8 @@ def decode_bg_targets(data, bg_units):
         # (low, high, offset) = data[start:end]
         (offset, low, high) = data[start:end]
         if bg_units == 2:
-            low = low // 10.0
-            high = high // 10.0
+            low = low / 10.0
+            high = high / 10.0
         targets.append(
             dict(  # i=x,
                 offset=offset * 30,
@@ -731,7 +729,7 @@ class ChangeMaxBasal(KnownRecord):
 
     def decode(self):
         self.parse_time()
-        return dict(maxBasal=self.head[1] // 40.0)
+        return dict(maxBasal=self.head[1] / 40.0)
 
 
 _confirmed.append(ChangeMaxBasal)
@@ -918,11 +916,11 @@ def parse_midnight(data):
 
 def unmask_m_midnight(data):
     """
-  Extract date values from a series of bytes.
-  Always returns tuple given a bytearray of at least 3 bytes.
+    Extract date values from a series of bytes.
+    Always returns tuple given a bytearray of at least 3 bytes.
 
-  Returns 6-tuple of scalar values year, month, day, hours, minutes,
-  seconds.
+    Returns 6-tuple of scalar values year, month, day, hours, minutes,
+    seconds.
 
     """
     data = data[:]
@@ -986,8 +984,8 @@ del x
 
 def suggest(head, larger=False, model=None):
     """
-  Look in the known table of commands to find a suitable record type
-  for this opcode.
+    Look in the known table of commands to find a suitable record type
+    for this opcode.
     """
     klass = _known.get(head[0], Base)
     record = klass(head, model)
@@ -996,10 +994,10 @@ def suggest(head, larger=False, model=None):
 
 def parse_record(fd, head=bytearray(), larger=False, model=None):
     """
-  Given a file-like object, and the head of a record, parse the rest
-  of the record.
-  Look up the type of record, read in just enough data to parse it,
-  return the result.
+    Given a file-like object, and the head of a record, parse the rest
+    of the record.
+    Look up the type of record, read in just enough data to parse it,
+    return the result.
     """
     # head    = bytearray(fd.read(2))
     date = bytearray()
@@ -1013,8 +1011,8 @@ def parse_record(fd, head=bytearray(), larger=False, model=None):
     if record.body_length > 0:
         body.extend(bytearray(fd.read(record.body_length)))
     record.parse(head + date + body)
-    # print str(record)
-    # print record.pformat(prefix=str(record) )
+    # print(str(record))
+    # print(record.pformat(prefix=str(record) ))
     return record
 
 

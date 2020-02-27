@@ -5,7 +5,7 @@ import logging
 
 import serial
 
-from . import fuser, lib
+from decocare import fuser, lib
 
 io = logging.getLogger()
 log = io.getChild(__name__)

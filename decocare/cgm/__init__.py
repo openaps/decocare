@@ -47,7 +47,7 @@ def parse_months(first_byte, second_byte):
 
 def parse_date(data, unmask=False, strict=False, minute_specific=False):
     """
-  Some dates are formatted/stored down to the second (Sensor CalBGForPH) while
+    Some dates are formatted/stored down to the second (Sensor CalBGForPH) while
     others are stored down to the minute (CGM SensorTimestamp dates).
     """
     data = data[:]
@@ -221,7 +221,7 @@ class PagedData:
                 # And this ResetGlucose has a payload indicating calibration factor
                 # Update sensor cal factor
                 if record["name"] == "SensorCalFactor":
-                    factor = lib.BangInt([body[0], body[1]]) // 1000.0
+                    factor = lib.BangInt([body[0], body[1]]) / 1000.0
                     record.update(factor=factor)
                 records.extend(mapped_glucose_records)
                 records.append(record)

@@ -327,44 +327,6 @@ class Device:
             return bytesAvailable
         return 0
 
-    """
-  def readStatus(self):
-    result = [ ]
-    def fetch_status( ):
-      res = self.link.sendComLink2Command(3)
-      log.info("res: %r" % res)
-      #if res and res[0] == 0: # 0 indicates success
-      if res and len(res) > 0:
-        return res
-      return False
-
-    result = retry(fetch_status)
-    if not result:
-      raise RFFailed("rf read header indicates failure %s" % lib.hexdump(result))
-    commStatus     = result[0] # 0 indicates success
-    if commStatus != 0:
-      log.error("readStatus: non-zero status: %02x" % commStatus)
-    status         = result[2]
-    lb, hb         = result[3], result[4]
-    bytesAvailable = lib.BangInt((lb, hb))
-    self.status    = status
-    log.info('status byte: %02x' % status)
-    if (status & 0x2) > 0:
-      log.info('STATUS: receive in progress!')
-    if (status & 0x4) > 0:
-      log.info('STATUS: transmit in progress!')
-    if (status & 0x8) > 0:
-      log.info('STATUS: interface error!')
-    if (status & 0x10) > 0:
-      log.info('STATUS: recieve overflow!')
-    if (status & 0x20) > 0:
-      log.info('STATUS: transmit overflow!')
-    assert commStatus == 0, "commStatus must be 0x00 (%02x)" % commStatus
-    if (status & 0x1) > 0:
-      return bytesAvailable
-    return 0
-    """
-
     def buildTransmitPacket(self):
         return self.command.format()
 

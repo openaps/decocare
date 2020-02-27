@@ -134,7 +134,7 @@ class TimeExperiment:
                 print("")
                 found = dict(timestamp=date, blob=bolus)
                 print(dump_four(candidate, indent=4))
-                # print lib.hexdump(bolus)
+                # print(lib.hexdump(bolus))
                 records.append(found)
                 bolus = bytearray()
         return records

@@ -3,7 +3,7 @@ import time
 
 log = logging.getLogger().getChild(__name__)
 
-from . import commands, lib
+from decocare import commands, lib
 
 
 class Downloader:
@@ -76,7 +76,7 @@ if __name__ == "__main__":
         sys.exit(1)
     from pprint import pformat
 
-    from . import link, session, stick
+    from decocare import link, session, stick
 
     logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
     log.info("howdy! I'm going to take a look at your pump download something info.")

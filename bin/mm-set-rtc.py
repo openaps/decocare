@@ -13,7 +13,7 @@ from decocare.helpers import cli
 class SetRTCApp(cli.CommandApp):
     """ %(prog)s -  query or set RTC
 
-  Set or query RTC.
+    Set or query RTC.
     """
 
     def customize_parser(self, parser):

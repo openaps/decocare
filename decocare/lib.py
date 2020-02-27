@@ -31,10 +31,11 @@ True
 >>> BangInt( bytearray( [ 0x02, 0X02 ] ) )
 514
 
->>> BangLong( bytearray( [ 0x0, 0X0, 0x02, 0x02 ] ) )
-514L
+>>> BangLong( bytearray( [ 0x0, 0X0, 0x02, 0x02 ] ) )  # Python3 has no `long` integer anymore
+514
 
 """
+import struct
 from binascii import hexlify, unhexlify
 from datetime import datetime
 from datetime import time as clocks
@@ -65,7 +66,7 @@ class Timer:
 
     def millis(self):
         dt = datetime.now() - self.begin
-        ms = (dt.days * 24 * 60 * 60 + dt.seconds) * 1000 + dt.microseconds // 1000.0
+        ms = (dt.days * 24 * 60 * 60 + dt.seconds) * 1000 + dt.microseconds / 1000.0
         return ms
 
 
@@ -88,29 +89,28 @@ class parse:
     def date(data):
         """
 
-    >>> parse.date( '2010-11-10T01:46:00' ).isoformat( )
-    '2010-11-10T01:46:00'
+        >>> parse.date( '2010-11-10T01:46:00' ).isoformat( )
+        '2010-11-10T01:46:00'
 
-    >>> parse.date( '2010-11-10 01:46:00' ).isoformat( )
-    '2010-11-10T01:46:00'
+        >>> parse.date( '2010-11-10 01:46:00' ).isoformat( )
+        '2010-11-10T01:46:00'
 
-    >>> parse.date( '2010-11-10 01:46PM' ).isoformat( )
-    '2010-11-10T13:46:00'
+        >>> parse.date( '2010-11-10 01:46PM' ).isoformat( )
+        '2010-11-10T13:46:00'
 
-    >>> parse.date( '2010-11-10 13:46' ).isoformat( )
-    '2010-11-10T13:46:00'
+        >>> parse.date( '2010-11-10 13:46' ).isoformat( )
+        '2010-11-10T13:46:00'
 
-    >>> parse.date( '2010-11-10 1:46AM' ).isoformat( )
-    '2010-11-10T01:46:00'
+        >>> parse.date( '2010-11-10 1:46AM' ).isoformat( )
+        '2010-11-10T01:46:00'
 
-    """
+        """
         return dateutil.parser.parse(data)
 
 
 def hexdump(src, length=8, indent=0):
     """
-  Return a string representing the bytes in src, length bytes per
-  line.
+    Return a string representing the bytes in src, length bytes per line.
 
     """
     if len(src) == 0:
@@ -128,9 +128,8 @@ def hexdump(src, length=8, indent=0):
 
 def int_dump(stream, indent=0):
     """
-  >>> int_dump(bytearray([0x01, 0x02]))
-  '   1    2'
-
+    >>> int_dump(bytearray([0x01, 0x02]))
+    '   1    2'
 
     """
     cells = ["%#04s" % (x) for x in stream]

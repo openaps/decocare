@@ -7,10 +7,10 @@ from decocare.helpers import cli
 class BolusApp(cli.CommandApp):
     """ %(prog)s - Send bolus command to a pump.
 
-  XXX: Be careful please!
+    XXX: Be careful please!
 
-  Units might be wrong.  Keep disconnected from pump until you trust it by
-  observing the right amount first.
+    Units might be wrong.  Keep disconnected from pump until you trust it by
+    observing the right amount first.
     """
 
     def customize_parser(self, parser):

@@ -2,8 +2,8 @@ import logging
 import time
 
 log = logging.getLogger().getChild(__name__)
-from . import commands, lib, models
-from .errors import AckError, BadDeviceCommError, StickError
+from decocare import commands, lib, models
+from decocare.errors import AckError, BadDeviceCommError, StickError
 
 
 class Session:
@@ -72,7 +72,7 @@ class Pump(Session):
 
     def power_control(self, minutes=None):
         log.info("BEGIN POWER CONTROL %s" % self.serial)
-        # print "PowerControl SERIAL", self.serial
+        # print("PowerControl SERIAL", self.serial)
         response = self.query(commands.PowerControl, minutes=minutes)
         power = self.command
         log.info("manually download PowerControl serial %s" % self.serial)
@@ -123,7 +123,7 @@ if __name__ == "__main__":
         sys.exit(1)
     from pprint import pformat
 
-    from . import link, stick
+    from decocare import link, stick
 
     logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
     log.info("howdy! I'm going to take a look at your pump.")

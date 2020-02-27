@@ -1,7 +1,7 @@
 import logging
 import time
 
-from . import lib
+from decocare import lib
 
 """
 stick - implement a naive open source driver for Medtronic's
@@ -22,7 +22,7 @@ format can be read.
 
 log = logging.getLogger().getChild(__name__)
 
-from .errors import AckError, BadDeviceCommError, StickError
+from decocare.errors import AckError, BadDeviceCommError, StickError
 
 
 class BadCRC(StickError):
@@ -40,15 +40,15 @@ def CRC8(data):
 class StickCommand:
     """Basic stick command
 
-  Each command is used to talk to the usb stick.
-  The usb stick interprets the opcode, and then performs the function
-  associated with the opcode.
-  Altogether, the suite of opcodes that the stick responds to allows
-  you to debug and track all packets you are sending/receiving plus
-  allows you to send recieve commands to the pump, by formatting your
-  message into payloads with opcodes, and then letting the stick work
-  on what you've given it.  It's kind of like a modem with this funky
-  binary interface and 64 byte payloads.
+    Each command is used to talk to the usb stick.
+    The usb stick interprets the opcode, and then performs the function
+    associated with the opcode.
+    Altogether, the suite of opcodes that the stick responds to allows
+    you to debug and track all packets you are sending/receiving plus
+    allows you to send recieve commands to the pump, by formatting your
+    message into payloads with opcodes, and then letting the stick work
+    on what you've given it.  It's kind of like a modem with this funky
+    binary interface and 64 byte payloads.
     """
 
     code = [0x00]
@@ -92,9 +92,9 @@ class StickCommand:
 class ProductInfo(StickCommand):
     """Get product info from the usb device.
 
-  Useful for identifying
-  what kind of usb stick you've got; there are a few different kinds.
-  Eg, European vs US regulatory domains require different frequencies for compliance.
+    Useful for identifying
+    what kind of usb stick you've got; there are a few different kinds.
+    Eg, European vs US regulatory domains require different frequencies for compliance.
 
     """
 
@@ -178,8 +178,8 @@ class RadioStats(InterfaceStats):
 
 class SignalStrength(StickCommand):
     """This seems to be required to initialize communications with the
-  usb stick.  Also, you should wait until a minimum threshold is
-  reached.
+    usb stick.  Also, you should wait until a minimum threshold is
+    reached.
     """
 
     code = [6, 0]
@@ -196,10 +196,10 @@ class SignalStrength(StickCommand):
 
 class LinkStatus(StickCommand):
     """Basic ACK type of command.
-  Used to poll the modem's radio buffer.  When the radio buffer is
-  full, we can download a packet from the buffer.  Otherwise, we need
-  to be mindful of the state the radio is in.  This opcode tells you
-  the current state of the radio/stick.
+    Used to poll the modem's radio buffer.  When the radio buffer is
+    full, we can download a packet from the buffer.  Otherwise, we need
+    to be mindful of the state the radio is in.  This opcode tells you
+    the current state of the radio/stick.
     """
 
     code = [0x03]
@@ -264,9 +264,9 @@ class LinkStatus(StickCommand):
 
 class ReadRadio(StickCommand):
     """
-  Read buffer from the radio.
+    Read buffer from the radio.
 
-  Downloads a packet from the radio buffer.
+    Downloads a packet from the radio buffer.
 
     """
 
@@ -376,13 +376,13 @@ class ReadRadio(StickCommand):
 class TransmitPacket(StickCommand):
     """Format a packet to send on the radio.
 
-  This commands formats a packet from usb, and shoves it into the
-  radio buffer.
-  The radio buffer is broadcast "over the air" so that any device
-  sensitive to the packets you sent will respond accordingly
-  (probably sending data back).
-  For this reason, the serial number of the device you'd like to talk
-  to is formatted into the packet.
+    This commands formats a packet from usb, and shoves it into the
+    radio buffer.
+    The radio buffer is broadcast "over the air" so that any device
+    sensitive to the packets you sent will respond accordingly
+    (probably sending data back).
+    For this reason, the serial number of the device you'd like to talk
+    to is formatted into the packet.
 
     """
 
@@ -462,31 +462,31 @@ class TransmitPacket(StickCommand):
 
 class Stick:
     """
-  The carelink usb stick acts like a buffer.
+    The carelink usb stick acts like a buffer.
 
-  It has a variety of commands providing synchronous IO, eg, you may
-  generally perform a read immediately after writing to it, and expect a
-  response.
+    It has a variety of commands providing synchronous IO, eg, you may
+    generally perform a read immediately after writing to it, and expect a
+    response.
 
-  The commands operate on a local buffer used to facilitate exchanging
-  messages over RF with the pump. RF communication with the pump
-  happens asynchronously, requiring us to go through 3 separate
-  phases for each message we'd like to exchange with the pumps:
-  * transmit - send commmand
-  * poll_size - loop
-  * download - loop
+    The commands operate on a local buffer used to facilitate exchanging
+    messages over RF with the pump. RF communication with the pump
+    happens asynchronously, requiring us to go through 3 separate
+    phases for each message we'd like to exchange with the pumps:
+    * transmit - send commmand
+    * poll_size - loop
+    * download - loop
 
-  Each command is usually only 3 bytes.
+    Each command is usually only 3 bytes.
 
-  The protocol offers some facility for detecting and recovering
-  from inconsistencies in the underlying transport of data, however,
-  we are somwhat ignorant of them.  The tricky bits are exactly how
-  to recover from, eg CRC, errors that can occur.
-  The "shape" and timing of these loops seem to mostly get the job
-  done.
+    The protocol offers some facility for detecting and recovering
+    from inconsistencies in the underlying transport of data, however,
+    we are somwhat ignorant of them.  The tricky bits are exactly how
+    to recover from, eg CRC, errors that can occur.
+    The "shape" and timing of these loops seem to mostly get the job
+    done.
 
-  The Stick object provides a bunch of useful methods, that given a link,
-  will represent the state of one active usb stick.
+    The Stick object provides a bunch of useful methods, that given a link,
+    will represent the state of one active usb stick.
 
     """
 
@@ -1027,7 +1027,7 @@ if __name__ == "__main__":
         sys.exit(1)
     from pprint import pformat
 
-    from . import link
+    from decocare import link
 
     logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
     log.info("howdy! I'm going to take a look at your carelink usb stick.")
@@ -1041,19 +1041,18 @@ if __name__ == "__main__":
         signal = stick.signal_strength()
     log.info("we seem to have found a nice signal strength of: %s" % signal)
     log.info(
-        """
-    at this point, we could issue remote commands to a medical
-    device, let's inspect the interfaces""".strip()
+        "at this point, we could issue remote commands to a medical"
+        " device, let's inspect the interfaces"
     )
     # log.info(pformat(stick.usb_stats( )))
     # log.info(pformat(stick.radio_stats( )))
     log.info(pformat(stick.interface_stats()))
     """
-  size = stick.poll_size( )
-  log.info("can we poll the size? %s" % (size))
-  if size > 14:
-    log.info("DOWNLOADING %s TO CLEAR BUFFER" % size)
-    log.info('\n'.join(["can we download ?", lib.hexdump(stick.download( ))]))
+    size = stick.poll_size( )
+    log.info("can we poll the size? %s" % (size))
+    if size > 14:
+        log.info("DOWNLOADING %s TO CLEAR BUFFER" % size)
+        log.info('\n'.join(["can we download ?", lib.hexdump(stick.download( ))]))
     """
     log.info("CLEAR BUFFERS")
     extra = stick.clear_buffer()

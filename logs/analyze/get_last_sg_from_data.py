@@ -40,11 +40,11 @@ with open(fileInName, "rb") as file:
         myBytes.append(byte)
 
 # j = len(myBytes)
-# print j
+# print(j)
 # j = j - 1
-# print myBytes[j]
-# print '{0:08b}'.format(myBytes[j])
-# print hex(myBytes[j])
+# print(myBytes[j])
+# print('{0:08b}'.format(myBytes[j]))
+# print(hex(myBytes[j]))
 
 
 # myBytes=myBytes.replace("\n","")
@@ -98,6 +98,6 @@ fileOut.write("<latest_sg>" + str(latest_sg) + "</latest_sg>")
 #        if withNewLine:
 #            fileOut.write("\n")
 # info stuff
-# print "bytes raw : " + myBytes
-# print "bytes bin : " + '{0:08b}'.format(myBytes)
-# print "bytes hex : " + hex(myBytes)
+# print("bytes raw : " + myBytes)
+# print("bytes bin : " + '{0:08b}'.format(myBytes))
+# print("bytes hex : " + hex(myBytes))

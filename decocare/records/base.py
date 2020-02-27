@@ -1,9 +1,8 @@
 from datetime import datetime
 
-# from .. import lib
 from decocare import lib
 
-from .times import *
+from decocare.records.times import *
 
 
 class Base:
@@ -11,10 +10,10 @@ class Base:
     >>> str( Base( bytearray([ 0x00, 0x00 ]) ) )
     'Base unknown head[2], body[0] op[0x00]'
 
-  Each record in the history seems to have a two byte head, possibly
-  some arguments, then a 5 byte description of the datetime, then
-  maybe a body.  The most reliable way to identify records so far,
-  seems to be through the 2 byte head.
+    Each record in the history seems to have a two byte head, possibly
+    some arguments, then a 5 byte description of the datetime, then
+    maybe a body.  The most reliable way to identify records so far,
+    seems to be through the 2 byte head.
 
     """
 
@@ -161,8 +160,8 @@ class Prime(KnownRecord):
 
     def decode(self):
         self.parse_time()
-        amount = self.head[4] // 10.0
-        fixed = self.head[2] // 10.0
+        amount = self.head[4] / 10.0
+        fixed = self.head[2] / 10.0
         t = {0: "manual"}.get(fixed, "fixed")
         prime = {
             "type": t,

@@ -14,7 +14,7 @@ def in_use(device):
 
 
 if __name__ == "__main__":
-    from .scan import scan
+    from decocare.scan import scan
 
     candidate = (sys.argv[1:2] or [scan()]).pop()
     print(in_use(candidate))
